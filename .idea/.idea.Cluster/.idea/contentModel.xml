@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\robin\.Rider2017.3\system\resharper-host\local\Transient\ReSharperHost\v11\SolutionCaches\_Cluster.-2073236858.00" t="ExcludeRecursive" />
+    <e p="C:\Users\robin\Programmierung\C#\Cluster" t="IncludeFlat">
+      <e p="Cluster" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Cluster.csproj" t="IncludeRecursive" />
+        <e p="GameMechanics" t="Include">
+          <e p="Behaviour" t="Include">
+            <e p="Sector.cs" t="Include" />
+            <e p="Target.cs" t="Include" />
+          </e>
+          <e p="Content" t="Include">
+            <e p="Blueprint.cs" t="Include" />
+            <e p="Prototype.cs" t="Include" />
+            <e p="Technology.cs" t="Include" />
+          </e>
+          <e p="Interface" t="Include">
+            <e p="GUI.cs" t="Include" />
+          </e>
+          <e p="Universe" t="Include">
+            <e p="Building.cs" t="Include" />
+            <e p="Civilisation.cs" t="Include" />
+            <e p="Particle.cs" t="Include" />
+            <e p="Planet.cs" t="Include" />
+            <e p="Shot.cs" t="Include" />
+            <e p="Space.cs" t="Include" />
+            <e p="Unit.cs" t="Include" />
+          </e>
+        </e>
+        <e p="GameWindow.cs" t="Include" />
+        <e p="Math" t="Include">
+          <e p="mat4.cs" t="Include" />
+          <e p="vec2.cs" t="Include" />
+          <e p="vec3.cs" t="Include" />
+          <e p="vec4.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="OpenTK.dll.config" t="Include" />
+        <e p="packages.config" t="Include" />
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="Rendering" t="Include">
+          <e p="Appearance" t="Include">
+            <e p="FrameBuffer.cs" t="Include" />
+            <e p="Shader.cs" t="Include" />
+          </e>
+          <e p="Draw2D" t="Include">
+            <e p="Image.cs" t="Include" />
+            <e p="Mesh.cs" t="Include" />
+            <e p="Primitives.cs" t="Include" />
+            <e p="Text.cs" t="Include" />
+          </e>
+          <e p="Draw3D" t="Include">
+            <e p="Camera.cs" t="Include" />
+            <e p="Collisions" t="Include">
+              <e p="Collision.cs" t="Include" />
+              <e p="Ray.cs" t="Include" />
+            </e>
+            <e p="Model" t="Include">
+              <e p="Instance.cs" t="Include" />
+              <e p="Model.cs" t="Include" />
+              <e p="Triangle.cs" t="Include" />
+              <e p="Vertex.cs" t="Include" />
+            </e>
+            <e p="ParticleSystem.cs" t="Include" />
+            <e p="PostProcessing.cs" t="Include" />
+            <e p="ProceduralGeneration" t="Include">
+              <e p="AnimalGenerator.cs" t="Include" />
+              <e p="ColorGenerator.cs" t="Include" />
+              <e p="FishGenerator.cs" t="Include" />
+              <e p="TerrainGenerator.cs" t="Include" />
+              <e p="TreeGenerator.cs" t="Include" />
+            </e>
+            <e p="SceneGraph.cs" t="Include" />
+            <e p="Terrain.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="Cluster.sln" t="IncludeFlat" />
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
