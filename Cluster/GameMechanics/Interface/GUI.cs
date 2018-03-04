@@ -325,10 +325,10 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                     index++;
                 }
 
-                byte subInterface = 0;
+                Blueprint.SpecialAbility subInterface = 0;
 
                 if (sel_planet.infra[_selIndex] != null && sel_planet.infra[_selIndex].owner == player
-                ) // && sel_planet.infra[sel_index].status == Building.STATUS_NONE)
+                ) // && sel_planet.infra[sel_index].status == Building.Status.NONE)
                 {
                     switch (sel_planet.infra[_selIndex].blueprint.specials)
                     {
@@ -346,7 +346,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 // Eigene Schiffswerft, in der Schiffe gebaut werden können
                 if (subInterface == Blueprint.SpecialAbility.SHIPS)
                 {
-                    List<Prototype> options2 = sel_planet.infra[_selIndex].ListOfPrototypes(player);
+                    List<Prototype> options2 = sel_planet.infra[_selIndex].listOfPrototypes(player);
 
                     index = 0;
                     hover = -1;
@@ -463,7 +463,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 //sel_planet.infra[sel_index].bp.shape.draw(0.0f, 0.0f, 100, 100);
 
                 if (sel_planet.infra[_selIndex].owner == Civilisation.getPlayer()
-                ) // && sel_planet.infra[sel_index].status == Building.STATUS_NONE)
+                ) // && sel_planet.infra[sel_index].status == Building.Status.NONE)
                 {
                     switch (sel_planet.infra[_selIndex].blueprint.specials)
                     {
@@ -586,10 +586,10 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                     {
                         Primitives.setColor(COL_STD_I, COL_STD_I, COL_STD_I, COL_STD_ALPHA);
                         Primitives.setDepth(Primitives.getDepth() - 0.1f);
-                        Primitives.drawRect(drx, dry, 47.5f * sel_planet.infra[_selIndex].production_timer, 47.5f);
+                        Primitives.drawRect(drx, dry, 47.5f * sel_planet.infra[_selIndex].productionTimer, 47.5f);
                         Primitives.setDepth(Primitives.getDepth() + 0.1f);
                         Text.setTextSize(15.0f);
-                        Text.drawText(((int) (sel_planet.infra[_selIndex].production_timer * 100.0)).ToString() + "%",
+                        Text.drawText(((int) (sel_planet.infra[_selIndex].productionTimer * 100.0)).ToString() + "%",
                             drx, dry);
                     }
 
@@ -614,8 +614,8 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
                     if (mhl)
                     {
-                        if ((sel_planet.infra[_selIndex].status == Building.STATUS_NONE ||
-                             sel_planet.infra[_selIndex].status == Building.STATUS_UNDERCONSTRUCTION) &&
+                        if ((sel_planet.infra[_selIndex].status == Building.Status.NONE ||
+                             sel_planet.infra[_selIndex].status == Building.Status.UNDER_CONSTRUCTION) &&
                             player.ressources >= options2[hover].getCost())
                         {
                             sel_planet.infra[_selIndex].produceUnit(options2[hover]);
@@ -635,8 +635,8 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                     }
                     else if (mhr)
                     {
-                        if ((sel_planet.infra[_selIndex].status == Building.STATUS_NONE ||
-                             sel_planet.infra[_selIndex].status == Building.STATUS_UNDERCONSTRUCTION))
+                        if ((sel_planet.infra[_selIndex].status == Building.Status.NONE ||
+                             sel_planet.infra[_selIndex].status == Building.Status.UNDER_CONSTRUCTION))
                         {
                             sel_planet.infra[_selIndex].abortUnit(options2[hover]);
                             if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.ShiftLeft) ||
