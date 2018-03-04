@@ -83,7 +83,7 @@ namespace Cluster.Rendering.Appearance
             GL.UseProgram(program);
         }
 
-        public void unbind()
+        public static void unbind()
         {
             GL.UseProgram(0);
         }

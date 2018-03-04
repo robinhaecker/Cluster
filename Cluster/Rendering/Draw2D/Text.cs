@@ -292,7 +292,7 @@ namespace Cluster.Rendering.Draw2D
 
 			GL.BindVertexArray(0);
 			GL.BindTexture(TextureTarget.Texture2D, 0);
-			text_shader.unbind();
+			Shader.unbind();
 			num_chars = 0;
 		}
 	}

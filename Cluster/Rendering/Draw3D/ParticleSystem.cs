@@ -305,7 +305,7 @@ namespace Cluster.Rendering.Draw3D
 
 			GL.DrawArrays(PrimitiveType.Points, 0, num_particles);
 			GL.BindTexture(TextureTarget.Texture2D, 0);
-			particle_shader.unbind();
+			Shader.unbind();
 
 
 			GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);

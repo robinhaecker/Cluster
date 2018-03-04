@@ -4,247 +4,283 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-
 using Cluster.Rendering.Draw2D;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.LivingThings;
 
 namespace Cluster.GameMechanics.Content
 {
-	class Prototype
-	{
-		public const byte SPECIAL_NONE = 0,
-						  SPECIAL_COLONIZE = 1,
-						  SPECIAL_ASTEROID_MINING = 2,
-						  SPECIAL_REPAIR_UNITS = 3,
-						  SPECIAL_SPAWN_UNITS = 4;
+    class Prototype
+    {
+        public enum ShipAbility
+        {
+            NONE,
+            COLONIZE,
+            ASTEROID_MINING,
+            REPAIR_UNITS,
+            SPAWN_UNITS
+        }
 
-		public const byte WEAPON_NONE = 0,
-						  WEAPON_STD = 1,
-						  WEAPON_FIND_AIM = 2,
-						  WEAPON_PERSECUTE = 3,
-						  WEAPON_LASER = 4,
-						  WEAPON_EXPLOSIVE = 5,
-						  WEAPON_PERSECUTE_AND_LASER = 6;
+        public enum WeaponType
+        {
+            NONE,
+            STD,
+            FIND_AIM,
+            PERSECUTE,
+            LASER,
+            EXPLOSIVE,
+            PERSECUTE_AND_LASER
+        }
 
-		public const byte CLASS_NONE = 0,
-						  CLASS_HUNTER = 1,
-						  CLASS_CRUISER = 2,
-						  CLASS_WARSHIP = 3,
-						  CLASS_CIVIL = 4,
-						  CLASS_SPECIAL = 5;
+        public enum Class
+        {
+            NONE,
+            HUNTER,
+            CRUISER,
+            WARSHIP,
+            CIVIL,
+            SPECIAL
+        }
 
-		public static List<Prototype> data;
-		public static int count;
-
-
-		public int id;                  // ID des Prototypen
-		public string name;             // Bezeichnung
-		public string description;      // Textbeschreibung (4 Zeilen)
-
-		public Mesh shape;              // Grafische Darstellung des Gebäudes
-		public float shape_scaling;     // Skalierung der Grafik (Standard: 1.0)
-
-		public byte specials;           // Besondere Eigenschaft
-		public float special_strength;  // Wie stark ist die Eigenschaft ausgeprägt
-
-		public int cost;                // Ressourcenkosten zum Bauen bzw. Upgraden
-		public int population;          // Bevölkerungskosten
-
-		public float health_max;        // Maximale Gesundheit
-		public float shields;           // Schildstärke
-		public float attack;            // Angriffskraft
-		public float reload_time;       // Nachladezeit der Waffen
-		public float speed;             // Basisgeschwindigkeit
-
-		public byte weapon_type;        // Waffenart
-		public byte ship_class;         // Klasse (z.B. Zivil, Jäger, Kreuzer, Kriegsschiff etc.)
-
-		public int infra_level;         // Ausbaustufe der Infrastruktur, die benötigt wird, um das Schiff zu bauen.
-		public Technology activation;   // Die Technologie, die benötigt wird, um das Raumschiff freizuschalten.
-
-		public float weapon_range;		// Hängt nur von Waffentyp ab.
-
-		public static void init()
-		{
-			data = new List<Prototype>();
-			count = 0;
-			string directory = GameWindow.BASE_FOLDER + "units/";
+        public static List<Prototype> data;
+        public static int count;
 
 
-			while (File.Exists(directory + count.ToString().PadLeft(3, '0') + ".unit"))
-			{
-				new Prototype(directory, count.ToString().PadLeft(3, '0') + ".unit");
-			}
-		}
-		public Prototype(string file_directory, string file_name)
-		{
-			//Console.WriteLine("Load Building: " + file_directory + file_name);
+        public readonly int id; // ID des Prototypen
+        public readonly string name; // Bezeichnung
+        public readonly string description; // Textbeschreibung (4 Zeilen)
 
-			using (StreamReader file = new StreamReader(file_directory + file_name, System.Text.Encoding.Default))
-			{
-				id = count; count++; data.Add(this);
+        public readonly Mesh shape; // Grafische Darstellung des Gebäudes
+        public readonly float shapeScaling; // Skalierung der Grafik (Standard: 1.0)
 
+        public readonly ShipAbility specials; // Besondere Eigenschaft
+        public readonly float specialStrength; // Wie stark ist die Eigenschaft ausgeprägt
 
+        public readonly int cost; // Ressourcenkosten zum Bauen bzw. Upgraden
+        public readonly int population; // Bevölkerungskosten
 
-				file.ReadLine();        //.Rohmaterial für Technologiedaten
-				file.ReadLine();        //.
-				file.ReadLine();        //.Name
-				name = file.ReadLine(); // Bezeichnung
-				file.ReadLine();
-				string txt = file.ReadLine();
-				while (!txt.StartsWith("."))
-				{
-					description = description + txt + "\n";
-					txt = file.ReadLine();
-				}
-				//file.ReadLine();        //.Grafikdatei
-				string gfx_file = file.ReadLine();
-				if (File.Exists(file_directory + "gfx/" + gfx_file)) shape = new Mesh(file_directory + "gfx/" + gfx_file, true, true);
-				file.ReadLine();        //.Skalierung der Grafik (Standard: 1.0)
-				shape_scaling = float.Parse(file.ReadLine());
+        public readonly float healthMax; // Maximale Gesundheit
+        public readonly float shields; // Schildstärke
+        public readonly float attack; // Angriffskraft
+        public readonly float reloadTime; // Nachladezeit der Waffen
+        public readonly float speed; // Basisgeschwindigkeit
 
-				file.ReadLine();        //Besondere Eigenschaft
-				specials = getSpecialsFromTxt(file.ReadLine());
-				file.ReadLine();        // Wie stark ist die Eigenschaft ausgeprägt
-				special_strength = float.Parse(file.ReadLine());
-				file.ReadLine();
-				cost = int.Parse(file.ReadLine());
-				file.ReadLine();
-				population = int.Parse(file.ReadLine());
+        public readonly WeaponType weaponType; // Waffenart
+        public readonly Class shipClass; // Klasse (z.B. Zivil, Jäger, Kreuzer, Kriegsschiff etc.)
 
-				file.ReadLine();
-				health_max = float.Parse(file.ReadLine());
-				file.ReadLine();
-				shields = float.Parse(file.ReadLine());
-				file.ReadLine();
-				attack = float.Parse(file.ReadLine());
-				file.ReadLine();
-				reload_time = float.Parse(file.ReadLine());
-				file.ReadLine();
-				speed = float.Parse(file.ReadLine());
+        public readonly int infraLevel; // Ausbaustufe der Infrastruktur, die benötigt wird, um das Schiff zu bauen.
+        public readonly Technology activation; // Die Technologie, die benötigt wird, um das Raumschiff freizuschalten.
 
-				file.ReadLine();
-				weapon_type = getWeaponTypeFromTxt(file.ReadLine());
-				file.ReadLine();
-				ship_class = getClassFromTxt(file.ReadLine());
-				file.ReadLine();
-				infra_level = int.Parse(file.ReadLine());
-				file.ReadLine();        //.Technologie, die das Gebäude freischaltet
-				string techname = file.ReadLine();
-				activation = Technology.findWithName(techname);
-				if (activation == null) activation = Technology.data[0];
+        public readonly float weaponRange; // Hängt nur von Waffentyp ab.
 
-				weapon_range = 950.0f;
-				if (weapon_type == Prototype.WEAPON_LASER || weapon_type == Prototype.WEAPON_PERSECUTE_AND_LASER || weapon_type == Prototype.WEAPON_EXPLOSIVE) weapon_range = 630.0f;
+        public static void init()
+        {
+            data = new List<Prototype>();
+            count = 0;
+            string directory = GameWindow.BASE_FOLDER + "units/";
 
 
+            while (File.Exists(directory + count.ToString().PadLeft(3, '0') + ".unit"))
+            {
+                // ReSharper disable once ObjectCreationAsStatement --> Wird im Konstruktor in Liste aufgenommen.
+                new Prototype(directory, count.ToString().PadLeft(3, '0') + ".unit");
+            }
+        }
 
-				Console.WriteLine("Prototype loaded: " + name);
+        private Prototype(string fileDirectory, string fileName)
+        {
+            using (var file = new StreamReader(fileDirectory + fileName, System.Text.Encoding.Default))
+            {
+                id = count;
+                count++;
+                data.Add(this);
 
-			}
-		}
-		static byte getSpecialsFromTxt(string text)
-		{
-			switch (text)
-			{
-				case "SPECIAL_NONE":
-					return SPECIAL_NONE;
-				case "SPECIAL_COLONIZE":
-					return SPECIAL_COLONIZE;
-				case "SPECIAL_ASTEROID_MINING":
-					return SPECIAL_ASTEROID_MINING;
-				case "SPECIAL_REPAIR_UNITS":
-					return SPECIAL_REPAIR_UNITS;
-				case "SPECIAL_SPAWN_UNITS":
-					return SPECIAL_SPAWN_UNITS;
-			}
-			return SPECIAL_NONE;
-		}
-		static byte getWeaponTypeFromTxt(string text)
-		{
-			switch (text)
-			{
-				case "WEAPON_NONE":
-					return WEAPON_NONE;
-				case "WEAPON_STD":
-					return WEAPON_STD;
-				case "WEAPON_FIND_AIM":
-					return WEAPON_FIND_AIM;
-				case "WEAPON_PERSECUTE":
-					return WEAPON_PERSECUTE;
-				case "WEAPON_LASER":
-					return WEAPON_LASER;
-				case "WEAPON_EXPLOSIVE":
-					return WEAPON_EXPLOSIVE;
-				case "WEAPON_PERSECUTE_AND_LASER":
-					return WEAPON_PERSECUTE_AND_LASER;
-			}
-			return SPECIAL_NONE;
-		}
-		static byte getClassFromTxt(string text)
-		{
-			switch (text)
-			{
-				case "CLASS_CIVIL":
-					return CLASS_CIVIL;
-				case "CLASS_HUNTER":
-					return CLASS_HUNTER;
-				case "CLASS_CRUISER":
-					return CLASS_CRUISER;
-				case "CLASS_WARSHIP":
-					return CLASS_WARSHIP;
-				case "CLASS_SPECIAL":
-					return CLASS_SPECIAL;
-			}
-			return CLASS_NONE;
-		}
+                ignoreLines(file, 3);
+                name = read(file); // Bezeichnung
+                ignoreLines(file);
+                string txt = read(file);
+                while (!txt.StartsWith("."))
+                {
+                    description = description + txt + "\n";
+                    txt = read(file);
+                }
 
+                string gfxFile = read(file);
+                if (File.Exists(fileDirectory + "gfx/" + gfxFile))
+                    shape = new Mesh(fileDirectory + "gfx/" + gfxFile, true, true);
+                ignoreLines(file);
+                shapeScaling = readFloat(file);
 
+                ignoreLines(file);
+                specials = getSpecialsFromTxt(read(file));
+                ignoreLines(file);
+                specialStrength = readFloat(file);
+                ignoreLines(file);
+                cost = readInt(file);
+                ignoreLines(file);
+                population = readInt(file);
 
+                ignoreLines(file);
+                healthMax = readFloat(file);
+                ignoreLines(file);
+                shields = readFloat(file);
+                ignoreLines(file);
+                attack = readFloat(file);
+                ignoreLines(file);
+                reloadTime = readFloat(file);
+                ignoreLines(file);
+                speed = readFloat(file);
 
+                ignoreLines(file);
+                weaponType = getWeaponTypeFromTxt(read(file));
+                ignoreLines(file);
+                shipClass = getClassFromTxt(read(file));
+                ignoreLines(file);
+                infraLevel = readInt(file);
+                ignoreLines(file);
+                string techname = read(file);
+                activation = Technology.findWithName(techname) ?? Technology.data[0];
 
+                weaponRange = hasShortWeaponRange() ? 630.0f : 950.0f;
 
-		public int getCost()
-		{
-			return cost;
-		}
-		public int getPopulation()
-		{
-			return population;
-		}
-		public float getSpeed(Civilisation civ = null)
-		{
-			return speed; // Wird noch abgewandelt durch Technologien der Zivilisation.
-		}
-		public float getHealth(Civilisation civ = null)
-		{
-			return health_max; // Modifikator durch Technologien WIP
-		}
-		public float getShields(Civilisation civ = null)
-		{
-			return shields; // Modifikator durch Technologien WIP
-		}
-		public float getAttack(Civilisation civ = null)
-		{
-			return attack; // Modifikator durch Technologien WIP
-		}
+                Console.WriteLine("Prototype loaded: " + name);
+            }
+        }
 
-		public byte goodAgainst()
-		{
-			switch (ship_class)
-			{
-				case CLASS_HUNTER:
-					return CLASS_WARSHIP;
-				case CLASS_CRUISER:
-					return CLASS_HUNTER;
-				case CLASS_WARSHIP:
-					return CLASS_CRUISER;
-				default:
-					return CLASS_NONE;
-			}
-		}
+        private static int readInt(StreamReader file)
+        {
+            return int.Parse(read(file));
+        }
+
+        private static float readFloat(StreamReader file)
+        {
+            return float.Parse(read(file));
+        }
+
+        private static string read(StreamReader file)
+        {
+            return file.ReadLine();
+        }
+
+        private static void ignoreLines(StreamReader file, int numberOfLines = 1)
+        {
+            for (var i = 0; i < numberOfLines; i++)
+            {
+                file.ReadLine();
+            }
+        }
 
 
-	}
+        private bool hasShortWeaponRange()
+        {
+            return weaponType == WeaponType.LASER || weaponType == WeaponType.PERSECUTE_AND_LASER ||
+                   weaponType == WeaponType.EXPLOSIVE;
+        }
+
+        static ShipAbility getSpecialsFromTxt(string text)
+        {
+            switch (text)
+            {
+                case "SPECIAL_NONE":
+                    return ShipAbility.NONE;
+                case "SPECIAL_COLONIZE":
+                    return ShipAbility.COLONIZE;
+                case "SPECIAL_ASTEROID_MINING":
+                    return ShipAbility.ASTEROID_MINING;
+                case "SPECIAL_REPAIR_UNITS":
+                    return ShipAbility.REPAIR_UNITS;
+                case "SPECIAL_SPAWN_UNITS":
+                    return ShipAbility.SPAWN_UNITS;
+            }
+
+            return ShipAbility.NONE;
+        }
+
+        static WeaponType getWeaponTypeFromTxt(string text)
+        {
+            switch (text)
+            {
+                case "WEAPON_NONE":
+                    return WeaponType.NONE;
+                case "WEAPON_STD":
+                    return WeaponType.STD;
+                case "WEAPON_FIND_AIM":
+                    return WeaponType.FIND_AIM;
+                case "WEAPON_PERSECUTE":
+                    return WeaponType.PERSECUTE;
+                case "WEAPON_LASER":
+                    return WeaponType.LASER;
+                case "WEAPON_EXPLOSIVE":
+                    return WeaponType.EXPLOSIVE;
+                case "WEAPON_PERSECUTE_AND_LASER":
+                    return WeaponType.PERSECUTE_AND_LASER;
+            }
+
+            return WeaponType.NONE;
+        }
+
+        static Class getClassFromTxt(string text)
+        {
+            switch (text)
+            {
+                case "CLASS_CIVIL":
+                    return Class.CIVIL;
+                case "CLASS_HUNTER":
+                    return Class.HUNTER;
+                case "CLASS_CRUISER":
+                    return Class.CRUISER;
+                case "CLASS_WARSHIP":
+                    return Class.WARSHIP;
+                case "CLASS_SPECIAL":
+                    return Class.SPECIAL;
+            }
+
+            return Class.NONE;
+        }
+
+        public int getCost()
+        {
+            return cost;
+        }
+
+        public int getPopulation()
+        {
+            return population;
+        }
+
+        public float getSpeed(Civilisation civ = null)
+        {
+            return speed; // Wird noch abgewandelt durch Technologien der Zivilisation.
+        }
+
+        public float getHealth(Civilisation civ = null)
+        {
+            return healthMax; // Modifikator durch Technologien WIP
+        }
+
+        public float getShields(Civilisation civ = null)
+        {
+            return shields; // Modifikator durch Technologien WIP
+        }
+
+        public float getAttack(Civilisation civ = null)
+        {
+            return attack; // Modifikator durch Technologien WIP
+        }
+
+        public Class goodAgainst()
+        {
+            switch (shipClass)
+            {
+                case Class.HUNTER:
+                    return Class.WARSHIP;
+                case Class.CRUISER:
+                    return Class.HUNTER;
+                case Class.WARSHIP:
+                    return Class.CRUISER;
+                default:
+                    return Class.NONE;
+            }
+        }
+    }
 }

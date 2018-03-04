@@ -73,9 +73,9 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             science = 0.0f;
             population = 0;
             maxPopulation = 10;
-            
-            this.name = getRandomName();
-            var colors = this.getRandomColors();
+
+            name = getRandomName();
+            var colors = getRandomColors();
             red = colors.x;
             green = colors.y;
             blue = colors.z;
@@ -89,7 +89,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             this.blue = blue;
         }
 
-        static void loadNames()
+        private static void loadNames()
         {
             _names = new List<string>();
             using (StreamReader file =
@@ -100,8 +100,6 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     _names.Add(file.ReadLine());
                 }
             }
-
-            //Console.WriteLine("Number of civilisation names loaded: " + names.Count.ToString());
         }
 
         private static string getRandomName()
@@ -114,70 +112,35 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private vec3 getRandomColors()
         {
-            float red;
-            float green;
-            float blue;
             switch (_id)
             {
                 case 0:
-                    red = 0.2f;
-                    green = 0.2f;
-                    blue = 1.0f;
-                    break;
+                    return new vec3(0.2f, 0.2f, 1.0f);
                 case 1:
-                    red = 1.0f;
-                    green = 0.2f;
-                    blue = 0.2f;
-                    break;
+                    return new vec3(1.0f, 0.2f, 0.2f);
                 case 2:
-                    red = 0.2f;
-                    green = 1.0f;
-                    blue = 0.2f;
-                    break;
+                    return new vec3(0.2f, 1.0f, 0.2f);
                 case 3:
-                    red = 1.0f;
-                    green = 1.0f;
-                    blue = 1.0f;
-                    break;
+                    return new vec3(1.0f, 1.0f, 1.0f);
                 case 4:
-                    red = 1.0f;
-                    green = 1.0f;
-                    blue = 0.1f;
-                    break;
+                    return new vec3(1.0f, 1.0f, 0.1f);
                 case 5:
-                    red = 1.0f;
-                    green = 0.1f;
-                    blue = 1.0f;
-                    break;
+                    return new vec3(1.0f, 0.1f, 1.0f);
                 case 6:
-                    red = 0.1f;
-                    green = 1.0f;
-                    blue = 1.0f;
-                    break;
+                    return new vec3(0.1f, 1.0f, 1.0f);
                 case 7:
-                    red = 0.2f;
-                    green = 0.2f;
-                    blue = 0.2f;
-                    break;
+                    return new vec3(0.2f, 0.2f, 0.2f);
                 case 8:
-                    red = 1.0f;
-                    green = 0.5f;
-                    blue = 0.05f;
-                    break;
+                    return new vec3(1.0f, 0.5f, 0.05f);
                 case 9:
-                    red = 0.57f;
-                    green = 0.47f;
-                    blue = 0.05f;
-                    break;
+                    return new vec3(0.57f, 0.47f, 0.05f);
                 default:
-                    red = (float) GameWindow.random.NextDouble();
-                    green = (float) GameWindow.random.NextDouble();
-                    blue = (float) GameWindow.random.NextDouble();
-                    break;
+                    return new vec3(
+                        (float) GameWindow.random.NextDouble(),
+                        (float) GameWindow.random.NextDouble(),
+                        (float) GameWindow.random.NextDouble());
             }
-            return new vec3(red, green, blue);
         }
-
 
         static public Civilisation getPlayer()
         {
@@ -199,7 +162,6 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         {
             return TOTAL_MAX_POPULATION / countCivilisations();
         }
-
 
         public int getId()
         {

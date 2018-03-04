@@ -25,7 +25,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         internal Status status;
         internal float timer;
 
-        internal List<Prototype> production;
+        internal readonly List<Prototype> production;
         internal float productionTimer;
 
 
@@ -57,7 +57,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public float getSpotRotation()
         {
-            return (float) (((float) _location + 0.5f) / (float) _planet.size) * 2.0f * (float) Math.PI;
+            return ( _location + 0.5f) / _planet.size * 2.0f * (float) Math.PI;
         }
 
         public float getHealthFraction()
@@ -72,7 +72,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             {
                 foreach (Prototype pr in Prototype.data)
                 {
-                    if (pr.activation.researchedBy(civ) && blueprint.specialStrength >= pr.infra_level) list.Add(pr);
+                    if (pr.activation.researchedBy(civ) && blueprint.specialStrength >= pr.infraLevel) list.Add(pr);
                 }
             }
 
@@ -100,7 +100,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             }
         }
 
-        public Unit createUnit(Prototype type)
+        private Unit createUnit(Prototype type)
         {
             return new Unit(type, this);
         }
@@ -116,89 +116,124 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             return ct;
         }
 
-
-        // Updated das Gebäude
         internal void simulate(float dt, float efficiency)
         {
-            //Status berücksichtigen
+            if (updateStatus(dt)) return;
+            useSpecialAbility(dt);
+        }
+
+        private bool updateStatus(float dt)
+        {
             switch (status)
             {
                 case Status.UNDER_CONSTRUCTION:
-                    if (health < healthMax)
-                    {
-                        health += dt * 1.25f;
-                    }
-                    else
-                    {
-                        health = healthMax;
-                        status = Status.NONE;
-                    }
-
+                    processIfUnderConstruction(dt);
                     break;
 
                 case Status.DESTROYED_DURING_CONSTRUCTION:
                 case Status.DESTROYED:
-                    health = Math.Max(0.0f, health);
-                    timer += dt;
-                    if (timer > 100.0f)
-                    {
-                        _planet.infra[_location] = null;
-                    }
-
-                    return;
+                    processIfDestroyed(dt);
+                    return true;
             }
-
 
             if (health <= 0.0f)
             {
-                if (status == Status.UNDER_CONSTRUCTION) status = Status.DESTROYED_DURING_CONSTRUCTION;
-                else status = Status.DESTROYED;
-                timer = 0.0f;
-                return;
+                processIfNoHealth();
+                return true;
             }
 
-            if (status == Status.UNDER_CONSTRUCTION) return;
+            return status == Status.UNDER_CONSTRUCTION;
+        }
 
+        private void processIfNoHealth()
+        {
+            if (status == Status.UNDER_CONSTRUCTION) status = Status.DESTROYED_DURING_CONSTRUCTION;
+            else status = Status.DESTROYED;
+            timer = 0.0f;
+        }
 
-            //Wenn nicht zerstört oder noch im Bau, dann die Spezialeigenschaft des Gebäudes berücksichtigen:
+        private void processIfUnderConstruction(float dt)
+        {
+            if (health < healthMax)
+            {
+                health += dt * 1.25f;
+            }
+            else
+            {
+                health = healthMax;
+                status = Status.NONE;
+            }
+        }
+
+        private void processIfDestroyed(float dt)
+        {
+            health = Math.Max(0.0f, health);
+            timer += dt;
+            if (timer > 100.0f)
+            {
+                _planet.infra[_location] = null;
+            }
+        }
+
+        private void useSpecialAbility(float dt)
+        {
             switch (blueprint.specials)
             {
                 case Blueprint.SpecialAbility.SETTLEMENT:
-                    owner.maxPopulationNew += (int) blueprint.specialStrength;
+                    useAbilityForSettling();
                     break;
 
                 case Blueprint.SpecialAbility.MINING:
-                    float factor = 0.005f;
-                    if (_planet.terra[_location] == Planet.Terrain.MOUNTAIN) factor = 0.0075f;
-                    else if (_planet.terra[_location] == Planet.Terrain.RESSOURCES) factor = 0.02f;
-
-                    owner.ressources += dt * factor * blueprint.specialStrength *
-                                        owner.getMultiplicator(Civilisation.BONUS_RESSOURCES);
+                    useAbilityForMining(dt);
                     break;
 
                 case Blueprint.SpecialAbility.RESEARCH:
-                    owner.science += dt * 0.0025f * blueprint.specialStrength *
-                                     owner.getMultiplicator(Civilisation.BONUS_RESEARCH);
+                    useAbilityForResearch(dt);
                     break;
 
                 case Blueprint.SpecialAbility.SHIPS:
                     if (production.Count > 0)
                     {
-                        float constructionSpeed = dt * 0.02f / (float) production[0].cost *
-                                                  owner.getMultiplicator(Civilisation.BONUS_CONSTRUCTION_SPEED);
-                        productionTimer += constructionSpeed;
-                        if (productionTimer >= 1.0f)
-                        {
-                            productionTimer = 0.0f;
-                            createUnit(production[0]);
-                            production.RemoveAt(0);
-                        }
+                        useAbilityForShipbuilding(dt);
                     }
 
                     break;
             }
         }
 
+        private void useAbilityForSettling()
+        {
+            owner.maxPopulationNew += (int) blueprint.specialStrength;
+        }
+
+        private void useAbilityForMining(float dt)
+        {
+            float factor = 0.005f;
+            if (_planet.terra[_location] == Planet.Terrain.MOUNTAIN) factor = 0.0075f;
+            else if (_planet.terra[_location] == Planet.Terrain.RESSOURCES) factor = 0.02f;
+
+            owner.ressources += dt * factor * blueprint.specialStrength *
+                                owner.getMultiplicator(Civilisation.BONUS_RESSOURCES);
+        }
+
+        private void useAbilityForResearch(float dt)
+        {
+            owner.science += dt * 0.0025f * blueprint.specialStrength *
+                             owner.getMultiplicator(Civilisation.BONUS_RESEARCH);
+        }
+
+        private void useAbilityForShipbuilding(float dt)
+        {
+            float constructionSpeed = dt * 0.02f / (float) production[0].cost *
+                                      owner.getMultiplicator(Civilisation.BONUS_CONSTRUCTION_SPEED);
+            productionTimer += constructionSpeed;
+            if (productionTimer >= 1.0f)
+            {
+                productionTimer = 0.0f;
+                createUnit(production[0]);
+                production.RemoveAt(0);
+            }
+        }
 
         public bool damage(float dmg)
         {

@@ -156,9 +156,8 @@ namespace Cluster.GameMechanics.Universe
 
         public static bool isVisible(float spaceX, float spaceY)
         {
-            if ((Math.Abs(spaceX - scrollX) * zoom <= 1.0f) &&
-                (Math.Abs(spaceY - scrollY) * zoom <= 1.0f)) return true;
-            return false;
+            return (Math.Abs(spaceX - scrollX) * zoom <= 1.0f) &&
+                   (Math.Abs(spaceY - scrollY) * zoom <= 1.0f);
         }
     }
 }

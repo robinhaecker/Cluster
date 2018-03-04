@@ -290,7 +290,7 @@ namespace Cluster.Rendering.Draw2D
             rendered.Clear();
 
 			GL.BindTexture(TextureTarget.Texture2D, 0);
-            image_shader.unbind();
+            Shader.unbind();
         }
 
 	}

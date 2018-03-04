@@ -13,17 +13,20 @@ namespace Cluster.GameMechanics.Behaviour
 {
 	class Sector
 	{
-		const int SECTOR_COUNT = 20;
-		const float SECTOR_SIZE = 700.0f;
-		public static float ORIGIN;
+		private const int SECTOR_COUNT = 20;
+		private const float SECTOR_SIZE = 700.0f;
+		private const float ORIGIN = -SECTOR_SIZE * SECTOR_COUNT * 0.5f;
 
-		public static Sector[,] data;
+		private static Sector[,] _data;
 
-		vec2 p0, p1;
-		int pos_x, pos_y;
+		vec2 _p0, _p1;
+		int _posX;
+		int _posY;
 
-		public List<Sector> neighbors, extendedSector;
-		public List<Unit>[] ships;
+		private List<Sector> _neighbors;
+		private List<Sector> _extendedSector;
+
+		public readonly List<Unit>[] ships;
 		//List<Shot> shots;
 		//List<Asteroid> asteroids;
 
@@ -45,20 +48,19 @@ namespace Cluster.GameMechanics.Behaviour
 
 		public static void init()
 		{
-			ORIGIN = -SECTOR_SIZE * SECTOR_COUNT * 0.5f;
-			data = new Sector[SECTOR_COUNT+1, SECTOR_COUNT+1];
+			_data = new Sector[SECTOR_COUNT+1, SECTOR_COUNT+1];
 
 			for (int x = 0; x < SECTOR_COUNT+1; x++)
 			{
 				for (int y = 0; y < SECTOR_COUNT+1; y++)
 				{
-					data[x, y] = new Sector();
-					data[x, y].p0 = new vec2(ORIGIN + x * SECTOR_SIZE, ORIGIN + y * SECTOR_SIZE);
-					data[x, y].p1 = data[x, y].p0 + new vec2(SECTOR_SIZE, SECTOR_SIZE);
-					data[x, y].pos_x = x;
-					data[x, y].pos_y = y;
-					data[x, y].neighbors = new List<Sector>();
-					data[x, y].extendedSector = new List<Sector>();
+					_data[x, y] = new Sector();
+					_data[x, y]._p0 = new vec2(ORIGIN + x * SECTOR_SIZE, ORIGIN + y * SECTOR_SIZE);
+					_data[x, y]._p1 = _data[x, y]._p0 + new vec2(SECTOR_SIZE, SECTOR_SIZE);
+					_data[x, y]._posX = x;
+					_data[x, y]._posY = y;
+					_data[x, y]._neighbors = new List<Sector>();
+					_data[x, y]._extendedSector = new List<Sector>();
 				}
 			}
 
@@ -66,24 +68,24 @@ namespace Cluster.GameMechanics.Behaviour
 			{
 				for (int y = 0; y < SECTOR_COUNT; y++)
 				{
-					data[x, y].extendedSector.Add(data[x    , y]);
-					data[x, y].extendedSector.Add(data[x + 1, y]);
-					data[x, y].extendedSector.Add(data[x, y + 1]);
-					data[x, y].extendedSector.Add(data[x + 1, y + 1]);
+					_data[x, y]._extendedSector.Add(_data[x    , y]);
+					_data[x, y]._extendedSector.Add(_data[x + 1, y]);
+					_data[x, y]._extendedSector.Add(_data[x, y + 1]);
+					_data[x, y]._extendedSector.Add(_data[x + 1, y + 1]);
 
 					//--------------------------------------------------
-					data[x, y].neighbors.Add(data[x + 1, y    ]);
-					data[x, y].neighbors.Add(data[x,     y + 1]);
-					data[x, y].neighbors.Add(data[x + 1, y+1  ]);
+					_data[x, y]._neighbors.Add(_data[x + 1, y    ]);
+					_data[x, y]._neighbors.Add(_data[x,     y + 1]);
+					_data[x, y]._neighbors.Add(_data[x + 1, y+1  ]);
 					//--------------------------------------------------
-					data[x+1, y  ].neighbors.Add(data[x, y]);
-					data[x,   y+1].neighbors.Add(data[x, y]);
-					data[x+1, y+1].neighbors.Add(data[x, y]);
+					_data[x+1, y  ]._neighbors.Add(_data[x, y]);
+					_data[x,   y+1]._neighbors.Add(_data[x, y]);
+					_data[x+1, y+1]._neighbors.Add(_data[x, y]);
 				}
 			}
 		}
 
-		public Sector()
+		private Sector()
 		{
 			ships = new List<Unit>[Civilisation.count+1];
 			for (int i = 0; i < Civilisation.count+1; i++)
@@ -97,19 +99,17 @@ namespace Cluster.GameMechanics.Behaviour
 
 		public static Sector get(float x, float y)
 		{
-			return data[Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((x - ORIGIN) / SECTOR_SIZE))),
+			return _data[Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((x - ORIGIN) / SECTOR_SIZE))),
 						Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((y - ORIGIN) / SECTOR_SIZE)))];
 		}
 
 		public bool containsPoint(float x, float y)
 		{
-			if (p0.x >= x && p0.y >= y && p1.x <= x && p1.y <= y) return true;
-			return false;
+			return _p0.x >= x && _p0.y >= y && _p1.x <= x && _p1.y <= y;
 		}
 		public bool containsPoint(double x, double y)
 		{
-			if (p0.x >= x && p0.y >= y && p1.x <= x && p1.y <= y) return true;
-			return false;
+			return _p0.x >= x && _p0.y >= y && _p1.x <= x && _p1.y <= y;
 		}
 
 
@@ -122,21 +122,14 @@ namespace Cluster.GameMechanics.Behaviour
 			ships[u.getOwner().getId()].Add(u);
 		}
 
-
-
-		public static void getShipEnemies()
+		public static void findNearestEnemies()
 		{
-			foreach (Unit u in Unit.units)
-			{
-				u.enemy = null;
-				u.enemyDistance = 1500;
-				u.inrange = 0;
-			}
+			resetAllEnemyDistanceValues();
 
 			// Für alle Sektoren...
-			foreach (Sector s0 in Sector.data)
+			foreach (var sector0 in _data)
 			{
-				foreach (Sector s1 in s0.extendedSector)
+				foreach (var sector1 in sector0._extendedSector)
 				{
 					// Alle Zivilisationen checken...
 					for (int i = 0; i < Civilisation.count + 1; i++)
@@ -146,50 +139,54 @@ namespace Cluster.GameMechanics.Behaviour
 							if (i == j) continue;
 
 							// Und jeweils alle lebendingen Schiffe überprüfen.
-							foreach (Unit u0 in s0.ships[i])
+							foreach (var unit0 in sector0.ships[i])
 							{
-								if (u0.isDead()) continue;
-								foreach (Unit u1 in s1.ships[j])
+								if (unit0.isDead()) continue;
+								foreach (var unit1 in sector1.ships[j])
 								{
-									if (u1.isDead()) continue;
-
-									float dst = (float)Math.Sqrt((u0.x - u1.x) * (u0.x - u1.x) + (u0.y - u1.y) * (u0.y - u1.y));
-									if (dst < 100.0f) { continue; } // Darf nicht zu nahe dran sein. Hier wird noch der Code für die Selbstzerstörungsdrohnen reinkommen.
-									if (dst < u0.enemyDistance)
-									{
-										u0.enemyDistance = dst;
-										u0.enemy = u1;
-										u0.inrange = 1;
-									}
-									if (dst < u1.enemyDistance)
-									{
-										u1.enemyDistance = dst;
-										u1.enemy = u0;
-										u1.inrange = 1;
-									}
-
+									checkNearestEnemyFor(unit1, unit0);
 								}
 							}
-							// END Ships
 						}
 					}
-					// END Civs
 				}
-
-
-
 			}
-			// END Sectors
-
 		}
 
+		private static void resetAllEnemyDistanceValues()
+		{
+			foreach (Unit u in Unit.units)
+			{
+				u.enemy = null;
+				u.enemyDistance = 1500;
+				u.inrange = 0;
+			}
+		}
 
+		private static void checkNearestEnemyFor(Unit unit1, Unit unit0)
+		{
+			if (unit1.isDead()) return;
 
+			float dst = (float) Math.Sqrt((unit0.x - unit1.x) * (unit0.x - unit1.x) +
+			                              (unit0.y - unit1.y) * (unit0.y - unit1.y));
+			if (dst < 100.0f)
+			{
+				return;
+			} // Darf nicht zu nahe dran sein. Hier wird noch der Code für die Selbstzerstörungsdrohnen reinkommen.
 
+			if (dst < unit0.enemyDistance)
+			{
+				unit0.enemyDistance = dst;
+				unit0.enemy = unit1;
+				unit0.inrange = 1;
+			}
 
-
-
-
-
+			if (dst < unit1.enemyDistance)
+			{
+				unit1.enemyDistance = dst;
+				unit1.enemy = unit0;
+				unit1.inrange = 1;
+			}
+		}
 	}
 }

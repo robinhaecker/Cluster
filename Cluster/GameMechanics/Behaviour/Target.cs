@@ -123,8 +123,7 @@ namespace Cluster.GameMechanics.Behaviour
 
 		public vec2 getWaypoint()
 		{
-			if (waypoints.Count == 0) return addWaypoint();
-			return waypoints[0];
+			return waypoints.Count == 0 ? addWaypoint() : waypoints[0];
 		}
 
 

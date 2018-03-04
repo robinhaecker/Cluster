@@ -1,28 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cluster.GameMechanics.Behaviour;
-using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Content;
+using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 using Cluster.GameMechanics.Universe.LivingThings;
-using Cluster.Rendering.Draw2D;
 using Cluster.math;
+using Cluster.Rendering.Draw2D;
+using OpenTK.Input;
 
 namespace Cluster.GameMechanics.Interface
 {
     enum Selection
     {
-        Planet,
-        Units,
-        Asteroid
+        PLANET,
+        UNITS,
+        ASTEROID
     }
 
-    class GUI
+    class UserInterface
     {
-        private const float COL_STD_I = 0.125f,
+        protected const float COL_STD_I = 0.125f,
             COL_STD_ALPHA = 0.85f,
             COL_STD_ALPHA2 = 0.6f,
             COL_YES_R = 0.5f,
@@ -35,74 +33,79 @@ namespace Cluster.GameMechanics.Interface
             COL_NO_G = 0.25f,
             COL_NO_B = 0.25f;
 
-        static int fps, fps2, msec, msec2;
-        static public bool mhl, mhr;
-        static public bool mdl, mdr;
+        private static int fps;
+        private static int fps2;
+        private static int msec;
+        private static int msec2;
+        static public bool mhl;
+        static public bool mhr;
+        static public bool mdl;
+        static public bool mdr;
         static vec3 focus;
-
 
         public static Selection selection;
 
         static Planet _pickedPlanet;
         static int _pickedIndex;
-        private static Planet sel_planet;
+        private static Planet _selPlanet;
         static int _selIndex;
 
-        public static Unit PickedUnit;
+        public static Unit pickedUnit;
         public static List<Unit> sel_u;
 
 
-        public static void Init()
+        public static void init()
         {
             sel_u = new List<Unit>();
             focus = null;
-            selectionBox = null;
+            _selectionBox = null;
         }
 
 
-        private static vec4 selectionBox;
-        static float selMX, selMY;
+        private static vec4 _selectionBox;
+        static float _selMx, _selMy;
 
-        static public void Update()
+        static public void update()
         {
-            ChangeView();
-            if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.Tab))
+            changeView();
+            if (GameWindow.keyboard.IsKeyDown(Key.Tab))
                 Civilisation.player = (Civilisation.player + 1) % Civilisation.count;
 
 
-            mhl = GameWindow.mouse.IsButtonDown(OpenTK.Input.MouseButton.Left) && !mdl;
-            mhr = GameWindow.mouse.IsButtonDown(OpenTK.Input.MouseButton.Right) && !mdr;
+            mhl = GameWindow.mouse.IsButtonDown(MouseButton.Left) && !mdl;
+            mhr = GameWindow.mouse.IsButtonDown(MouseButton.Right) && !mdr;
 
-            mdl = GameWindow.mouse.IsButtonDown(OpenTK.Input.MouseButton.Left);
-            mdr = GameWindow.mouse.IsButtonDown(OpenTK.Input.MouseButton.Right);
+            mdl = GameWindow.mouse.IsButtonDown(MouseButton.Left);
+            mdr = GameWindow.mouse.IsButtonDown(MouseButton.Right);
 
-            if (mhl && !MouseOverInterface())
+            if (mhl && !mouseOverInterface())
             {
-                if (selectionBox == null) // Selektionsbox anfangen.
+                if (_selectionBox == null) // Selektionsbox anfangen.
                 {
-                    selMX = GameWindow.mouse_pos.x;
-                    selMY = GameWindow.mouse_pos.y;
-                    selectionBox = new vec4(Space.screenToSpaceX(GameWindow.mouse_pos.x),
+                    _selMx = GameWindow.mouse_pos.x;
+                    _selMy = GameWindow.mouse_pos.y;
+                    _selectionBox = new vec4(Space.screenToSpaceX(GameWindow.mouse_pos.x),
                         Space.screenToSpaceY(GameWindow.mouse_pos.y), 0.0f, 0.0f);
                 }
 
                 mhl = false;
-                Pick();
-                Select();
+                pick();
+                @select();
             }
-            else if (mdl && !mhl && selectionBox != null) // Selektionsbox-Ende ziehen bei gedrückter linker Maustaste.
+            else if (mdl && !mhl && _selectionBox != null) // Selektionsbox-Ende ziehen bei gedrückter linker Maustaste.
             {
-                selectionBox.z = Space.screenToSpaceX(GameWindow.mouse_pos.x);
-                selectionBox.w = Space.screenToSpaceY(GameWindow.mouse_pos.y);
+                _selectionBox.z = Space.screenToSpaceX(GameWindow.mouse_pos.x);
+                _selectionBox.w = Space.screenToSpaceY(GameWindow.mouse_pos.y);
             }
-            else if (selectionBox != null) // Maustaste nicht mehr gedrückt? Selektionsbox beenden.
+            else if (_selectionBox != null) // Maustaste nicht mehr gedrückt? Selektionsbox beenden.
             {
-                if (Math.Abs(GameWindow.mouse_pos.x - selMX) + Math.Abs(GameWindow.mouse_pos.x - selMX) > 20.0f
+                if (Math.Abs(GameWindow.mouse_pos.x - _selMx) + Math.Abs(GameWindow.mouse_pos.x - _selMx) > 20.0f
                 ) // Wenn nicht nur geklickt, sondern auch vergrößert, dann auswerten.
                 {
-                    float cx = (selectionBox.x + selectionBox.z) * 0.5f, cy = (selectionBox.y + selectionBox.w) * 0.5f;
-                    float dx = Math.Abs(selectionBox.x - selectionBox.z) * 0.5f,
-                        dy = Math.Abs(selectionBox.y - selectionBox.w) * 0.5f;
+                    float cx = (_selectionBox.x + _selectionBox.z) * 0.5f,
+                        cy = (_selectionBox.y + _selectionBox.w) * 0.5f;
+                    float dx = Math.Abs(_selectionBox.x - _selectionBox.z) * 0.5f,
+                        dy = Math.Abs(_selectionBox.y - _selectionBox.w) * 0.5f;
                     foreach (Unit u in Unit.units)
                     {
                         if ((Math.Abs(cx - u.x) < dx && Math.Abs(cy - u.y) < dy) &&
@@ -118,14 +121,14 @@ namespace Cluster.GameMechanics.Interface
                     }
                 }
 
-                selectionBox = null; // Wird wieder entfernt.
+                _selectionBox = null; // Wird wieder entfernt.
             }
         }
 
 
         static float mouseZ, mouseZspeed;
 
-        static void ChangeView()
+        static void changeView()
         {
             mouseZspeed = GameWindow.mouse.WheelPrecise - mouseZ;
             mouseZ = GameWindow.mouse.WheelPrecise;
@@ -146,9 +149,9 @@ EndIf
 zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
 
-            if (GameWindow.mouse.IsButtonDown(OpenTK.Input.MouseButton.Middle))
+            if (GameWindow.mouse.IsButtonDown(MouseButton.Middle))
             {
-                if (sel_planet != null) focus = new vec3(sel_planet.x, sel_planet.y, 1.0f);
+                if (_selPlanet != null) focus = new vec3(_selPlanet.x, _selPlanet.y, 1.0f);
             }
 
             if (focus != null)
@@ -161,12 +164,12 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
         }
 
 
-        public static void Render()
+        public static void render()
         {
             Primitives.setDepth(-0.1f);
-            DrawAlways();
-            DrawPlanetInfo();
-            DrawGuiUnits();
+            drawAlways();
+            drawPlanetInfo();
+            drawGuiUnits();
             /*
             switch (selection)
             {
@@ -182,7 +185,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
         }
 
 
-        private static void DrawAlways()
+        private static void drawAlways()
         {
             Civilisation civ = Civilisation.getPlayer();
 
@@ -194,7 +197,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 60.0f); //, 20.0f, 1.0f, 0.0f, 1.0f, 0.5f);
 
             Text.drawText(
-                "FPS: " + fps.ToString() + "\n1/FPS: " + (100.0f / (float) fps).ToString() +
+                "FPS: " + fps.ToString() + "\n1/FPS: " + (100.0f / (float) fps) +
                 " ms von 16 ms\nParticles rendered: " + Particle.rendered_count.ToString(),
                 GameWindow.active.width - 300, 100.0f);
 
@@ -202,7 +205,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
             //Frames per second
             fps2++;
-            msec2 = System.Environment.TickCount;
+            msec2 = Environment.TickCount;
             if (msec2 - msec >= 1000)
             {
                 msec = msec2;
@@ -210,12 +213,12 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 fps2 = 0;
             }
 
-            if (selectionBox != null && Math.Abs(selectionBox.z) + Math.Abs(selectionBox.w) > 0.000001f)
+            if (_selectionBox != null && Math.Abs(_selectionBox.z) + Math.Abs(_selectionBox.w) > 0.000001f)
             {
                 Primitives.setColor(1.0f, 1.0f, 1.0f, 0.125f);
                 Primitives.setLineWidth(2.0f);
-                vec4 box = new vec4(Space.spaceToScreenX(selectionBox.x), Space.spaceToScreenY(selectionBox.y),
-                    Space.spaceToScreenX(selectionBox.z), Space.spaceToScreenY(selectionBox.w));
+                vec4 box = new vec4(Space.spaceToScreenX(_selectionBox.x), Space.spaceToScreenY(_selectionBox.y),
+                    Space.spaceToScreenX(_selectionBox.z), Space.spaceToScreenY(_selectionBox.w));
                 Primitives.drawLine(box.x, box.y, box.x, box.w);
                 Primitives.drawLine(box.z, box.y, box.z, box.w);
                 Primitives.drawLine(box.x, box.y, box.z, box.y);
@@ -236,11 +239,11 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 		}*/
 
 
-        private static void Select()
+        private static void select()
         {
-            sel_planet = _pickedPlanet;
+            _selPlanet = _pickedPlanet;
             _selIndex = _pickedIndex;
-            if (!GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.ShiftLeft))
+            if (!GameWindow.keyboard.IsKeyDown(Key.ShiftLeft))
             {
                 foreach (Unit u in sel_u)
                 {
@@ -250,15 +253,15 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 sel_u.Clear();
             }
 
-            if (PickedUnit != null && !sel_u.Contains(PickedUnit))
+            if (pickedUnit != null && !sel_u.Contains(pickedUnit))
             {
-                sel_u.Add(PickedUnit);
-                PickedUnit.isSelected = true;
+                sel_u.Add(pickedUnit);
+                pickedUnit.isSelected = true;
             }
         }
 
 
-        private static void Pick()
+        private static void pick()
         {
             float mSpaceX = Space.screenToSpaceX(GameWindow.mouse_pos.x);
             float mSpaceY = Space.screenToSpaceY(GameWindow.mouse_pos.y);
@@ -266,7 +269,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
             _pickedPlanet = null;
             _pickedIndex = -1;
-            PickedUnit = null;
+            pickedUnit = null;
             //Planeten picken
             foreach (Planet pl in Planet.planets)
             {
@@ -284,7 +287,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                     if (Space.zoom > 0.3 && dist > pl.size * pl.size * 225.0)
                     {
                         double alpha = Math.Atan2(dely, delx) / (2.0 * Math.PI);
-                        _pickedIndex = (int) Math.Floor(((alpha + 1.0) % 1.0) * (double) pl.size);
+                        _pickedIndex = (int) Math.Floor(((alpha + 1.0) % 1.0) * pl.size);
                     }
 
                     return;
@@ -299,38 +302,38 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 foreach (var unit in listOfSectorShips)
                 {
                     if (Math.Sqrt((unit.x - mSpaceX) * (unit.x - mSpaceX) + (unit.y - mSpaceY) * (unit.y - mSpaceY)) <
-                        unit.getPrototype().shape_scaling * unit.getPrototype().shape.radius + 20.0f)
+                        unit.getPrototype().shapeScaling * unit.getPrototype().shape.radius + 20.0f)
                     {
-                        PickedUnit = unit;
+                        pickedUnit = unit;
                         return;
                     }
                 }
             }
         }
 
-        static bool MouseOverInterface()
+        static bool mouseOverInterface()
         {
-            if (sel_planet != null && _selIndex >= 0)
+            if (_selPlanet != null && _selIndex >= 0)
             {
-                if (MouseInRect(10, GameWindow.active.height - 110, 100, 100)) return true;
+                if (mouseInRect(10, GameWindow.active.height - 110, 100, 100)) return true;
 
                 Civilisation player = Civilisation.getPlayer();
-                List<Blueprint> options = sel_planet.listOfBuildables(_selIndex, player);
+                List<Blueprint> options = _selPlanet.listOfBuildables(_selIndex, player);
                 int index = 0, hover = -1;
-                foreach (Blueprint bp in options)
+                foreach (var blueprint in options)
                 {
                     float drx = 115.0f + (float) (index / 2) * 50.0f;
                     float dry = (float) (GameWindow.active.height - 110) + 52.0f * (float) (index % 2);
-                    if (MouseInRect(drx, dry, 48.0f, 48.0f)) return true;
+                    if (mouseInRect(drx, dry, 48.0f, 48.0f)) return true;
                     index++;
                 }
 
                 Blueprint.SpecialAbility subInterface = 0;
 
-                if (sel_planet.infra[_selIndex] != null && sel_planet.infra[_selIndex].owner == player
+                if (_selPlanet.infra[_selIndex] != null && _selPlanet.infra[_selIndex].owner == player
                 ) // && sel_planet.infra[sel_index].status == Building.Status.NONE)
                 {
-                    switch (sel_planet.infra[_selIndex].blueprint.specials)
+                    switch (_selPlanet.infra[_selIndex].blueprint.specials)
                     {
                         case Blueprint.SpecialAbility.SHIPS:
                             subInterface = Blueprint.SpecialAbility.SHIPS;
@@ -346,7 +349,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 // Eigene Schiffswerft, in der Schiffe gebaut werden können
                 if (subInterface == Blueprint.SpecialAbility.SHIPS)
                 {
-                    List<Prototype> options2 = sel_planet.infra[_selIndex].listOfPrototypes(player);
+                    List<Prototype> options2 = _selPlanet.infra[_selIndex].listOfPrototypes(player);
 
                     index = 0;
                     hover = -1;
@@ -355,7 +358,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                         float drx = 115.0f + (float) (options.Count / 2) * 50.0f + (float) (index / 2) * 50.0f;
                         float dry = (float) (GameWindow.active.height - 110) + 52.0f * (float) (index % 2);
                         float boxr = COL_STD_I, boxg = COL_STD_I, boxb = COL_STD_I, boxa = COL_STD_ALPHA2;
-                        if (MouseInRect(drx, dry, 48.0f, 48.0f)) return true;
+                        if (mouseInRect(drx, dry, 48.0f, 48.0f)) return true;
                         index++;
                     }
                 }
@@ -375,7 +378,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                     if (counts[i] == 0) continue;
                     float drx = 15.0f + (float) (index) * 50.0f;
                     float dry = (float) (GameWindow.active.height - 60);
-                    if (MouseInRect(drx, dry, 48.0f, 48.0f))
+                    if (mouseInRect(drx, dry, 48.0f, 48.0f))
                     {
                         return true;
                     }
@@ -388,9 +391,9 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
         }
 
 
-        static void DrawPlanetInfo()
+        static void drawPlanetInfo()
         {
-            if (sel_planet != null && (_selIndex > -1))
+            if (_selPlanet != null && (_selIndex > -1))
             {
                 draw_land_info();
                 return;
@@ -417,7 +420,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
 
             //manager.drawText(text, manager.MouseX() + 20, manager.MouseY());//, 20.0f, 0.0f, 0.0f, 0.0f, 0.5f);
-            if (Space.zoom < 0.3 || sel_planet != null)
+            if (Space.zoom < 0.3 || _selPlanet != null)
             {
                 Text.drawText(text, drawX, drawY - 10.0f * 4.0f); //, 20.0f, 0.0f, 0.0f, 0.0f, 0.5f);
             }
@@ -430,24 +433,24 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
         static void draw_land_info()
         {
-            Blueprint.SpecialAbility sub_interface = 0;
+            Blueprint.SpecialAbility subInterface = 0;
 
             Primitives.setColor(COL_STD_I, COL_STD_I, COL_STD_I, COL_STD_ALPHA);
             Primitives.drawRect(10, GameWindow.active.height - 110, 100, 100);
             //manager.drawBox(110, manager.height - 105, 200, 100, 0.125f, 0.125f, 0.125f, 0.85f);
             string text = "";
 
-            if (sel_planet.infra[_selIndex] != null)
+            if (_selPlanet.infra[_selIndex] != null)
             {
-                text = sel_planet.infra[_selIndex].blueprint.name + " (" + sel_planet.infra[_selIndex].owner.name +
-                       ")\nGesundheit: " + ((int) sel_planet.infra[_selIndex].health) + "/" +
-                       ((int) sel_planet.infra[_selIndex].healthMax) + "";
+                text = _selPlanet.infra[_selIndex].blueprint.name + " (" + _selPlanet.infra[_selIndex].owner.name +
+                       ")\nGesundheit: " + ((int) _selPlanet.infra[_selIndex].health) + "/" +
+                       ((int) _selPlanet.infra[_selIndex].healthMax) + "";
                 //manager.drawText(text, 5, manager.height - 100 - manager.textHeight(text));
 
-                sel_planet.infra[_selIndex].blueprint.shape.deferred_draw(10, GameWindow.active.height - 80, 100, 100);
+                _selPlanet.infra[_selIndex].blueprint.shape.deferred_draw(10, GameWindow.active.height - 80, 100, 100);
 
                 float gr_r = 0.5f, gr_g = 0.5f, gr_b = 0.5f;
-                if (sel_planet.terra[_selIndex] == Planet.Terrain.WATER)
+                if (_selPlanet.terra[_selIndex] == Planet.Terrain.WATER)
                 {
                     gr_r = 0.5f;
                     gr_g = 0.5f;
@@ -456,45 +459,45 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
                 Primitives.setColor(gr_r, gr_g, gr_b, 0.25f);
                 Primitives.drawRect(10,
-                    GameWindow.active.height - 30 + sel_planet.infra[_selIndex].blueprint.shape.del_y * 50.0f, 100,
-                    20.0f - sel_planet.infra[_selIndex].blueprint.shape.del_y * 50.0f);
+                    GameWindow.active.height - 30 + _selPlanet.infra[_selIndex].blueprint.shape.del_y * 50.0f, 100,
+                    20.0f - _selPlanet.infra[_selIndex].blueprint.shape.del_y * 50.0f);
                 //manager.drawBox(0, manager.height - 10 + sel_planet.infra[sel_index].bp.shape.del_y * 50.0f, 100, -10.0f, gr_r, gr_g, gr_b, 0.25f);
                 //manager.drawBox(0, manager.height - 20 + sel_planet.infra[sel_index].bp.shape.del_y * 50.0f, 100, 20.0f - sel_planet.infra[sel_index].bp.shape.del_y * 50.0f, 0.5f, 0.5f, 0.5f, 0.25f);
                 //sel_planet.infra[sel_index].bp.shape.draw(0.0f, 0.0f, 100, 100);
 
-                if (sel_planet.infra[_selIndex].owner == Civilisation.getPlayer()
+                if (_selPlanet.infra[_selIndex].owner == Civilisation.getPlayer()
                 ) // && sel_planet.infra[sel_index].status == Building.Status.NONE)
                 {
-                    switch (sel_planet.infra[_selIndex].blueprint.specials)
+                    switch (_selPlanet.infra[_selIndex].blueprint.specials)
                     {
                         case Blueprint.SpecialAbility.SHIPS:
-                            sub_interface = Blueprint.SpecialAbility.SHIPS;
+                            subInterface = Blueprint.SpecialAbility.SHIPS;
                             break;
 
                         case Blueprint.SpecialAbility.RESEARCH:
-                            sub_interface = Blueprint.SpecialAbility.RESEARCH;
+                            subInterface = Blueprint.SpecialAbility.RESEARCH;
                             break;
                     }
                 }
             }
             else
             {
-                text = sel_planet.getTerrainType(_selIndex) + " (" + sel_planet.name + ")";
+                text = _selPlanet.getTerrainType(_selIndex) + " (" + _selPlanet.name + ")";
                 //manager.drawText(text, 5, manager.height - 100 - manager.textHeight(text));
-                Planet.terraImage[(int)sel_planet.terra[_selIndex]]
+                Planet.terraImage[(int) _selPlanet.terra[_selIndex]]
                     .deferred_draw(10, GameWindow.active.height - 80, 100, 100);
                 //Planet.terra_image[sel_planet.terra[sel_index]].draw(manager.width - 50, 0, 9, 9);
             }
 
             Civilisation player = Civilisation.getPlayer();
-            List<Blueprint> options = sel_planet.listOfBuildables(_selIndex, player);
+            List<Blueprint> options = _selPlanet.listOfBuildables(_selIndex, player);
             int index = 0, hover = -1;
             foreach (Blueprint bp in options)
             {
                 float drx = 115.0f + (float) (index / 2) * 50.0f;
                 float dry = (float) (GameWindow.active.height - 110) + 52.0f * (float) (index % 2);
                 float boxr = COL_STD_I, boxg = COL_STD_I, boxb = COL_STD_I, boxa = COL_STD_ALPHA2;
-                if (MouseInRect(drx, dry, 48.0f, 48.0f))
+                if (mouseInRect(drx, dry, 48.0f, 48.0f))
                 {
                     hover = index;
                     if (bp.cost <= player.ressources)
@@ -530,23 +533,23 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
                 if (mhl)
                 {
-                    if (sel_planet.infra[_selIndex] == null && player.ressources >= options[hover].getCost())
+                    if (_selPlanet.infra[_selIndex] == null && player.ressources >= options[hover].getCost())
                     {
-                        sel_planet.build(_selIndex, options[hover], player);
+                        _selPlanet.build(_selIndex, options[hover], player);
                     }
-                    else if (sel_planet.infra[_selIndex] != null && player.ressources >=
-                             (options[hover].getCost() - sel_planet.infra[_selIndex].blueprint.getCost()))
+                    else if (_selPlanet.infra[_selIndex] != null && player.ressources >=
+                             (options[hover].getCost() - _selPlanet.infra[_selIndex].blueprint.getCost()))
                     {
-                        sel_planet.upgrade(_selIndex, options[hover]);
+                        _selPlanet.upgrade(_selIndex, options[hover]);
                     }
                 }
             }
 
 
             // Eigene Schiffswerft, in der Schiffe gebaut werden können
-            if (sub_interface == Blueprint.SpecialAbility.SHIPS)
+            if (subInterface == Blueprint.SpecialAbility.SHIPS)
             {
-                List<Prototype> options2 = sel_planet.infra[_selIndex].listOfPrototypes(player);
+                List<Prototype> options2 = _selPlanet.infra[_selIndex].listOfPrototypes(player);
 
                 index = 0;
                 hover = -1;
@@ -555,7 +558,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                     float drx = 115.0f + (float) (options.Count / 2) * 50.0f + (float) (index / 2) * 50.0f;
                     float dry = (float) (GameWindow.active.height - 110) + 52.0f * (float) (index % 2);
                     float boxr = COL_STD_I, boxg = COL_STD_I, boxb = COL_STD_I, boxa = COL_STD_ALPHA2;
-                    if (MouseInRect(drx, dry, 48.0f, 48.0f))
+                    if (mouseInRect(drx, dry, 48.0f, 48.0f))
                     {
                         hover = index;
                         if (prot.cost <= player.ressources)
@@ -581,21 +584,21 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                     Primitives.setColor(boxr, boxg, boxb, boxa);
                     Primitives.drawRect(drx, dry, 47.5f, 47.5f);
 
-                    if ((sel_planet.infra[_selIndex].production.Count > 0) &&
-                        (sel_planet.infra[_selIndex].production[0] == prot))
+                    if ((_selPlanet.infra[_selIndex].production.Count > 0) &&
+                        (_selPlanet.infra[_selIndex].production[0] == prot))
                     {
                         Primitives.setColor(COL_STD_I, COL_STD_I, COL_STD_I, COL_STD_ALPHA);
                         Primitives.setDepth(Primitives.getDepth() - 0.1f);
-                        Primitives.drawRect(drx, dry, 47.5f * sel_planet.infra[_selIndex].productionTimer, 47.5f);
+                        Primitives.drawRect(drx, dry, 47.5f * _selPlanet.infra[_selIndex].productionTimer, 47.5f);
                         Primitives.setDepth(Primitives.getDepth() + 0.1f);
                         Text.setTextSize(15.0f);
-                        Text.drawText(((int) (sel_planet.infra[_selIndex].productionTimer * 100.0)).ToString() + "%",
+                        Text.drawText(((int) (_selPlanet.infra[_selIndex].productionTimer * 100.0)).ToString() + "%",
                             drx, dry);
                     }
 
                     prot.shape.deferred_drawFit(drx, dry, 47.5f, 47.5f);
 
-                    int ct = sel_planet.infra[_selIndex].getProductionCount(prot);
+                    int ct = _selPlanet.infra[_selIndex].getProductionCount(prot);
                     if (ct > 0)
                     {
                         Text.setTextSize(15.0f);
@@ -614,38 +617,38 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
                     if (mhl)
                     {
-                        if ((sel_planet.infra[_selIndex].status == Building.Status.NONE ||
-                             sel_planet.infra[_selIndex].status == Building.Status.UNDER_CONSTRUCTION) &&
+                        if ((_selPlanet.infra[_selIndex].status == Building.Status.NONE ||
+                             _selPlanet.infra[_selIndex].status == Building.Status.UNDER_CONSTRUCTION) &&
                             player.ressources >= options2[hover].getCost())
                         {
-                            sel_planet.infra[_selIndex].produceUnit(options2[hover]);
-                            if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.ShiftLeft) ||
-                                GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.ShiftRight))
+                            _selPlanet.infra[_selIndex].produceUnit(options2[hover]);
+                            if (GameWindow.keyboard.IsKeyDown(Key.ShiftLeft) ||
+                                GameWindow.keyboard.IsKeyDown(Key.ShiftRight))
                             {
                                 if (player.ressources >= options2[hover].getCost())
-                                    sel_planet.infra[_selIndex].produceUnit(options2[hover]);
+                                    _selPlanet.infra[_selIndex].produceUnit(options2[hover]);
                                 if (player.ressources >= options2[hover].getCost())
-                                    sel_planet.infra[_selIndex].produceUnit(options2[hover]);
+                                    _selPlanet.infra[_selIndex].produceUnit(options2[hover]);
                                 if (player.ressources >= options2[hover].getCost())
-                                    sel_planet.infra[_selIndex].produceUnit(options2[hover]);
+                                    _selPlanet.infra[_selIndex].produceUnit(options2[hover]);
                                 if (player.ressources >= options2[hover].getCost())
-                                    sel_planet.infra[_selIndex].produceUnit(options2[hover]);
+                                    _selPlanet.infra[_selIndex].produceUnit(options2[hover]);
                             }
                         }
                     }
                     else if (mhr)
                     {
-                        if ((sel_planet.infra[_selIndex].status == Building.Status.NONE ||
-                             sel_planet.infra[_selIndex].status == Building.Status.UNDER_CONSTRUCTION))
+                        if ((_selPlanet.infra[_selIndex].status == Building.Status.NONE ||
+                             _selPlanet.infra[_selIndex].status == Building.Status.UNDER_CONSTRUCTION))
                         {
-                            sel_planet.infra[_selIndex].abortUnit(options2[hover]);
-                            if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.ShiftLeft) ||
-                                GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.ShiftRight))
+                            _selPlanet.infra[_selIndex].abortUnit(options2[hover]);
+                            if (GameWindow.keyboard.IsKeyDown(Key.ShiftLeft) ||
+                                GameWindow.keyboard.IsKeyDown(Key.ShiftRight))
                             {
-                                sel_planet.infra[_selIndex].abortUnit(options2[hover]);
-                                sel_planet.infra[_selIndex].abortUnit(options2[hover]);
-                                sel_planet.infra[_selIndex].abortUnit(options2[hover]);
-                                sel_planet.infra[_selIndex].abortUnit(options2[hover]);
+                                _selPlanet.infra[_selIndex].abortUnit(options2[hover]);
+                                _selPlanet.infra[_selIndex].abortUnit(options2[hover]);
+                                _selPlanet.infra[_selIndex].abortUnit(options2[hover]);
+                                _selPlanet.infra[_selIndex].abortUnit(options2[hover]);
                             }
                         }
                     }
@@ -657,7 +660,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
         }
 
 
-        public static void DrawGuiUnits()
+        public static void drawGuiUnits()
         {
             if (sel_u.Count == 0) return;
 
@@ -676,7 +679,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
                 float drx = 15.0f + (float) (index) * 50.0f;
                 float dry = (float) (GameWindow.active.height - 60); // +52.0f * (float)(index % 2);
                 float boxr = COL_STD_I, boxg = COL_STD_I, boxb = COL_STD_I, boxa = COL_STD_ALPHA2;
-                if (MouseInRect(drx, dry, 48.0f, 48.0f))
+                if (mouseInRect(drx, dry, 48.0f, 48.0f))
                 {
                     hover = i;
                     boxr = COL_YES_R;
@@ -701,11 +704,9 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
         }
 
 
-        public static bool MouseInRect(float x0, float y0, float width, float height)
+        private static bool mouseInRect(float x0, float y0, float width, float height)
         {
-            if (GameWindow.mouse_pos.x < x0 || GameWindow.mouse_pos.y < y0 || GameWindow.mouse_pos.x > x0 + width ||
-                GameWindow.mouse_pos.y > y0 + height) return false;
-            return true;
+            return !(GameWindow.mouse_pos.x < x0) && !(GameWindow.mouse_pos.y < y0) && !(GameWindow.mouse_pos.x > x0 + width) && !(GameWindow.mouse_pos.y > y0 + height);
         }
     }
 }

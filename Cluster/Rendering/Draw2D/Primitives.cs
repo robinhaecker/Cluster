@@ -220,7 +220,7 @@ namespace Cluster.Rendering.Draw2D
 
 			GL.Uniform3(polygon_shader.getUniformLocation("viewport"), 1.0f / (float)GameWindow.active.width, 1.0f / (float)GameWindow.active.height, 0.0f);
 			GL.DrawArrays(PrimitiveType.Triangles, 0, num_vertices);
-			polygon_shader.unbind();
+			Shader.unbind();
 			num_vertices = 0;
 			GL.BindTexture(TextureTarget.Texture2D, 0);
 		}

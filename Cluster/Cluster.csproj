@@ -68,7 +68,7 @@
     <Compile Include="GameMechanics\Content\Blueprint.cs" />
     <Compile Include="GameMechanics\Content\Prototype.cs" />
     <Compile Include="GameMechanics\Content\Technology.cs" />
-    <Compile Include="GameMechanics\Interface\GUI.cs" />
+    <Compile Include="GameMechanics\Interface\UserInterface.cs" />
     <Compile Include="GameMechanics\Universe\CelestialBodies\Planet.cs" />
     <Compile Include="GameMechanics\Universe\LivingThings\Building.cs" />
     <Compile Include="GameMechanics\Universe\LivingThings\Civilisation.cs" />

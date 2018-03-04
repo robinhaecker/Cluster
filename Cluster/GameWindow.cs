@@ -163,7 +163,7 @@ namespace Cluster
 			//####################################################################################################################################################################
 
 			// Spielinhalte laden
-			GUI.Init();
+			UserInterface.init();
 			Space.init();
 
 
@@ -199,7 +199,7 @@ namespace Cluster
 
 
 			Space.update();
-			GUI.Update();
+			UserInterface.update();
 
         }
 
@@ -222,9 +222,9 @@ namespace Cluster
 			//Space.render();
 			Planet.render();
 			Unit.render();
-			Shot.Render();
+			Shot.render();
 			Cluster.GameMechanics.Universe.Particle.render();
-			GUI.Render();
+			UserInterface.render();
 
 
 			//PostProcessing.render();

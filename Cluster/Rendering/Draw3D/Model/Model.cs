@@ -433,7 +433,7 @@ namespace Cluster.Rendering.Draw3D
 			
 			GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, draw_count, num_instances);
 			GL.BindTexture(TextureTarget.Texture2D, 0);
-			model_shader.unbind();
+			Shader.unbind();
 
 			GameWindow.glError("D");
 

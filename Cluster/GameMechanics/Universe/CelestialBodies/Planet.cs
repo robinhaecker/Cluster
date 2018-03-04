@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe.LivingThings;
+using Cluster.Rendering.Appearance;
 using Cluster.Rendering.Draw2D;
 using OpenTK.Graphics.OpenGL;
 
@@ -55,19 +56,20 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
         // fields
         public float x, y;
-        public int size;
-        public string name;
+        public readonly int size;
+        public readonly string name;
 
-        public Climate climate;
+        public readonly Climate climate;
         public Terrain[] terra;
         public Effect[] effect;
         public float[] timer;
         public Building[] infra;
 
-        int random;
+        private readonly int random;
         private readonly int _id;
 
-        bool _canseeTemp, _seenbefore;
+        private bool _canseeTemp;
+        private bool _seenbefore;
         readonly float _red, _green, _blue;
 
         int _glData, _bufPos, _bufTer, _bufCol;
@@ -231,7 +233,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 }
             }
 
-            Space.planetShader.unbind();
+            Shader.unbind();
         }
 
         void prepare_vba()

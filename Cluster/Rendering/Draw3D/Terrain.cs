@@ -667,7 +667,7 @@ namespace Cluster.Rendering.Draw3D
             */
 
 
-            water_shader.unbind();
+            Shader.unbind();
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.ActiveTexture(TextureUnit.Texture1);
