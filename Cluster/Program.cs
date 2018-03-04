@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using OpenTK;
 
 namespace Cluster
 {
@@ -11,19 +6,11 @@ namespace Cluster
     {
         static void Main(string[] args)
         {
-            using (GameWindow game = new GameWindow())//800,800))
+            using (GameWindow game = new GameWindow()) //800,800))
             {
-                game.VSync = OpenTK.VSyncMode.Off;
+                game.VSync = VSyncMode.Off;
                 game.Run();
             }
-
         }
-
-
-
-
-
-
-
     }
 }
