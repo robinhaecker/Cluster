@@ -69,13 +69,13 @@
     <Compile Include="GameMechanics\Content\Prototype.cs" />
     <Compile Include="GameMechanics\Content\Technology.cs" />
     <Compile Include="GameMechanics\Interface\GUI.cs" />
-    <Compile Include="GameMechanics\Universe\Building.cs" />
-    <Compile Include="GameMechanics\Universe\Civilisation.cs" />
+    <Compile Include="GameMechanics\Universe\CelestialBodies\Planet.cs" />
+    <Compile Include="GameMechanics\Universe\LivingThings\Building.cs" />
+    <Compile Include="GameMechanics\Universe\LivingThings\Civilisation.cs" />
+    <Compile Include="GameMechanics\Universe\LivingThings\Shot.cs" />
+    <Compile Include="GameMechanics\Universe\LivingThings\Unit.cs" />
     <Compile Include="GameMechanics\Universe\Particle.cs" />
-    <Compile Include="GameMechanics\Universe\Planet.cs" />
-    <Compile Include="GameMechanics\Universe\Shot.cs" />
     <Compile Include="GameMechanics\Universe\Space.cs" />
-    <Compile Include="GameMechanics\Universe\Unit.cs" />
     <Compile Include="Rendering\Appearance\FrameBuffer.cs" />
     <Compile Include="Rendering\Appearance\Shader.cs" />
     <Compile Include="Rendering\Draw2D\Image.cs" />
@@ -128,7 +128,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

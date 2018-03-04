@@ -23,6 +23,8 @@ using Cluster.GameMechanics;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Interface;
+using Cluster.GameMechanics.Universe.CelestialBodies;
+using Cluster.GameMechanics.Universe.LivingThings;
 
 namespace Cluster
 {
@@ -161,7 +163,7 @@ namespace Cluster
 			//####################################################################################################################################################################
 
 			// Spielinhalte laden
-			GUI.init();
+			GUI.Init();
 			Space.init();
 
 
@@ -197,7 +199,7 @@ namespace Cluster
 
 
 			Space.update();
-			GUI.update();
+			GUI.Update();
 
         }
 
@@ -220,9 +222,9 @@ namespace Cluster
 			//Space.render();
 			Planet.render();
 			Unit.render();
-			Shot.render();
+			Shot.Render();
 			Cluster.GameMechanics.Universe.Particle.render();
-			GUI.render();
+			GUI.Render();
 
 
 			//PostProcessing.render();

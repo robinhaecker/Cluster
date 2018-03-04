@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Cluster.GameMechanics.Universe;
+using Cluster.GameMechanics.Universe.CelestialBodies;
+using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.math;
 
 namespace Cluster.GameMechanics.Behaviour

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Cluster.math;
 using Cluster.GameMechanics.Content;
-using Cluster.GameMechanics.Universe;
+using Cluster.GameMechanics.Universe.LivingThings;
 using System.Threading;
 
 namespace Cluster.GameMechanics.Behaviour
@@ -115,11 +115,11 @@ namespace Cluster.GameMechanics.Behaviour
 
 		public void removeUnit(Unit u)
 		{
-			ships[u.getOwner().getID()].Remove(u);
+			ships[u.getOwner().getId()].Remove(u);
 		}
 		public void addUnit(Unit u)
 		{
-			ships[u.getOwner().getID()].Add(u);
+			ships[u.getOwner().getId()].Add(u);
 		}
 
 
@@ -129,7 +129,7 @@ namespace Cluster.GameMechanics.Behaviour
 			foreach (Unit u in Unit.units)
 			{
 				u.enemy = null;
-				u.enemy_distance = 1500;
+				u.enemyDistance = 1500;
 				u.inrange = 0;
 			}
 
@@ -155,15 +155,15 @@ namespace Cluster.GameMechanics.Behaviour
 
 									float dst = (float)Math.Sqrt((u0.x - u1.x) * (u0.x - u1.x) + (u0.y - u1.y) * (u0.y - u1.y));
 									if (dst < 100.0f) { continue; } // Darf nicht zu nahe dran sein. Hier wird noch der Code für die Selbstzerstörungsdrohnen reinkommen.
-									if (dst < u0.enemy_distance)
+									if (dst < u0.enemyDistance)
 									{
-										u0.enemy_distance = dst;
+										u0.enemyDistance = dst;
 										u0.enemy = u1;
 										u0.inrange = 1;
 									}
-									if (dst < u1.enemy_distance)
+									if (dst < u1.enemyDistance)
 									{
-										u1.enemy_distance = dst;
+										u1.enemyDistance = dst;
 										u1.enemy = u0;
 										u1.inrange = 1;
 									}

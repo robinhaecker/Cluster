@@ -7,6 +7,7 @@ using System.IO;
 
 using Cluster.Rendering.Draw2D;
 using Cluster.GameMechanics.Universe;
+using Cluster.GameMechanics.Universe.LivingThings;
 
 namespace Cluster.GameMechanics.Content
 {

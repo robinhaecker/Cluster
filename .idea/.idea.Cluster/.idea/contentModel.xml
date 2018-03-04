@@ -21,13 +21,17 @@
             <e p="GUI.cs" t="Include" />
           </e>
           <e p="Universe" t="Include">
-            <e p="Building.cs" t="Include" />
-            <e p="Civilisation.cs" t="Include" />
+            <e p="CelestialBodies" t="Include">
+              <e p="Planet.cs" t="Include" />
+            </e>
+            <e p="LivingThings" t="Include">
+              <e p="Building.cs" t="Include" />
+              <e p="Civilisation.cs" t="Include" />
+              <e p="Shot.cs" t="Include" />
+              <e p="Unit.cs" t="Include" />
+            </e>
             <e p="Particle.cs" t="Include" />
-            <e p="Planet.cs" t="Include" />
-            <e p="Shot.cs" t="Include" />
             <e p="Space.cs" t="Include" />
-            <e p="Unit.cs" t="Include" />
           </e>
         </e>
         <e p="GameWindow.cs" t="Include" />

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 
 using Cluster.GameMechanics.Universe;
+using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Rendering.Draw2D;
 
 namespace Cluster.GameMechanics.Content

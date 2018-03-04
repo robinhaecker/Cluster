@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-
+using Cluster.GameMechanics.Universe.CelestialBodies;
 using OpenTK.Graphics.OpenGL;
 
 
@@ -158,9 +157,9 @@ namespace Cluster.GameMechanics.Universe
 			GL.VertexAttribPointer(1, RENDER_ARRSIZE_COL, VertexAttribPointerType.Float, false, 0, 0);
 
 
-			Space.particle_shader.bind();
-			GL.Uniform3(Space.particle_shader.getUniformLocation("viewport"), GameWindow.active.mult_x, GameWindow.active.mult_y, Space.animation);
-			GL.Uniform3(Space.particle_shader.getUniformLocation("scroll"), Space.scroll_x, Space.scroll_y, Space.zoom);
+			Space.particleShader.bind();
+			GL.Uniform3(Space.particleShader.getUniformLocation("viewport"), GameWindow.active.mult_x, GameWindow.active.mult_y, Space.animation);
+			GL.Uniform3(Space.particleShader.getUniformLocation("scroll"), Space.scrollX, Space.scrollY, Space.zoom);
 			GL.DrawArrays(PrimitiveType.Points, 0, rendered_count);
 
 
