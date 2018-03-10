@@ -23,13 +23,13 @@ namespace Cluster.Rendering.Appearance
         
 
 
-        public Shader(string vertex_shader_src, string fragment_shader_src, string geometry_shader_src = "")
+        public Shader(string vertexShaderSrc, string fragmentShaderSrc, string geometryShaderSrc = "")
         {
             
-            string vertexShaderSource = File.ReadAllText(GameWindow.BASE_FOLDER + "shaders/" + vertex_shader_src);
-            string fragmentShaderSource = File.ReadAllText(GameWindow.BASE_FOLDER + "shaders/" + fragment_shader_src);
+            string vertexShaderSource = File.ReadAllText(GameWindow.BASE_FOLDER + "shaders/" + vertexShaderSrc);
+            string fragmentShaderSource = File.ReadAllText(GameWindow.BASE_FOLDER + "shaders/" + fragmentShaderSrc);
 			string geometryShaderSource = "";
-			if (geometry_shader_src != "") geometryShaderSource = File.ReadAllText(GameWindow.BASE_FOLDER + "shaders/" + geometry_shader_src);
+			if (geometryShaderSrc != "") geometryShaderSource = File.ReadAllText(GameWindow.BASE_FOLDER + "shaders/" + geometryShaderSrc);
 
             program = GL.CreateProgram();
 
@@ -46,18 +46,18 @@ namespace Cluster.Rendering.Appearance
 
             
             string log = GL.GetShaderInfoLog(vert);
-            if (log != "") Console.Write("Compilation Error in '" + vertex_shader_src + "':\n" + log + "\n");
+            if (log != "") Console.Write("Compilation Error in '" + vertexShaderSrc + "':\n" + log + "\n");
             log = GL.GetShaderInfoLog(frag);
-            if (log != "") Console.Write("Compilation Error in '" + fragment_shader_src + "':\n" + log + "\n");
+            if (log != "") Console.Write("Compilation Error in '" + fragmentShaderSrc + "':\n" + log + "\n");
 
 
-			if (geometry_shader_src != "")
+			if (geometryShaderSrc != "")
 			{
 				geom = GL.CreateShader(ShaderType.GeometryShader);
 				GL.ShaderSource(geom, geometryShaderSource);
 				GL.CompileShader(geom);
 				log = GL.GetShaderInfoLog(geom);
-				if (log != "") Console.Write("Compilation Error in '" + geometry_shader_src + "':\n" + log + "\n");
+				if (log != "") Console.Write("Compilation Error in '" + geometryShaderSrc + "':\n" + log + "\n");
 
 				GL.AttachShader(program, geom);
 			}

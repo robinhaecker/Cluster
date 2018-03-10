@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameMechanics\Behaviour\DominanceMap.cs" />
     <Compile Include="GameMechanics\Behaviour\Sector.cs" />
     <Compile Include="GameMechanics\Behaviour\Target.cs" />
     <Compile Include="GameMechanics\Content\Blueprint.cs" />

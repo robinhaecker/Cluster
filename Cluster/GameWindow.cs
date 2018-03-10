@@ -219,7 +219,7 @@ namespace Cluster
             //cam.render();
 			//
 
-			//Space.render();
+			Space.render();
 			Planet.render();
 			Unit.render();
 			Shot.render();

@@ -65,7 +65,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
         public float[] timer;
         public Building[] infra;
 
-        private readonly int random;
+        private readonly int _random;
         private readonly int _id;
 
         private bool _canseeTemp;
@@ -80,13 +80,13 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
         public Planet(float x, float y, int size = 15)
         {
             planets.Add(this);
-            this._id = _countId;
+            _id = _countId;
             _countId++;
             _glDataUpdate = true;
 
             this.x = x;
             this.y = y;
-            random = GameWindow.random.Next(1000);
+            _random = GameWindow.random.Next(1000);
 
             this.size = size;
             terra = new Terrain[size];
@@ -101,9 +101,9 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             _green = 1.0f;
             _blue = 1.0f;
 
-            _red = Civilisation.data[random % Civilisation.count].red;
-            _green = Civilisation.data[random % Civilisation.count].green;
-            _blue = Civilisation.data[random % Civilisation.count].blue;
+            _red = Civilisation.data[_random % Civilisation.count].red;
+            _green = Civilisation.data[_random % Civilisation.count].green;
+            _blue = Civilisation.data[_random % Civilisation.count].blue;
 
             _seenbefore = false;
             _canseeTemp = false;
@@ -152,7 +152,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 {
                     terra[i] = Terrain.JUNGLE;
 
-                    //build(i, Blueprint.data[5], Civilisation.data[0]);
+//                    build(i, Blueprint.data[5], Civilisation.data[0]);
                 }
                 else
                 {
@@ -167,7 +167,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
 
         // Initiation
-        static public void init()
+        public static void init()
         {
             _jungle = new Mesh[JUNGLE_VARIETY, NUMBER_OF_CLIMATES];
             for (byte i = 0; i < JUNGLE_VARIETY; i++)
@@ -192,12 +192,8 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
 
         // rendering stuff
-        static public void render()
+        public static void render()
         {
-            //manager.gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
-
-            //Console.WriteLine("Number of Planets: "+Planet.count().ToString());
-
             Space.planetShader.bind();
             GL.Uniform3(Space.planetShader.getUniformLocation("scroll"), (float) Space.scrollX, (float) Space.scrollY,
                 (float) Space.zoom);
@@ -236,7 +232,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             Shader.unbind();
         }
 
-        void prepare_vba()
+        private void prepare_vba()
         {
             float[] vertices = new float[(size * PLANET_DETAIL + 2) * 2];
             float[] terrain = new float[(size * PLANET_DETAIL + 2) * 1];
@@ -586,7 +582,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             _glDataUpdate = false;
         }
 
-        public void _render()
+        private void _render()
         {
             if (_glDataUpdate) prepare_vba();
 
@@ -594,10 +590,6 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             GL.Uniform1(Space.planetShader.getUniformLocation("pos_y"), (float) y);
             GL.Uniform1(Space.planetShader.getUniformLocation("size"), (float) size);
             GL.Uniform3(Space.planetShader.getUniformLocation("rgb"), _red, _green, _blue);
-            //Space.planet_shader.id.SetUniform1(manager.gl, "pos_x", (float)x);
-            //Space.planet_shader.id.SetUniform1(manager.gl, "pos_y", (float)y);
-            //Space.planet_shader.id.SetUniform3(manager.gl, "rgb", r, g, b);
-            //Space.planet_shader.id.SetUniform1(manager.gl, "size", (float)size);
 
             GL.BindVertexArray(_glData);
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, size * PLANET_DETAIL + 2);
@@ -605,7 +597,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             GL.BindVertexArray(0);
         }
 
-        public void _render_buildings()
+        private void _render_buildings()
         {
             GL.LineWidth(2.0f);
             GL.Enable(EnableCap.LineSmooth);
@@ -614,16 +606,13 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             GL.Uniform1(Space.buildingShader.getUniformLocation("pos_x"), (float) x);
             GL.Uniform1(Space.buildingShader.getUniformLocation("pos_y"), (float) y);
             GL.Uniform1(Space.buildingShader.getUniformLocation("size"), (float) size);
-            //Space.building_shader.id.SetUniform1(manager.gl, "pos_x", (float)x);
-            //Space.building_shader.id.SetUniform1(manager.gl, "pos_y", (float)y);
-            //Space.building_shader.id.SetUniform1(manager.gl, "size", (float)size);
 
             for (int ii = 0; ii < size; ii++)
             {
+                var transp = 1.0f;
                 if (terra[ii] == Terrain.JUNGLE)
                 {
-                    int cc = (random * size + ii) % JUNGLE_VARIETY;
-                    float transp = 1.0f;
+                    int cc = (_random * size + ii) % JUNGLE_VARIETY;
                     if (infra[ii] != null) transp = 1.0f - infra[ii].getHealthFraction() * 0.75f;
                     GL.Uniform3(Space.buildingShader.getUniformLocation("info"), (float) ii, 1.0f, transp);
                     GL.Uniform3(Space.buildingShader.getUniformLocation("rgb"), 1.0f, 1.0f, 1.0f);
@@ -631,34 +620,27 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                     GL.DrawArrays(PrimitiveType.Lines, 0, _jungle[cc, (int) climate].num_lines * 2);
                 }
 
-                if (infra[ii] != null)
+                if (infra[ii] == null)
                 {
-                    //Console.WriteLine(i.ToString()+" x "+infra[i].bp.shape.num_lines.ToString());
-
-                    float ycut = 1.0f;
-                    float transp = 1.0f;
-                    if (infra[ii].status == Building.Status.DESTROYED ||
-                        infra[ii].status == Building.Status.DESTROYED_DURING_CONSTRUCTION)
-                        transp = 1.0f - infra[ii].timer * 0.01f;
-                    if (infra[ii].status == Building.Status.UNDER_CONSTRUCTION ||
-                        infra[ii].status == Building.Status.DESTROYED_DURING_CONSTRUCTION)
-                        ycut = infra[ii].getHealthFraction() * infra[ii].blueprint.shape.box_y;
-
-
-                    GL.Uniform3(Space.buildingShader.getUniformLocation("info"), (float) ii, (float) ycut,
-                        (float) transp);
-                    GL.Uniform3(Space.buildingShader.getUniformLocation("rgb"), 0.5f + 0.5f * infra[ii].owner.red,
-                        0.5f + 0.5f * infra[ii].owner.green, 0.5f + 0.5f * infra[ii].owner.blue);
-                    //Space.building_shader.id.SetUniform3(manager.gl, "info", (float)ii, ycut, transp);
-                    //Space.building_shader.id.SetUniform3(manager.gl, "rgb", 0.5f + 0.5f * infra[ii].owner.r, 0.5f + 0.5f * infra[ii].owner.g, 0.5f + 0.5f * infra[ii].owner.b);
-
-                    GL.BindVertexArray(infra[ii].blueprint.shape.gl_data);
-                    GL.DrawArrays(PrimitiveType.Lines, 0, infra[ii].blueprint.shape.num_lines * 2);
-
-                    //infra[ii].bp.shape.gl_data.Bind(manager.gl);
-                    //manager.gl.DrawArrays(OpenGL.GL_LINES, 0, infra[ii].bp.shape.num_lines * 2);
-                    //infra[ii].bp.shape.gl_data.Unbind(manager.gl);
+                    continue;
                 }
+
+                var ycut = 1.0f;
+                transp = 1.0f;
+                if (infra[ii].status == Building.Status.DESTROYED ||
+                    infra[ii].status == Building.Status.DESTROYED_DURING_CONSTRUCTION)
+                    transp = 1.0f - infra[ii].timer * 0.01f;
+                if (infra[ii].status == Building.Status.UNDER_CONSTRUCTION ||
+                    infra[ii].status == Building.Status.DESTROYED_DURING_CONSTRUCTION)
+                    ycut = infra[ii].getHealthFraction() * infra[ii].blueprint.shape.box_y;
+
+
+                GL.Uniform3(Space.buildingShader.getUniformLocation("info"), (float) ii, (float) ycut, transp);
+                GL.Uniform3(Space.buildingShader.getUniformLocation("rgb"), 0.5f + 0.5f * infra[ii].owner.red,
+                    0.5f + 0.5f * infra[ii].owner.green, 0.5f + 0.5f * infra[ii].owner.blue);
+
+                GL.BindVertexArray(infra[ii].blueprint.shape.gl_data);
+                GL.DrawArrays(PrimitiveType.Lines, 0, infra[ii].blueprint.shape.num_lines * 2);
             }
 
             GL.BindVertexArray(0);
@@ -667,7 +649,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
         }
 
         // static functions
-        static public int count()
+        public static int count()
         {
             return planets.Count;
         }
@@ -724,7 +706,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             }
         }
 
-        public Civilisation getDominantCiv()
+        private Civilisation getDominantCiv()
         {
             byte[] points = new byte[Civilisation.count];
             for (int i = 0; i < size; i++)
@@ -751,12 +733,13 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
         public string getDominantCivName()
         {
-            Civilisation civ = getDominantCiv();
+            var civ = getDominantCiv();
             if (civ == null)
             {
                 return "Status:\tunbesiedelt";
             }
-            else if (civ == Civilisation.getPlayer())
+
+            if (civ == Civilisation.getPlayer())
             {
                 return "Status:\teigene Kolonie";
             }
@@ -902,67 +885,78 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 }
 
                 //Regnet es gerade?
-                float height, rot;
-                Particle p;
                 switch (effect[i])
                 {
                     case Effect.RAIN:
-                        if ((float) GameWindow.random.NextDouble() < Math.Min(0.5f, timer[i] * 0.1f))
-                        {
-                            float subfield = (float) GameWindow.random.NextDouble();
-                            height = 20.0f * size + 100.0f + 30.0f * ((float) GameWindow.random.NextDouble() - 0.5f) *
-                                     (1.0f - 4.0f * (subfield - 0.5f) * (subfield - 0.5f));
-                            if (climate == Climate.COLD)
-                            {
-                                height = 20.0f * size + 10.0f + 50.0f * ((float) GameWindow.random.NextDouble()) *
-                                         (2.0f - 4.0f * (subfield - 0.5f) * (subfield - 0.5f));
-                                subfield *= 4.0f - 1.5f;
-                            }
-                            else
-                            {
-                                subfield *= 2.0f - 0.5f;
-                            }
-
-                            rot = (float) Math.PI * 2.0f * (subfield + (float) i) / (float) size;
-                            p = new Particle(x + (float) Math.Cos(rot) * height, y + (float) Math.Sin(rot) * height);
-                            p.setSpeed(-(float) Math.Sin(rot) * (float) Math.Sin(timer[i] * 0.1f + (float) i) * 30.0f,
-                                (float) Math.Cos(rot) * (float) Math.Sin(timer[i] * 0.1f + (float) i) * 30.0f);
-                            if (climate == Climate.COLD)
-                            {
-                                p.setColor(1.0f, 1.0f, 1.0f, 0.05f);
-                            }
-                            else
-                            {
-                                p.setColor(0.7f, 0.7f, 1.0f, 0.1f);
-                                p.setGravity(this);
-                            }
-                        }
+                        particleEffectRain(i);
 
                         break;
                     case Effect.VOLCANO_ERUPTION:
-                        rot = (float) Math.PI * 2.0f * (0.5f + (float) i) / (float) size;
-                        height = 21.5f * size;
-                        p = new Particle(x + (float) Math.Cos(rot) * height, y + (float) Math.Sin(rot) * height);
-
-                        height = (float) GameWindow.random.NextDouble() * 20.0f +
-                                 20.0f * (1.5f + (float) Math.Cos(timer[i] * 0.13f));
-                        if ((float) GameWindow.random.NextDouble() < Math.Min(0.5f, timer[i] * 0.1f)) // Lava
-                        {
-                            rot += (((float) GameWindow.random.NextDouble() - 0.5f) * 0.3f +
-                                    0.3f * (float) Math.Sin(timer[i] * 0.1f + (float) i)) * (float) Math.PI;
-                            p.setColor(0.8f, (float) GameWindow.random.NextDouble() * 0.7f, 0.0f, 0.2f);
-                            p.setSpeed((float) Math.Cos(rot) * height, (float) Math.Sin(rot) * height);
-                            p.setGravity(this);
-                        }
-                        else // Nur Qualm
-                        {
-                            rot += 0.75f * (((float) GameWindow.random.NextDouble() - 0.5f) * 0.7f +
-                                            0.4f * (float) Math.Sin(timer[i] * 0.1f + (float) i)) * (float) Math.PI;
-                            p.setColor(0.72f, 0.72f, 0.72f, 0.06f);
-                            p.setSpeed((float) Math.Cos(rot) * height, (float) Math.Sin(rot) * height);
-                        }
+                        particleEffectEruption(i);
 
                         break;
+                }
+            }
+        }
+
+        private void particleEffectEruption(int i)
+        {
+            float rot;
+            float height;
+            Particle p;
+            rot = (float) Math.PI * 2.0f * (0.5f + (float) i) / (float) size;
+            height = 21.5f * size;
+            p = new Particle(x + (float) Math.Cos(rot) * height, y + (float) Math.Sin(rot) * height);
+
+            height = (float) GameWindow.random.NextDouble() * 20.0f +
+                     20.0f * (1.5f + (float) Math.Cos(timer[i] * 0.13f));
+            if ((float) GameWindow.random.NextDouble() < Math.Min(0.5f, timer[i] * 0.1f)) // Lava
+            {
+                rot += (((float) GameWindow.random.NextDouble() - 0.5f) * 0.3f +
+                        0.3f * (float) Math.Sin(timer[i] * 0.1f + (float) i)) * (float) Math.PI;
+                p.setColor(0.8f, (float) GameWindow.random.NextDouble() * 0.7f, 0.0f, 0.2f);
+                p.setSpeed((float) Math.Cos(rot) * height, (float) Math.Sin(rot) * height);
+                p.setGravity(this);
+            }
+            else // Nur Qualm
+            {
+                rot += 0.75f * (((float) GameWindow.random.NextDouble() - 0.5f) * 0.7f +
+                                0.4f * (float) Math.Sin(timer[i] * 0.1f + (float) i)) * (float) Math.PI;
+                p.setColor(0.72f, 0.72f, 0.72f, 0.06f);
+                p.setSpeed((float) Math.Cos(rot) * height, (float) Math.Sin(rot) * height);
+            }
+        }
+
+        private void particleEffectRain(int i)
+        {
+            if ((float) GameWindow.random.NextDouble() < Math.Min(0.5f, timer[i] * 0.1f))
+            {
+                float subfield = (float) GameWindow.random.NextDouble();
+                var height = 20.0f * size + 100.0f + 30.0f * ((float) GameWindow.random.NextDouble() - 0.5f) *
+                               (1.0f - 4.0f * (subfield - 0.5f) * (subfield - 0.5f));
+                if (climate == Climate.COLD)
+                {
+                    height = 20.0f * size + 10.0f + 50.0f * ((float) GameWindow.random.NextDouble()) *
+                             (2.0f - 4.0f * (subfield - 0.5f) * (subfield - 0.5f));
+                    subfield *= 4.0f - 1.5f;
+                }
+                else
+                {
+                    subfield *= 2.0f - 0.5f;
+                }
+
+                var rot = (float) Math.PI * 2.0f * (subfield + i) / size;
+                var particle = new Particle(x + (float) Math.Cos(rot) * height, y + (float) Math.Sin(rot) * height);
+                particle.setSpeed(-(float) Math.Sin(rot) * (float) Math.Sin(timer[i] * 0.1f + i) * 30.0f,
+                    (float) Math.Cos(rot) * (float) Math.Sin(timer[i] * 0.1f +  i) * 30.0f);
+                if (climate == Climate.COLD)
+                {
+                    particle.setColor(1.0f, 1.0f, 1.0f, 0.05f);
+                }
+                else
+                {
+                    particle.setColor(0.7f, 0.7f, 1.0f, 0.1f);
+                    particle.setGravity(this);
                 }
             }
         }
