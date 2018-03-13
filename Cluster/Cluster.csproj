@@ -77,6 +77,11 @@
     <Compile Include="GameMechanics\Universe\LivingThings\Unit.cs" />
     <Compile Include="GameMechanics\Universe\Particle.cs" />
     <Compile Include="GameMechanics\Universe\Space.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Appearance\FrameBuffer.cs" />
     <Compile Include="Rendering\Appearance\Shader.cs" />
     <Compile Include="Rendering\Draw2D\Image.cs" />
@@ -111,6 +116,23 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Resources\Shader\building.frag" />
+    <None Include="Resources\Shader\building.vert" />
+    <None Include="Resources\Shader\image.frag" />
+    <None Include="Resources\Shader\image.vert" />
+    <None Include="Resources\Shader\planet.frag" />
+    <None Include="Resources\Shader\planet.vert" />
+    <None Include="Resources\Shader\poly.frag" />
+    <None Include="Resources\Shader\poly.vert" />
+    <None Include="Resources\Shader\shield.frag" />
+    <None Include="Resources\Shader\shield.geom" />
+    <None Include="Resources\Shader\shield.vert" />
+    <None Include="Resources\Shader\shot.frag" />
+    <None Include="Resources\Shader\shot.vert" />
+    <None Include="Resources\Shader\space.frag" />
+    <None Include="Resources\Shader\space.vert" />
+    <None Include="Resources\Shader\unit.frag" />
+    <None Include="Resources\Shader\unit.vert" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -128,6 +150,22 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Shader\mesh.frag" />
+    <Content Include="Resources\Shader\mesh.vert" />
+    <Content Include="Resources\Shader\particle2D.frag" />
+    <Content Include="Resources\Shader\particle2D.vert" />
+    <Content Include="Resources\Shader\shot.geom" />
+    <Content Include="Resources\Shader\text.frag" />
+    <Content Include="Resources\Shader\text.geom" />
+    <Content Include="Resources\Shader\text.vert" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

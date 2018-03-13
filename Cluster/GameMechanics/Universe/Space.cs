@@ -2,6 +2,7 @@
 using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 using Cluster.GameMechanics.Universe.LivingThings;
+using Cluster.Properties;
 using Cluster.Rendering.Appearance;
 using Cluster.Rendering.Draw2D;
 using OpenTK.Graphics.OpenGL;
@@ -20,7 +21,7 @@ namespace Cluster.GameMechanics.Universe
         public static Shader particleShader;
         private static Shader _spaceShader;
 
-        private static DominanceMap dominanceMap;
+        private static DominanceMap _dominanceMap;
         static Image _spaceTex0;
         static Image _spaceTex1;
         static Image _spaceTex2;
@@ -33,15 +34,15 @@ namespace Cluster.GameMechanics.Universe
 
         public static void init()
         {
-            _spaceShader = new Shader("space.vert", "space.frag");
-            planetShader = new Shader("planet.vert", "planet.frag");
-            buildingShader = new Shader("building.vert", "building.frag");
-            unitShader = new Shader("unit.vert", "unit.frag");
-            unitShieldShader = new Shader("shield.vert", "shield.frag", "shield.geom");
-            shotShader = new Shader("shot.vert", "shot.frag", "shot.geom");
-            particleShader = new Shader("particle2D.vert", "particle2D.frag");
+            _spaceShader = new Shader(Resources.space_vert, Resources.space_frag);
+            planetShader = new Shader(Resources.planet_vert, Resources.planet_frag);
+            buildingShader = new Shader(Resources.building_vert, Resources.building_frag);
+            unitShader = new Shader(Resources.unit_vert, Resources.unit_frag);
+            unitShieldShader = new Shader(Resources.shield_vert, Resources.shield_frag, Resources.shield_geom);
+            shotShader = new Shader(Resources.shot_vert, Resources.shot_frag, Resources.shot_geom);
+            particleShader = new Shader(Resources.particle2D_vert, Resources.particle2D_frag);
 
-            dominanceMap = new DominanceMap();
+            _dominanceMap = new DominanceMap();
             
             _spaceTex0 = new Image("space0.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
             _spaceTex1 = new Image("space1.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
@@ -112,7 +113,7 @@ namespace Cluster.GameMechanics.Universe
             GL.ActiveTexture(TextureUnit.Texture3);
             GL.BindTexture(TextureTarget.Texture2D, _spaceTex3.tex);
             GL.ActiveTexture(TextureUnit.Texture4);
-            dominanceMap.bindTexture();
+            _dominanceMap.bindTexture();
 
             GL.Uniform3(_spaceShader.getUniformLocation("scroll"), scrollX, scrollY, zoom);
             GL.Uniform3(_spaceShader.getUniformLocation("viewport"), GameWindow.active.width, GameWindow.active.height,
@@ -141,7 +142,7 @@ namespace Cluster.GameMechanics.Universe
             Unit.update(time * 5.0f);
             Shot.update(time * 5.0f);
             Particle.update(time * 5.0f);
-            dominanceMap.update();
+            _dominanceMap.update();
         }
 
 

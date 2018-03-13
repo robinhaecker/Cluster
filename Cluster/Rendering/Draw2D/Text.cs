@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Cluster.Rendering.Appearance;
 using Cluster.math;
+using Cluster.Properties;
 
 
 namespace Cluster.Rendering.Draw2D
@@ -188,19 +189,9 @@ namespace Cluster.Rendering.Draw2D
 			return h;
 		}
 
-
-
-
-
-
-
-
-
-
-
 		public static void init(string font_url = "Courier.png")
 		{
-			text_shader = new Shader("text.vert", "text.frag", "text.geom");
+			text_shader = new Shader(Resources.text_vert, Resources.text_frag, Resources.text_geom);
 
 			Bitmap data = new Bitmap(GameWindow.BASE_FOLDER + "textures/" + font_url);
 			BitmapData bdat = data.LockBits(new Rectangle(0, 0, data.Width, data.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);

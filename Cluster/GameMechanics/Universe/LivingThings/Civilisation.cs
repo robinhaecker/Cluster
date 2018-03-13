@@ -142,12 +142,12 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             }
         }
 
-        static public Civilisation getPlayer()
+        public static Civilisation getPlayer()
         {
             return data[player];
         }
 
-        static public int countCivilisations()
+        public static int countCivilisations()
         {
             int num = 0;
             foreach (Civilisation civ in data)
@@ -158,7 +158,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             return num;
         }
 
-        static public int getMaxPopulationPerCiv()
+        public static int getMaxPopulationPerCiv()
         {
             return TOTAL_MAX_POPULATION / countCivilisations();
         }

@@ -48,6 +48,8 @@
         <e p="Program.cs" t="Include" />
         <e p="Properties" t="Include">
           <e p="AssemblyInfo.cs" t="Include" />
+          <e p="Resources.Designer.cs" t="Include" />
+          <e p="Resources.resx" t="Include" />
         </e>
         <e p="Rendering" t="Include">
           <e p="Appearance" t="Include">
@@ -83,6 +85,35 @@
             </e>
             <e p="SceneGraph.cs" t="Include" />
             <e p="Terrain.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Resources" t="Include">
+          <e p="Shader" t="Include">
+            <e p="building.frag" t="Include" />
+            <e p="building.vert" t="Include" />
+            <e p="image.frag" t="Include" />
+            <e p="image.vert" t="Include" />
+            <e p="mesh.frag" t="Include" />
+            <e p="mesh.vert" t="Include" />
+            <e p="particle2D.frag" t="Include" />
+            <e p="particle2D.vert" t="Include" />
+            <e p="planet.frag" t="Include" />
+            <e p="planet.vert" t="Include" />
+            <e p="poly.frag" t="Include" />
+            <e p="poly.vert" t="Include" />
+            <e p="shield.frag" t="Include" />
+            <e p="shield.geom" t="Include" />
+            <e p="shield.vert" t="Include" />
+            <e p="shot.frag" t="Include" />
+            <e p="shot.geom" t="Include" />
+            <e p="shot.vert" t="Include" />
+            <e p="space.frag" t="Include" />
+            <e p="space.vert" t="Include" />
+            <e p="text.frag" t="Include" />
+            <e p="text.geom" t="Include" />
+            <e p="text.vert" t="Include" />
+            <e p="unit.frag" t="Include" />
+            <e p="unit.vert" t="Include" />
           </e>
         </e>
       </e>

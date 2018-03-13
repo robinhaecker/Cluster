@@ -70,7 +70,9 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
         private bool _canseeTemp;
         private bool _seenbefore;
-        readonly float _red, _green, _blue;
+        internal float red;
+        internal float green;
+        internal float blue;
 
         int _glData, _bufPos, _bufTer, _bufCol;
         private bool _glDataUpdate;
@@ -97,13 +99,13 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             //r = 0.41f; g = 0.25f; b = 0.0f;
             //b = 1.0f;
             //g = 0.91f; r = 0.15f; b = 0.0f;
-            _red = 1.0f;
-            _green = 1.0f;
-            _blue = 1.0f;
+            red = 1.0f;
+            green = 1.0f;
+            blue = 1.0f;
 
-            _red = Civilisation.data[_random % Civilisation.count].red;
-            _green = Civilisation.data[_random % Civilisation.count].green;
-            _blue = Civilisation.data[_random % Civilisation.count].blue;
+            red = Civilisation.data[_random % Civilisation.count].red;
+            green = Civilisation.data[_random % Civilisation.count].green;
+            blue = Civilisation.data[_random % Civilisation.count].blue;
 
             _seenbefore = false;
             _canseeTemp = false;
@@ -413,8 +415,8 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                             colour[(i * PLANET_DETAIL + j + 1) * 3 + 0] = 0.2f;
                             colour[(i * PLANET_DETAIL + j + 1) * 3 + 1] = 0.2f;
                             colour[(i * PLANET_DETAIL + j + 1) * 3 + 2] = 0.2f;
-                            if (((double) j > (double) PLANET_DETAIL * 0.45) &&
-                                ((double) j < (double) PLANET_DETAIL * 0.55))
+                            if (( j > PLANET_DETAIL * 0.45) &&
+                                ( j < PLANET_DETAIL * 0.55))
                             {
                                 colour[(i * PLANET_DETAIL + j + 1) * 3 + 0] = 0.5f;
                                 colour[(i * PLANET_DETAIL + j + 1) * 3 + 1] = 0.0f;
@@ -469,7 +471,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
                             height -= maxamp * multor *
                                       (1.0f + hilly * 0.12f +
-                                       (hilly + 1.05f) * (hilly + 1.75f) * 0.15f); // * (hilly + 0.015f) + 0.5f);
+                                       (hilly + 1.05f) * (hilly + 1.75f) * 0.15f);
                             break;
 
                         default:
@@ -482,36 +484,14 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                     if (j == 0 && terra[i] != Terrain.WATER && terra[(i - 1 + size) % size] == Terrain.WATER)
                     {
                         height = baseHeight;
-                        //colour[(i * PLANET_DETAIL + j + 1) * 3 + 0] = 0.25f;
-                        //colour[(i * PLANET_DETAIL + j + 1) * 3 + 1] = 0.25f;
-                        //colour[(i * PLANET_DETAIL + j + 1) * 3 + 2] = 0.75f;
                     }
 
                     if (j == PLANET_DETAIL - 1 && terra[i] != Terrain.WATER &&
                         terra[(i + 1 + size) % size] == Terrain.WATER)
                     {
-                        height = baseHeight; // -2.0f;
-                        //colour[(i * PLANET_DETAIL + j - 0) * 3 + 0] = 0.25f;
-                        //colour[(i * PLANET_DETAIL + j - 0) * 3 + 1] = 0.25f;
-                        //colour[(i * PLANET_DETAIL + j - 0) * 3 + 2] = 0.75f;
+                        height = baseHeight;
                     }
-                    /*
-                    if (j == 0 && terra[i] == Terrain.WATER && terra[(i - 1 + size) % size] != Terrain.WATER)
-                    {
-                        //height = height_base;
-                        colour[(i * PLANET_DETAIL + j ) * 3 + 0] = 0.05f;
-                        colour[(i * PLANET_DETAIL + j ) * 3 + 1] = 0.05f;
-                        colour[(i * PLANET_DETAIL + j ) * 3 + 2] = 0.75f;
-                    }
-                    if (j == PLANET_DETAIL - 1 && terra[i] == Terrain.WATER && terra[(i + 1 + size) % size] != Terrain.WATER)
-                    {
-                        //height = height_base;// -2.0f;
-                        colour[(i * PLANET_DETAIL + j ) * 3 + 0] = 0.05f;
-                        colour[(i * PLANET_DETAIL + j ) * 3 + 1] = 0.05f;
-                        colour[(i * PLANET_DETAIL + j ) * 3 + 2] = 0.75f;
-                    }*/
-
-
+                    
                     //Vertices setzen
                     double alpha = 2.0 * (double) Math.PI * ((double) i + ((double) j / (double) PLANET_DETAIL)) /
                                    (double) size;
@@ -558,27 +538,6 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             GL.EnableVertexArrayAttrib(_glData, 2);
             GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.BindVertexArray(0);
-            /*
-            //Vertex-Daten uebergeben
-            VertexBuffer vertexDataBuffer = new VertexBuffer();
-            vertexDataBuffer.Create(manager.gl);
-            vertexDataBuffer.Bind(manager.gl);
-            vertexDataBuffer.SetData(manager.gl, 0, vertices, false, 2);
-
-            //Terrain-Daten uebergeben
-            VertexBuffer terraDataBuffer = new VertexBuffer();
-            terraDataBuffer.Create(manager.gl);
-            terraDataBuffer.Bind(manager.gl);
-            terraDataBuffer.SetData(manager.gl, 1, terrain, false, 1);
-
-            //Terrain-Daten uebergeben
-            VertexBuffer colourDataBuffer = new VertexBuffer();
-            colourDataBuffer.Create(manager.gl);
-            colourDataBuffer.Bind(manager.gl);
-            colourDataBuffer.SetData(manager.gl, 2, colour, false, 3);
-
-            gl_data.Unbind(manager.gl);
-            */
             _glDataUpdate = false;
         }
 
@@ -589,7 +548,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             GL.Uniform1(Space.planetShader.getUniformLocation("pos_x"), (float) x);
             GL.Uniform1(Space.planetShader.getUniformLocation("pos_y"), (float) y);
             GL.Uniform1(Space.planetShader.getUniformLocation("size"), (float) size);
-            GL.Uniform3(Space.planetShader.getUniformLocation("rgb"), _red, _green, _blue);
+            GL.Uniform3(Space.planetShader.getUniformLocation("rgb"), red, green, blue);
 
             GL.BindVertexArray(_glData);
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, size * PLANET_DETAIL + 2);
@@ -803,6 +762,33 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             }
 
             return false;
+        }
+
+        public Civilisation getDominantCivilisation()
+        {
+            //TODO: Hat aus irgendeinem Grund nicht funktioniert, daher vorerst auskommentiert
+//            float[] counts = new float[Civilisation.count];
+//            foreach (Building building in infra)
+//            {
+//                counts[building.owner.getId()] += building.health;
+//            }
+//
+//            int dominantId = -1;
+//            float maximum = 100.0f;
+//            for (int i = 0; i < counts.Length; i++)
+//            {
+//                if (counts[i] > maximum)
+//                {
+//                    dominantId = i;
+//                    maximum = counts[i];
+//                }
+//            }
+//
+//            if (dominantId > -1)
+//            {
+//                return Civilisation.data[dominantId];
+//            }
+            return null;
         }
 
         public float getEnergy(Civilisation civ)

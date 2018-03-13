@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-
+using Cluster.Properties;
 using OpenTK.Graphics.OpenGL;
 using Cluster.Rendering.Appearance;
 
@@ -26,7 +26,7 @@ namespace Cluster.Rendering.Draw2D
 
 		public static void init()
 		{
-			mesh_shader = new Shader("mesh.vert", "mesh.frag");
+			mesh_shader = new Shader(Resources.mesh_vert, Resources.mesh_frag);
 			drawCall = new List<MeshDraw>();
 		}
 

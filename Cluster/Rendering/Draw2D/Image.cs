@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Cluster.math;
+using Cluster.Properties;
 using Cluster.Rendering.Appearance;
 using OpenTK.Graphics.OpenGL;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
@@ -237,8 +238,7 @@ namespace Cluster.Rendering.Draw2D
 
         public static void init()
         {
-            _imageShader = new Shader("image.vert", "image.frag");
-            //image_shader = new shader(manager.FILE_DIRECTORY + "/shaders/poly.vert", manager.FILE_DIRECTORY + "/shaders/poly.frag");
+            _imageShader = new Shader(Resources.image_vert, Resources.image_frag);
             _rendered = new List<Image>();
         }
 
