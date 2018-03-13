@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Cluster.math;
+using Cluster.Mathematics;
 using Cluster.Properties;
 using Cluster.Rendering.Appearance;
 using OpenTK.Graphics.OpenGL;
@@ -35,7 +35,7 @@ namespace Cluster.Rendering.Draw2D
         float _scalex;
         float _scaley;
         private bool _center;
-        List<vec4> frames;
+        List<Vec4> frames;
         public bool additiveBlending;
 
 
@@ -50,8 +50,8 @@ namespace Cluster.Rendering.Draw2D
             height = 512.0f;
             _scalex = 1.0f;
             _scaley = 1.0f;
-            frames = new List<vec4>();
-            frames.Add(new vec4(0.0f, 0.0f, 1.0f / count, 1.0f / count2));
+            frames = new List<Vec4>();
+            frames.Add(new Vec4(0.0f, 0.0f, 1.0f / count, 1.0f / count2));
         }
 
 
@@ -86,8 +86,8 @@ namespace Cluster.Rendering.Draw2D
             _scalex = 1.0f;
             _scaley = 1.0f;
 
-            frames = new List<vec4>();
-            frames.Add(new vec4(0.0f, 0.0f, 1.0f, 1.0f));
+            frames = new List<Vec4>();
+            frames.Add(new Vec4(0.0f, 0.0f, 1.0f, 1.0f));
         }
 
         public Image(string url, int xframes = 1, int yframes = 1)
@@ -121,13 +121,13 @@ namespace Cluster.Rendering.Draw2D
             _scalex = 1.0f;
             _scaley = 1.0f;
 
-            frames = new List<vec4>();
+            frames = new List<Vec4>();
             float fsc_x = 1.0f / (float) xframes, fsc_y = 1.0f / (float) yframes;
             for (int y = 0; y < yframes; y++)
             {
                 for (int x = 0; x < xframes; x++)
                 {
-                    frames.Add(new vec4(fsc_x * (float) x, fsc_y * (float) y, fsc_x * (float) (x + 1),
+                    frames.Add(new Vec4(fsc_x * (float) x, fsc_y * (float) y, fsc_x * (float) (x + 1),
                         fsc_y * (float) (y + 1)));
                 }
             }
@@ -159,9 +159,9 @@ namespace Cluster.Rendering.Draw2D
                 _rendered.Add(this);
             }
 
-            vec2 a = new vec2(0.5f * width * _scalex * (float) Math.Cos(rot),
+            Vec2 a = new Vec2(0.5f * width * _scalex * (float) Math.Cos(rot),
                 0.5f * width * _scalex * (float) Math.Sin(rot));
-            vec2 b = new vec2(-0.5f * height * _scaley * (float) Math.Sin(rot),
+            Vec2 b = new Vec2(-0.5f * height * _scaley * (float) Math.Sin(rot),
                 0.5f * height * _scaley * (float) Math.Cos(rot));
 
             if (!_center)

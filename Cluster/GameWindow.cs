@@ -14,10 +14,7 @@ using System.Threading;
 
 
 using Cluster.Rendering.Appearance;
-using Cluster.math;
-using Cluster.Rendering.Draw3D;
-using Cluster.Rendering.Draw3D.Collisions;
-using Cluster.Rendering.Draw3D.ProceduralGeneration;
+using Cluster.Mathematics;
 using Cluster.Rendering.Draw2D;
 using Cluster.GameMechanics;
 using Cluster.GameMechanics.Universe;
@@ -39,37 +36,28 @@ namespace Cluster
         public static Random random;
         public static KeyboardState keyboard;
         public static MouseState mouse;
-		public static vec2 mouse_pos;
+		public static Vec2 mousePos;
         public static GameWindow active;
 
 
 
 
         //Fensterinfos
-        string title;
+        string _title;
         public int width, height;
-		public float mult_x, mult_y;
-        bool fullscreen;
+		public float multX;
+	    public float multY;
+	    bool _fullscreen;
 
 
         //Performance-Messung
-        int render_time, swapbuffer_time;
-        Stopwatch watch;
+        int _renderTime;
+	    int _swapbufferTime;
+	    Stopwatch watch;
 
 
         //Rendering
-        Camera cam;
 		public FrameBuffer shadows;
-		public mat4 shadowMatrix;
-
-		//Instance alien;
-		//ParticleSystem ps;
-		//Image img;
-
-
-		//Gameplay-Relevant.
-		float time;
-		//Model[] trees;
 
 
 
@@ -90,43 +78,39 @@ namespace Cluster
             Console.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version));
 
             active = this;
-            title = apptitle;
+            _title = apptitle;
             this.width = width;
             this.height = height;
 
-			mult_x = 1.0f / (float)width;
-			mult_y = 1.0f / (float)height;
+			multX = 1.0f / (float)width;
+			multY = 1.0f / (float)height;
 
             watch = new Stopwatch();
             random = new Random();
-            render_time = 0;
+            _renderTime = 0;
 
             keyboard = Keyboard.GetState();
             mouse = Mouse.GetState();
-			mouse_pos = new vec2(width*0.5f, height*0.5f);
+			mousePos = new Vec2(width*0.5f, height*0.5f);
 
 			//Spielinhalte Laden
 			Technology.init();
 			Blueprint.init();
 			Prototype.init();
-
+	        CombinedGui.combinedGui.init();
 
 
             //Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(2); // Uses the second Core or Processor for the Test
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;  	// Prevents "Normal" processes from interrupting Threads
             Thread.CurrentThread.Priority = ThreadPriority.Highest;  	// Prevents "Normal" Threads from interrupting this thread
-
-            cam = new Camera(0, 0, width, height);
-
-
         }
 
 
         protected override void OnResize(EventArgs e)
         {
 			GL.Viewport(0, 0, this.Width, this.Height);
-			mult_x = 1.0f / (float)this.Width;
-			mult_y = 1.0f / (float)this.Height;
+			multX = 1.0f / (float)this.Width;
+			multY = 1.0f / (float)this.Height;
 			width = this.Width;
 			height = this.Height;
 
@@ -142,22 +126,13 @@ namespace Cluster
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
-
-
-
 			// Allgemeines Zeug initialisieren:
 			Text.init();
 			Primitives.init();
 			Image.init();
 			Mesh.init();
 
-			PostProcessing.init();
-
-            Terrain.init();
-			Model.init();
-			ParticleSystem.init();
-
-			shadows = new FrameBuffer(512, 512);//width, height);//);
+	        shadows = new FrameBuffer(512, 512);//width, height);//);
             glError("Init");
 
 			//####################################################################################################################################################################
@@ -165,10 +140,6 @@ namespace Cluster
 			// Spielinhalte laden
 			UserInterface.init();
 			Space.init();
-
-
-
-
 
 			//####################################################################################################################################################################
 
@@ -195,11 +166,11 @@ namespace Cluster
 			}*/
 
 
-			Text.drawText("Render Time: " + render_time.ToString() + "\nSwap Buffer Time: " + swapbuffer_time.ToString(), width-200, 5);
+			Text.drawText("Render Time: " + _renderTime.ToString() + "\nSwap Buffer Time: " + _swapbufferTime.ToString(), width-200, 5);
 
 
 			Space.update();
-			UserInterface.update();
+			CombinedGui.update();
 
         }
 
@@ -224,7 +195,7 @@ namespace Cluster
 			Unit.render();
 			Shot.render();
 			Cluster.GameMechanics.Universe.Particle.render();
-			UserInterface.render();
+			CombinedGui.render();
 
 
 			//PostProcessing.render();
@@ -239,9 +210,9 @@ namespace Cluster
 
             //##################################################################################################
             // Ab hier nur noch Performance-Messung.
-            render_time = (int)watch.ElapsedMilliseconds;
+            _renderTime = (int)watch.ElapsedMilliseconds;
             this.SwapBuffers();
-			swapbuffer_time = (int)watch.ElapsedMilliseconds;// -render_time;swapbuffer_time.ToString()
+			_swapbufferTime = (int)watch.ElapsedMilliseconds;// -render_time;swapbuffer_time.ToString()
             watch.Stop();
 			//Console.WriteLine("Render Time: " + render_time.ToString() + ", time to swap buffers: " + swapbuffer_time.ToString());
 
@@ -267,8 +238,8 @@ namespace Cluster
 		protected override void OnMouseMove(MouseMoveEventArgs e)
 		{
  			base.OnMouseMove(e);
-			mouse_pos.x = e.X;
-			mouse_pos.y = e.Y;
+			mousePos.x = e.X;
+			mousePos.y = e.Y;
 		}
 
 

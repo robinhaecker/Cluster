@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using Cluster.GameMechanics.Content;
-using Cluster.math;
+using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Universe.LivingThings
 {
@@ -110,32 +110,32 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             return s;
         }
 
-        private vec3 getRandomColors()
+        private Vec3 getRandomColors()
         {
             switch (_id)
             {
                 case 0:
-                    return new vec3(0.2f, 0.2f, 1.0f);
+                    return new Vec3(0.2f, 0.2f, 1.0f);
                 case 1:
-                    return new vec3(1.0f, 0.2f, 0.2f);
+                    return new Vec3(1.0f, 0.2f, 0.2f);
                 case 2:
-                    return new vec3(0.2f, 1.0f, 0.2f);
+                    return new Vec3(0.2f, 1.0f, 0.2f);
                 case 3:
-                    return new vec3(1.0f, 1.0f, 1.0f);
+                    return new Vec3(1.0f, 1.0f, 1.0f);
                 case 4:
-                    return new vec3(1.0f, 1.0f, 0.1f);
+                    return new Vec3(1.0f, 1.0f, 0.1f);
                 case 5:
-                    return new vec3(1.0f, 0.1f, 1.0f);
+                    return new Vec3(1.0f, 0.1f, 1.0f);
                 case 6:
-                    return new vec3(0.1f, 1.0f, 1.0f);
+                    return new Vec3(0.1f, 1.0f, 1.0f);
                 case 7:
-                    return new vec3(0.2f, 0.2f, 0.2f);
+                    return new Vec3(0.2f, 0.2f, 0.2f);
                 case 8:
-                    return new vec3(1.0f, 0.5f, 0.05f);
+                    return new Vec3(1.0f, 0.5f, 0.05f);
                 case 9:
-                    return new vec3(0.57f, 0.47f, 0.05f);
+                    return new Vec3(0.57f, 0.47f, 0.05f);
                 default:
-                    return new vec3(
+                    return new Vec3(
                         (float) GameWindow.random.NextDouble(),
                         (float) GameWindow.random.NextDouble(),
                         (float) GameWindow.random.NextDouble());

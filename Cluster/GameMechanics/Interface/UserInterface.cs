@@ -5,7 +5,7 @@ using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 using Cluster.GameMechanics.Universe.LivingThings;
-using Cluster.math;
+using Cluster.Mathematics;
 using Cluster.Rendering.Draw2D;
 using OpenTK.Input;
 
@@ -41,7 +41,7 @@ namespace Cluster.GameMechanics.Interface
         static public bool mhr;
         static public bool mdl;
         static public bool mdr;
-        static vec3 focus;
+        static Vec3 focus;
 
         public static Selection selection;
 
@@ -62,12 +62,11 @@ namespace Cluster.GameMechanics.Interface
         }
 
 
-        private static vec4 _selectionBox;
+        private static Vec4 _selectionBox;
         static float _selMx, _selMy;
 
         static public void update()
         {
-            changeView();
             if (GameWindow.keyboard.IsKeyDown(Key.Tab))
                 Civilisation.player = (Civilisation.player + 1) % Civilisation.count;
 
@@ -82,10 +81,10 @@ namespace Cluster.GameMechanics.Interface
             {
                 if (_selectionBox == null) // Selektionsbox anfangen.
                 {
-                    _selMx = GameWindow.mouse_pos.x;
-                    _selMy = GameWindow.mouse_pos.y;
-                    _selectionBox = new vec4(Space.screenToSpaceX(GameWindow.mouse_pos.x),
-                        Space.screenToSpaceY(GameWindow.mouse_pos.y), 0.0f, 0.0f);
+                    _selMx = GameWindow.mousePos.x;
+                    _selMy = GameWindow.mousePos.y;
+                    _selectionBox = new Vec4(Space.screenToSpaceX(GameWindow.mousePos.x),
+                        Space.screenToSpaceY(GameWindow.mousePos.y), 0.0f, 0.0f);
                 }
 
                 mhl = false;
@@ -94,12 +93,12 @@ namespace Cluster.GameMechanics.Interface
             }
             else if (mdl && !mhl && _selectionBox != null) // Selektionsbox-Ende ziehen bei gedrückter linker Maustaste.
             {
-                _selectionBox.z = Space.screenToSpaceX(GameWindow.mouse_pos.x);
-                _selectionBox.w = Space.screenToSpaceY(GameWindow.mouse_pos.y);
+                _selectionBox.z = Space.screenToSpaceX(GameWindow.mousePos.x);
+                _selectionBox.w = Space.screenToSpaceY(GameWindow.mousePos.y);
             }
             else if (_selectionBox != null) // Maustaste nicht mehr gedrückt? Selektionsbox beenden.
             {
-                if (Math.Abs(GameWindow.mouse_pos.x - _selMx) + Math.Abs(GameWindow.mouse_pos.x - _selMx) > 20.0f
+                if (Math.Abs(GameWindow.mousePos.x - _selMx) + Math.Abs(GameWindow.mousePos.x - _selMx) > 20.0f
                 ) // Wenn nicht nur geklickt, sondern auch vergrößert, dann auswerten.
                 {
                     float cx = (_selectionBox.x + _selectionBox.z) * 0.5f,
@@ -126,47 +125,8 @@ namespace Cluster.GameMechanics.Interface
         }
 
 
-        static float mouseZ, mouseZspeed;
-
-        static void changeView()
-        {
-            mouseZspeed = GameWindow.mouse.WheelPrecise - mouseZ;
-            mouseZ = GameWindow.mouse.WheelPrecise;
-
-            Space.zoom = Math.Min(1.5f, Math.Max(0.03f, Space.zoom + mouseZspeed * 0.025f));
-            if (GameWindow.mouse_pos.x < 10 && Space.scrollX > -20000.0f) Space.scrollX -= 1.5f / Space.zoom;
-            if (GameWindow.mouse_pos.x > GameWindow.active.width - 10 && Space.scrollX < 20000.0f)
-                Space.scrollX += 1.5f / Space.zoom;
-            if (GameWindow.mouse_pos.y < 10 && Space.scrollY < 20000.0f) Space.scrollY += 1.5f / Space.zoom;
-            if (GameWindow.mouse_pos.y > GameWindow.active.height - 10 && Space.scrollY > -20000.0f)
-                Space.scrollY -= 1.5f / Space.zoom;
-            /*If Interface.mx<10 And cam_x>-20000.0 Then cam_x:-15.5/zoom*deltaT2
-    If Interface.mx>GraphicsWidth()-10 And cam_x<20000.0 Then cam_x:+15.5/zoom*deltaT2
-    If Interface.my<10  And cam_y>-20000.0 Then cam_y:-15.5/zoom*deltaT2
-    If Interface.my>GraphicsHeight()-10 And cam_y<20000.0 Then cam_y:+15.5/zoom*deltaT2
-EndIf
-
-zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
-
-
-            if (GameWindow.mouse.IsButtonDown(MouseButton.Middle))
-            {
-                if (_selPlanet != null) focus = new vec3(_selPlanet.x, _selPlanet.y, 1.0f);
-            }
-
-            if (focus != null)
-            {
-                Space.scrollX = Space.scrollX * focus.z + focus.x * (1.0f - focus.z);
-                Space.scrollY = Space.scrollY * focus.z + focus.y * (1.0f - focus.z);
-                focus.z -= 0.002f;
-                if (focus.z <= 0.0f) focus = null;
-            }
-        }
-
-
         public static void render()
         {
-            Primitives.setDepth(-0.1f);
             drawAlways();
             drawPlanetInfo();
             drawGuiUnits();
@@ -217,7 +177,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
             {
                 Primitives.setColor(1.0f, 1.0f, 1.0f, 0.125f);
                 Primitives.setLineWidth(2.0f);
-                vec4 box = new vec4(Space.spaceToScreenX(_selectionBox.x), Space.spaceToScreenY(_selectionBox.y),
+                Vec4 box = new Vec4(Space.spaceToScreenX(_selectionBox.x), Space.spaceToScreenY(_selectionBox.y),
                     Space.spaceToScreenX(_selectionBox.z), Space.spaceToScreenY(_selectionBox.w));
                 Primitives.drawLine(box.x, box.y, box.x, box.w);
                 Primitives.drawLine(box.z, box.y, box.z, box.w);
@@ -263,8 +223,8 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
         private static void pick()
         {
-            float mSpaceX = Space.screenToSpaceX(GameWindow.mouse_pos.x);
-            float mSpaceY = Space.screenToSpaceY(GameWindow.mouse_pos.y);
+            float mSpaceX = Space.screenToSpaceX(GameWindow.mousePos.x);
+            float mSpaceY = Space.screenToSpaceY(GameWindow.mousePos.y);
 
 
             _pickedPlanet = null;
@@ -426,8 +386,8 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
             }
             else
             {
-                Text.drawText(text, GameWindow.mouse_pos.x + 20,
-                    GameWindow.mouse_pos.y); //, 20.0f, 0.0f, 0.0f, 0.0f, 0.5f);
+                Text.drawText(text, GameWindow.mousePos.x + 20,
+                    GameWindow.mousePos.y); //, 20.0f, 0.0f, 0.0f, 0.0f, 0.5f);
             }
         }
 
@@ -706,7 +666,7 @@ zoom=Min(1.5, Max(0.03, zoom+MouseZSpeed()*0.025))*/
 
         private static bool mouseInRect(float x0, float y0, float width, float height)
         {
-            return !(GameWindow.mouse_pos.x < x0) && !(GameWindow.mouse_pos.y < y0) && !(GameWindow.mouse_pos.x > x0 + width) && !(GameWindow.mouse_pos.y > y0 + height);
+            return !(GameWindow.mousePos.x < x0) && !(GameWindow.mousePos.y < y0) && !(GameWindow.mousePos.x > x0 + width) && !(GameWindow.mousePos.y > y0 + height);
         }
     }
 }

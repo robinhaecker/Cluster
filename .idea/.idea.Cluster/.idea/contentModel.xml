@@ -19,6 +19,20 @@
             <e p="Technology.cs" t="Include" />
           </e>
           <e p="Interface" t="Include">
+            <e p="CombinedGUI.cs" t="Include" />
+            <e p="Commons" t="Include">
+              <e p="Button.cs" t="Include" />
+              <e p="GuiMouse.cs" t="Include" />
+              <e p="IGui.cs" t="Include" />
+              <e p="InfoBox.cs" t="Include" />
+              <e p="IToolTip.cs" t="Include" />
+              <e p="MeshButton.cs" t="Include" />
+              <e p="Panel.cs" t="Include" />
+              <e p="ProgressBar.cs" t="Include" />
+              <e p="Properties.cs" t="Include" />
+            </e>
+            <e p="ISelection.cs" t="Include" />
+            <e p="MoveAndSelect.cs" t="Include" />
             <e p="UserInterface.cs" t="Include" />
           </e>
           <e p="Universe" t="Include">
@@ -36,7 +50,7 @@
           </e>
         </e>
         <e p="GameWindow.cs" t="Include" />
-        <e p="Math" t="Include">
+        <e p="Mathematics" t="Include">
           <e p="mat4.cs" t="Include" />
           <e p="vec2.cs" t="Include" />
           <e p="vec3.cs" t="Include" />
@@ -61,30 +75,6 @@
             <e p="Mesh.cs" t="Include" />
             <e p="Primitives.cs" t="Include" />
             <e p="Text.cs" t="Include" />
-          </e>
-          <e p="Draw3D" t="Include">
-            <e p="Camera.cs" t="Include" />
-            <e p="Collisions" t="Include">
-              <e p="Collision.cs" t="Include" />
-              <e p="Ray.cs" t="Include" />
-            </e>
-            <e p="Model" t="Include">
-              <e p="Instance.cs" t="Include" />
-              <e p="Model.cs" t="Include" />
-              <e p="Triangle.cs" t="Include" />
-              <e p="Vertex.cs" t="Include" />
-            </e>
-            <e p="ParticleSystem.cs" t="Include" />
-            <e p="PostProcessing.cs" t="Include" />
-            <e p="ProceduralGeneration" t="Include">
-              <e p="AnimalGenerator.cs" t="Include" />
-              <e p="ColorGenerator.cs" t="Include" />
-              <e p="FishGenerator.cs" t="Include" />
-              <e p="TerrainGenerator.cs" t="Include" />
-              <e p="TreeGenerator.cs" t="Include" />
-            </e>
-            <e p="SceneGraph.cs" t="Include" />
-            <e p="Terrain.cs" t="Include" />
           </e>
         </e>
         <e p="Resources" t="Include">

@@ -378,8 +378,8 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
 
             Space.shotShader.bind();
-            GL.Uniform3(Space.shotShader.getUniformLocation("viewport"), GameWindow.active.mult_x,
-                GameWindow.active.mult_y, Space.animation);
+            GL.Uniform3(Space.shotShader.getUniformLocation("viewport"), GameWindow.active.multX,
+                GameWindow.active.multY, Space.animation);
             GL.Uniform3(Space.shotShader.getUniformLocation("scroll"), Space.scrollX, Space.scrollY, Space.zoom);
             GL.DrawArrays(PrimitiveType.Points, 0, _renderShotCount);
 

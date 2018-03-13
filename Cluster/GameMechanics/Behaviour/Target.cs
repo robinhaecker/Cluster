@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 using Cluster.GameMechanics.Universe.LivingThings;
-using Cluster.math;
+using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Behaviour
 {
@@ -29,7 +29,7 @@ namespace Cluster.GameMechanics.Behaviour
 		Unit unit;
 		float space_x, space_y;
 
-		List<vec2> waypoints;
+		List<Vec2> waypoints;
 		double previously;
 
 
@@ -39,7 +39,7 @@ namespace Cluster.GameMechanics.Behaviour
 			planet_field = -1;
 			unit = null;
 			type = TARGET_SPACE;
-			waypoints = new List<vec2>();
+			waypoints = new List<Vec2>();
 		}
 		public Target(float x, float y)
 		{
@@ -49,7 +49,7 @@ namespace Cluster.GameMechanics.Behaviour
 			type = TARGET_SPACE;
 			space_x = (float)x;
 			space_y = (float)y;
-			waypoints = new List<vec2>();
+			waypoints = new List<Vec2>();
 		}
 
 
@@ -116,26 +116,26 @@ namespace Cluster.GameMechanics.Behaviour
 			}
 		}
 
-		public vec2 getPosition()
+		public Vec2 getPosition()
 		{
-			return new vec2((float)getX(), (float)getY());
+			return new Vec2((float)getX(), (float)getY());
 		}
 
-		public vec2 getWaypoint()
+		public Vec2 getWaypoint()
 		{
 			return waypoints.Count == 0 ? addWaypoint() : waypoints[0];
 		}
 
 
-		public vec2 nextWaypoint() // Fokussiert auf den nachfolgenden Wegpunkt
+		public Vec2 nextWaypoint() // Fokussiert auf den nachfolgenden Wegpunkt
 		{
 			waypoints.RemoveAt(0);
 			return getWaypoint();
 		}
 
-		public vec2 addWaypoint(float x, float y, bool insertFirst = false)
+		public Vec2 addWaypoint(float x, float y, bool insertFirst = false)
 		{
-			vec2 wp = new vec2(x,y);
+			Vec2 wp = new Vec2(x,y);
 			if (insertFirst)
 			{
 				waypoints.Insert(0, wp);
@@ -148,9 +148,9 @@ namespace Cluster.GameMechanics.Behaviour
 			}
 
 		}
-		public vec2 addWaypoint()
+		public Vec2 addWaypoint()
 		{
-			vec2 wp;
+			Vec2 wp;
 			switch (type)
 			{
 				case TARGET_PLANET:
@@ -168,19 +168,19 @@ namespace Cluster.GameMechanics.Behaviour
 						phi = (((double)planet_field + delta) / (double)planet.size) * 2.0 * Math.PI;
 						previously = ((double)planet_field + delta + (double)planet.size) % (double)planet.size;
 					}
-					wp = new vec2((float)planet.x + (float)Math.Cos(phi) * height,
+					wp = new Vec2((float)planet.x + (float)Math.Cos(phi) * height,
 								  (float)planet.y + (float)Math.Sin(phi) * height);
 					waypoints.Add(wp);
 					return wp;
 
 				case TARGET_UNIT:
-					wp = new vec2((float)unit.x + 200.0f * ((float)GameWindow.random.NextDouble() - 0.5f),
+					wp = new Vec2((float)unit.x + 200.0f * ((float)GameWindow.random.NextDouble() - 0.5f),
 								  (float)unit.y + 200.0f * ((float)GameWindow.random.NextDouble() - 0.5f));
 					waypoints.Add(wp);
 					return wp;
 
 				default:
-					wp = new vec2(space_x + 100.0f * ((float)GameWindow.random.NextDouble() - 0.5f),
+					wp = new Vec2(space_x + 100.0f * ((float)GameWindow.random.NextDouble() - 0.5f),
 								  space_y + 100.0f * ((float)GameWindow.random.NextDouble() - 0.5f));
 					waypoints.Add(wp);
 					return wp;

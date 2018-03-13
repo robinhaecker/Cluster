@@ -158,7 +158,7 @@ namespace Cluster.GameMechanics.Universe
 
 
 			Space.particleShader.bind();
-			GL.Uniform3(Space.particleShader.getUniformLocation("viewport"), GameWindow.active.mult_x, GameWindow.active.mult_y, Space.animation);
+			GL.Uniform3(Space.particleShader.getUniformLocation("viewport"), GameWindow.active.multX, GameWindow.active.multY, Space.animation);
 			GL.Uniform3(Space.particleShader.getUniformLocation("scroll"), Space.scrollX, Space.scrollY, Space.zoom);
 			GL.DrawArrays(PrimitiveType.Points, 0, rendered_count);
 

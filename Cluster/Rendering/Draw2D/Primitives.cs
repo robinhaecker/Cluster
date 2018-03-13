@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL;
-using System.Drawing;
-using System.Drawing.Imaging;
-using Cluster.Rendering.Appearance;
-using Cluster.math;
+﻿using Cluster.Mathematics;
 using Cluster.Properties;
-
+using Cluster.Rendering.Appearance;
+using OpenTK.Graphics.OpenGL;
 
 namespace Cluster.Rendering.Draw2D
 {
@@ -68,9 +60,9 @@ namespace Cluster.Rendering.Draw2D
             return default_depth;
         }
 
-        static public vec4 getColor()
+        static public Vec4 getColor()
         {
-            return new vec4(default_red, default_green, default_blue, default_alpha);
+            return new Vec4(default_red, default_green, default_blue, default_alpha);
         }
 
         static public float getLineWidth()
@@ -138,7 +130,7 @@ namespace Cluster.Rendering.Draw2D
             if (num_vertices >= BUFFER_SIZE) renderPolys();
         }
 
-        static public void drawTriangle(vec2 v0, vec2 v1, vec2 v2)
+        static public void drawTriangle(Vec2 v0, Vec2 v1, Vec2 v2)
         {
             rgba[num_vertices * 4 + 0] = default_red;
             rgba[num_vertices * 4 + 1] = default_green;
@@ -168,7 +160,7 @@ namespace Cluster.Rendering.Draw2D
             if (num_vertices >= BUFFER_SIZE) renderPolys();
         }
 
-        public static void drawTriangle(vec2 v0, vec2 v1, vec2 v2, float depth, float r = 1.0f, float g = 1.0f,
+        public static void drawTriangle(Vec2 v0, Vec2 v1, Vec2 v2, float depth, float r = 1.0f, float g = 1.0f,
             float b = 1.0f, float a = 1.0f)
         {
             rgba[num_vertices * 4 + 0] = r;
@@ -201,12 +193,12 @@ namespace Cluster.Rendering.Draw2D
 
         public static void drawLine(float x1, float y1, float x2, float y2)
         {
-            drawLine(new vec2(x1, y1), new vec2(x2, y2));
+            drawLine(new Vec2(x1, y1), new Vec2(x2, y2));
         }
 
-        public static void drawLine(vec2 a, vec2 b)
+        public static void drawLine(Vec2 a, Vec2 b)
         {
-            vec2 vertical = (b - a).vertical() * (default_line_width * 0.5f);
+            Vec2 vertical = (b - a).vertical() * (default_line_width * 0.5f);
             drawTriangle(a - vertical, a + vertical, b + vertical);
             drawTriangle(a - vertical, b + vertical, b - vertical);
         }

@@ -251,8 +251,8 @@ namespace Cluster.Rendering.Draw2D
 			mesh_shader.bind();
 			//GL.Uniform1(mesh_shader.getUniformLocation("pos_x"), (x + width * 0.5f) * GameWindow.active.mult_x * 2.0f - 1.0f);
 			//GL.Uniform1(mesh_shader.getUniformLocation("pos_y"), (y + height * 0.5f * (1.0f + del_y)) * GameWindow.active.mult_y * 2.0f - 0.0f);
-			GL.Uniform2(mesh_shader.getUniformLocation("pos"), (x + width * 0.5f) * GameWindow.active.mult_x * 2.0f - 1.0f, (y + height * 0.5f * (1.0f + del_y)) * GameWindow.active.mult_y * 2.0f - 0.0f);
-			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.mult_x, height * GameWindow.active.mult_y, clamp);
+			GL.Uniform2(mesh_shader.getUniformLocation("pos"), (x + width * 0.5f) * GameWindow.active.multX * 2.0f - 1.0f, (y + height * 0.5f * (1.0f + del_y)) * GameWindow.active.multY * 2.0f - 0.0f);
+			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.multX, height * GameWindow.active.multY, clamp);
 			GL.Uniform4(mesh_shader.getUniformLocation("col"), r, g, b, a);
 			/*
 			manager.mesh_shader.id.SetUniform1(manager.gl, "pos_x", (x + width * 0.5f) * manager.mult_x * 2.0f - 1.0f);
@@ -279,10 +279,10 @@ namespace Cluster.Rendering.Draw2D
 		{
 			float sc = Math.Max(Math.Max(box_x, box_y), 0.5f) * 2.5f;
 			mesh_shader.bind();
-			GL.Uniform2(mesh_shader.getUniformLocation("pos"), (x + width * 0.5f) * GameWindow.active.mult_x * 2.0f - 1.0f, (y + height * 0.5f) * GameWindow.active.mult_y * 2.0f - 0.0f);
+			GL.Uniform2(mesh_shader.getUniformLocation("pos"), (x + width * 0.5f) * GameWindow.active.multX * 2.0f - 1.0f, (y + height * 0.5f) * GameWindow.active.multY * 2.0f - 0.0f);
 			//GL.Uniform1(mesh_shader.getUniformLocation("pos_x"), (x + width * 0.5f) * GameWindow.active.mult_x * 2.0f - 1.0f);
 			//GL.Uniform1(mesh_shader.getUniformLocation("pos_y"), (y + height * 0.5f) * GameWindow.active.mult_y * 2.0f - 0.0f);
-			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.mult_x / sc, height * GameWindow.active.mult_y / sc, clamp);
+			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.multX / sc, height * GameWindow.active.multY / sc, clamp);
 			GL.Uniform4(mesh_shader.getUniformLocation("col"), r, g, b, a);
 
 			GL.BindVertexArray(gl_data);

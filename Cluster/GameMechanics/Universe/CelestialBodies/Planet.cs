@@ -199,8 +199,8 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             Space.planetShader.bind();
             GL.Uniform3(Space.planetShader.getUniformLocation("scroll"), (float) Space.scrollX, (float) Space.scrollY,
                 (float) Space.zoom);
-            GL.Uniform3(Space.planetShader.getUniformLocation("viewport"), GameWindow.active.mult_x,
-                GameWindow.active.mult_y, Space.animation);
+            GL.Uniform3(Space.planetShader.getUniformLocation("viewport"), GameWindow.active.multX,
+                GameWindow.active.multY, Space.animation);
             Space.animation += 0.001f;
 
             float maxwidth = GL.GetFloat(GetPName.AliasedLineWidthRange);
@@ -220,8 +220,8 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 Space.buildingShader.bind();
                 GL.Uniform3(Space.buildingShader.getUniformLocation("scroll"), (float) Space.scrollX,
                     (float) Space.scrollY, (float) Space.zoom);
-                GL.Uniform3(Space.buildingShader.getUniformLocation("viewport"), GameWindow.active.mult_x,
-                    GameWindow.active.mult_y, Space.animation);
+                GL.Uniform3(Space.buildingShader.getUniformLocation("viewport"), GameWindow.active.multX,
+                    GameWindow.active.multY, Space.animation);
                 foreach (Planet pl in planets)
                 {
                     if (true) //pl.cansee_temp)

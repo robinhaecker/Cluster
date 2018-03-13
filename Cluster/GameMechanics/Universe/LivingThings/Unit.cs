@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe.CelestialBodies;
-using Cluster.math;
+using Cluster.Mathematics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Cluster.GameMechanics.Universe.LivingThings
@@ -147,7 +147,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                 GL.Uniform4(Space.unitShader.getUniformLocation("col"), (float) u._owner.red, (float) u._owner.green,
                     (float) u._owner.blue, alpha);
                 GL.Uniform3(Space.unitShader.getUniformLocation("scale"), scale,
-                    (float) (Space.zoom * GameWindow.active.mult_x), (float) (Space.zoom * GameWindow.active.mult_y));
+                    (float) (Space.zoom * GameWindow.active.multX), (float) (Space.zoom * GameWindow.active.multY));
 
                 GL.BindVertexArray(u._prototype.shape.gl_data);
                 GL.DrawArrays(PrimitiveType.Lines, 0, u._prototype.shape.num_lines * 2);
@@ -222,8 +222,8 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
 
                 Space.unitShieldShader.bind();
-                GL.Uniform3(Space.unitShieldShader.getUniformLocation("viewport"), GameWindow.active.mult_x,
-                    GameWindow.active.mult_y, Space.animation);
+                GL.Uniform3(Space.unitShieldShader.getUniformLocation("viewport"), GameWindow.active.multX,
+                    GameWindow.active.multY, Space.animation);
                 GL.Uniform3(Space.unitShieldShader.getUniformLocation("scroll"), Space.scrollX, Space.scrollY,
                     Space.zoom);
                 GL.DrawArrays(PrimitiveType.Points, 0, _displayShieldCount);
@@ -326,7 +326,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         {
             rechargeShield(t);
 
-            var deltaMission = _target.getPosition() - new vec2(x, y);
+            var deltaMission = _target.getPosition() - new Vec2(x, y);
             var delta = getDirectionToNextWaypoint();
 
             simMoveAndShoot(t, delta, deltaMission);
@@ -334,20 +334,24 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.D)) damage(t * 0.1f); // Nur zu Testzwecken
         }
 
-        private vec2 getDirectionToNextWaypoint()
+        private Vec2 getDirectionToNextWaypoint()
         {
-            var delta = _target.getWaypoint() - new vec2(x, y);
+            var delta = _target.getWaypoint() - new Vec2(x, y);
             if (delta.length() < 50.0)
             {
-                delta = _target.nextWaypoint() - new vec2(x, y);
+                delta = _target.nextWaypoint() - new Vec2(x, y);
             }
 
             return delta;
         }
 
-        private void simMoveAndShoot(float t, vec2 delta, vec2 deltaMission)
+        private void simMoveAndShoot(float t, Vec2 delta, Vec2 deltaMission)
         {
-            if (_currentEffect == Effect.SPAWNING || _currentEffect == Effect.STUNNED) {return;}
+            if (_currentEffect == Effect.SPAWNING || _currentEffect == Effect.STUNNED)
+            {
+                return;
+            }
+
             var rotationSpeed = simAttackEnemy(t, delta);
             simAccellerate(t, rotationSpeed, deltaMission.length());
         }
@@ -359,7 +363,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             _reloadTimer = Math.Max(_reloadTimer - t * 0.005f, 0.0f);
         }
 
-        private double simAttackEnemy(float t, vec2 delta)
+        private double simAttackEnemy(float t, Vec2 delta)
         {
             double rotationSpeed;
             if (enemy != null)

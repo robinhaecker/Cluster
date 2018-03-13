@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Cluster.math;
+using Cluster.Mathematics;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe.LivingThings;
 using System.Threading;
@@ -19,7 +19,7 @@ namespace Cluster.GameMechanics.Behaviour
 
 		private static Sector[,] _data;
 
-		vec2 _p0, _p1;
+		Vec2 _p0, _p1;
 		int _posX;
 		int _posY;
 
@@ -55,8 +55,8 @@ namespace Cluster.GameMechanics.Behaviour
 				for (int y = 0; y < SECTOR_COUNT+1; y++)
 				{
 					_data[x, y] = new Sector();
-					_data[x, y]._p0 = new vec2(ORIGIN + x * SECTOR_SIZE, ORIGIN + y * SECTOR_SIZE);
-					_data[x, y]._p1 = _data[x, y]._p0 + new vec2(SECTOR_SIZE, SECTOR_SIZE);
+					_data[x, y]._p0 = new Vec2(ORIGIN + x * SECTOR_SIZE, ORIGIN + y * SECTOR_SIZE);
+					_data[x, y]._p1 = _data[x, y]._p0 + new Vec2(SECTOR_SIZE, SECTOR_SIZE);
 					_data[x, y]._posX = x;
 					_data[x, y]._posY = y;
 					_data[x, y]._neighbors = new List<Sector>();
