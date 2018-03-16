@@ -33,6 +33,23 @@ namespace Cluster.GameMechanics.Interface.Commons
             _y = y;
         }
 
+        public void enable()
+        {
+            _active = true;
+        }
+
+        public void disable()
+        {
+            _active = false;
+        }
+
+        public void clear()
+        {
+            _elements.Clear();
+            _indexX = 0;
+            _indexY = 0;
+        }
+
         public void addElement(IGui element)
         {
             _elements.Add(element);

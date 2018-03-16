@@ -6,12 +6,12 @@ namespace Cluster.GameMechanics.Interface.Commons
     {
         private Mesh _mesh;
         
-        internal MeshButton(Mesh mesh, float x, float y, float size = Properties.BUTTON_SIZE_DEFAULT) : base(x, y, size)
+        internal MeshButton(Mesh mesh, float x = 0, float y = 0, float size = Properties.BUTTON_SIZE_DEFAULT) : base(x, y, size)
         {
             _mesh = mesh;
         }
 
-        public new void render()
+        public override void render()
         {
             base.render();
             _mesh.deferred_drawFit(x, y, width, height);

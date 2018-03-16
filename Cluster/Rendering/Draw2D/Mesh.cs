@@ -14,15 +14,14 @@ namespace Cluster.Rendering.Draw2D
 	{
 		public static List<MeshDraw> drawCall;
 
-
 		static Shader mesh_shader;
 		public int gl_data, buf_pos, buf_col;
 
 		public float box_x, box_y, radius, del_y, cx, cy;
 		public int num_vertices, num_lines, num_triangles;
 
-		List<vertex> vex;
-		List<line> lines;
+		List<Vertex> vex;
+		List<Line> lines;
 
 		public static void init()
 		{
@@ -41,8 +40,8 @@ namespace Cluster.Rendering.Draw2D
 			GL.LineWidth(2.0f);
 			foreach (MeshDraw md in drawCall)
 			{
-				if (md.fit) md.mesh.drawFit(md.x, md.y, md.width, md.height, md.clamp, md.r, md.g, md.b, md.a);
-				else    	md.mesh.draw(md.x, md.y, md.width, md.height, md.clamp, md.r, md.g, md.b, md.a);
+				if (md.fit) {md.mesh.drawFit(md.x, md.y, md.width, md.height, md.clamp, md.r, md.g, md.b, md.a);}
+				else    	{md.mesh.draw(md.x, md.y, md.width, md.height, md.clamp, md.r, md.g, md.b, md.a);}
 			}
 			GL.Enable(EnableCap.DepthTest);
 			drawCall.Clear();
@@ -52,12 +51,12 @@ namespace Cluster.Rendering.Draw2D
 		public Mesh(string filename, bool centering = false, bool absolutePath = false)
 		{
 			FileStream file;
-			if (absolutePath) file = File.OpenRead(filename);
-			else			  file = File.OpenRead(GameWindow.BASE_FOLDER + filename);
+			if (absolutePath) {file = File.OpenRead(filename);}
+			else			  {file = File.OpenRead(GameWindow.BASE_FOLDER + filename);}
 			BinaryReader reader = new BinaryReader(file);
 
-			vex = new List<vertex>();
-			lines = new List<line>();
+			vex = new List<Vertex>();
+			lines = new List<Line>();
 
 			num_vertices = reader.ReadInt32();
 			num_lines = reader.ReadInt32();
@@ -67,14 +66,13 @@ namespace Cluster.Rendering.Draw2D
 
 			for (int i = 0; i < num_vertices; i++)
 			{
-				vertex v = new vertex();
+				Vertex v = new Vertex();
 				v.r = ((float)reader.ReadByte()) / 255.0f;
 				v.g = ((float)reader.ReadByte()) / 255.0f;
 				v.b = ((float)reader.ReadByte()) / 255.0f;
 
 				v.x = reader.ReadSingle();
 				v.y = reader.ReadSingle();
-				//Console.WriteLine("(x = "+v.x.ToString() + "| y = " + v.y.ToString()+" )");
 
 				box_x = Math.Max(box_x, Math.Abs(v.x));
 				box_y = Math.Max(box_y, Math.Abs(v.y));
@@ -95,8 +93,7 @@ namespace Cluster.Rendering.Draw2D
 
 			if (centering)
 			{
-				//Console.WriteLine("centering "+cx.ToString()+" "+cy.ToString());
-				foreach (vertex v in vex)
+				foreach (Vertex v in vex)
 				{
 					v.x -= cx;
 					v.y -= cy;
@@ -105,41 +102,11 @@ namespace Cluster.Rendering.Draw2D
 
 			for (int i = 0; i < num_lines; i++)
 			{
-				line l = new line();
+				Line l = new Line();
 				l.a = vex[reader.ReadInt16()];
 				l.b = vex[reader.ReadInt16()];
 				lines.Add(l);
 			}
-
-
-			/* Das hier wird bisher nicht gebraucht.
-			For Local i:Int=0 Until num_t
-				Local t:Triangle=New Triangle
-				ListAddLast(m.tri, t)
-				t.v0=array[file.ReadShort()]
-				t.v1=array[file.ReadShort()]
-				t.v2=array[file.ReadShort()]
-				't.setnormal(m.radius*0.8)
-			Next
-		
-		
-			For Local t:Triangle=EachIn m.tri
-				For Local l:Line=EachIn m.lines
-					If t.Contains(l) Then
-						t.setnormal2(l)
-					EndIf
-				Next
-			Next
-			 * 
-			For Local v:Vertex=EachIn m.vex
-				v.nx:+(v.x/m.radius)*3.0
-				v.ny:+(v.y/m.radius)*3.0
-				v.ct:+3
-				v.nx:/Float(v.ct)
-				v.ny:/Float(v.ct)
-			Next
-			 */
-
 
 			reader.Close();
 			file.Close();
@@ -154,10 +121,8 @@ namespace Cluster.Rendering.Draw2D
 			float[] vertices = new float[num_lines * 4];
 			float[] colour = new float[num_lines * 6];
 
-
-			//Vertices außen herum.
 			int i = 0;
-			foreach (line l in lines)
+			foreach (Line l in lines)
 			{
 				vertices[i * 2 + 0] = l.a.x;
 				vertices[i * 2 + 1] = l.a.y;
@@ -165,7 +130,6 @@ namespace Cluster.Rendering.Draw2D
 				colour[i * 3 + 1] = l.a.g;
 				colour[i * 3 + 2] = l.a.b;
 				i++;
-				//Console.WriteLine(l.a.x.ToString() + ", " + l.a.y.ToString());
 				vertices[i * 2 + 0] = l.b.x;
 				vertices[i * 2 + 1] = l.b.y;
 				colour[i * 3 + 0] = l.b.r;
@@ -174,15 +138,13 @@ namespace Cluster.Rendering.Draw2D
 				i++;
 			}
 
-			//Create the vertex array object.
 			if (gl_data == 0)
 			{
-				gl_data = GL.GenVertexArray();// new VertexBufferArray();
-				//gl_data.Create(manager.gl);
+				gl_data = GL.GenVertexArray();
 				buf_pos = GL.GenBuffer();
 				buf_col = GL.GenBuffer();
 			}
-			GL.BindVertexArray(gl_data); //gl_data.Bind(manager.gl);
+			GL.BindVertexArray(gl_data);
 
 			GL.BindBuffer(BufferTarget.ArrayBuffer, buf_pos);
 			GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
@@ -195,20 +157,6 @@ namespace Cluster.Rendering.Draw2D
 			GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
 
 			GL.BindVertexArray(0);
-			/*
-			//Vertex-Daten uebergeben
-			VertexBuffer vertexDataBuffer = new VertexBuffer();
-			vertexDataBuffer.Create(manager.gl);
-			vertexDataBuffer.Bind(manager.gl);
-			vertexDataBuffer.SetData(manager.gl, 0, vertices, false, 2);
-
-			//Terrain-Daten uebergeben
-			VertexBuffer colourDataBuffer = new VertexBuffer();
-			colourDataBuffer.Create(manager.gl);
-			colourDataBuffer.Bind(manager.gl);
-			colourDataBuffer.SetData(manager.gl, 1, colour, false, 3);
-
-			gl_data.Unbind(manager.gl);*/
 		}
 
 
@@ -249,29 +197,12 @@ namespace Cluster.Rendering.Draw2D
 		public void draw(float x, float y, float width = 100.0f, float height = 100.0f, float clamp = 1.0f, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f)
 		{
 			mesh_shader.bind();
-			//GL.Uniform1(mesh_shader.getUniformLocation("pos_x"), (x + width * 0.5f) * GameWindow.active.mult_x * 2.0f - 1.0f);
-			//GL.Uniform1(mesh_shader.getUniformLocation("pos_y"), (y + height * 0.5f * (1.0f + del_y)) * GameWindow.active.mult_y * 2.0f - 0.0f);
 			GL.Uniform2(mesh_shader.getUniformLocation("pos"), (x + width * 0.5f) * GameWindow.active.multX * 2.0f - 1.0f, (y + height * 0.5f * (1.0f + del_y)) * GameWindow.active.multY * 2.0f - 0.0f);
 			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.multX, height * GameWindow.active.multY, clamp);
 			GL.Uniform4(mesh_shader.getUniformLocation("col"), r, g, b, a);
-			/*
-			manager.mesh_shader.id.SetUniform1(manager.gl, "pos_x", (x + width * 0.5f) * manager.mult_x * 2.0f - 1.0f);
-			manager.mesh_shader.id.SetUniform1(manager.gl, "pos_y", (y + height * 0.5f * (1.0f + del_y)) * manager.mult_y * 2.0f - 0.0f);
-			manager.mesh_shader.id.SetUniform3(manager.gl, "scale", width * manager.mult_x, height * manager.mult_y, clamp);
-			manager.mesh_shader.id.SetUniform3(manager.gl, "col", r, g, b);
-			manager.mesh_shader.id.SetUniform1(manager.gl, "alpha", a);
-			*/
 			GL.BindVertexArray(gl_data);
 			GL.DrawArrays(PrimitiveType.Lines, 0, num_lines * 2);
 			GL.BindVertexArray(0);
-			/*
-			gl_data.Bind(manager.gl);
-			manager.gl.DrawArrays(OpenGL.GL_LINES, 0, num_lines * 2);
-			//manager.gl.UseProgram(0);
-			//manager.gl.BindVertexArray(0);
-			//gl_data.Unbind(manager.gl);
-			//manager.mesh_shader.unbind();
-			manager.null_vao.Bind(manager.gl);*/
 		}
 
 
@@ -280,8 +211,6 @@ namespace Cluster.Rendering.Draw2D
 			float sc = Math.Max(Math.Max(box_x, box_y), 0.5f) * 2.5f;
 			mesh_shader.bind();
 			GL.Uniform2(mesh_shader.getUniformLocation("pos"), (x + width * 0.5f) * GameWindow.active.multX * 2.0f - 1.0f, (y + height * 0.5f) * GameWindow.active.multY * 2.0f - 0.0f);
-			//GL.Uniform1(mesh_shader.getUniformLocation("pos_x"), (x + width * 0.5f) * GameWindow.active.mult_x * 2.0f - 1.0f);
-			//GL.Uniform1(mesh_shader.getUniformLocation("pos_y"), (y + height * 0.5f) * GameWindow.active.mult_y * 2.0f - 0.0f);
 			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.multX / sc, height * GameWindow.active.multY / sc, clamp);
 			GL.Uniform4(mesh_shader.getUniformLocation("col"), r, g, b, a);
 
@@ -301,16 +230,16 @@ namespace Cluster.Rendering.Draw2D
 
 
 
-	class vertex
+	class Vertex
 	{
 		public float x, y;
 		public float r, g, b;
 		//public float nx, ny, ct;
 	}
 
-	class line
+	class Line
 	{
-		public vertex a, b;
+		public Vertex a, b;
 	}
 
 	class MeshDraw

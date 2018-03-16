@@ -1,16 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cluster.GameMechanics.Interface.Commons;
+using Cluster.GameMechanics.Universe;
+using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Rendering.Draw2D;
 
 namespace Cluster.GameMechanics.Interface
 {
     public class CombinedGui
     {
-        public static readonly CombinedGui combinedGui = new CombinedGui();
+        private static readonly CombinedGui combinedGui = new CombinedGui();
 
-        private List<IGui> _elements;
+        private static int _fps;
+        private static int _fps2;
+        private static int _msec;
+        private static int _msec2;
 
-        public void init()
+        private readonly List<IGui> _elements;
+        private readonly InfoBox _ressourcesInfoBox;
+        private readonly InfoBox _performanceInfoBox;
+
+        public static void init()
         {
             MoveAndSelect.init();
         }
@@ -18,17 +28,23 @@ namespace Cluster.GameMechanics.Interface
         private CombinedGui()
         {
             _elements = new List<IGui>();
+
+            _ressourcesInfoBox = new InfoBox(10, 10);
+            _performanceInfoBox = new InfoBox(GameWindow.active.width, 10, InfoBox.SpecifiedCorner.UPPER_RIGHT);
+
+            _elements.Add(_ressourcesInfoBox);
+            _elements.Add(_performanceInfoBox);
         }
 
         public static void update()
         {
-            GuiMouse.update();
+            MoveAndSelect.update();
+            combinedGui.updateInfos();
             foreach (var element in combinedGui._elements)
             {
                 element.updateState();
             }
-            
-            MoveAndSelect.update();
+            GuiMouse.update();
         }
 
         public static void render()
@@ -43,6 +59,11 @@ namespace Cluster.GameMechanics.Interface
 
         public static bool isMouseOver()
         {
+            if (MoveAndSelect.isMouseOver())
+            {
+                return true;
+            }
+            
             foreach (var element in combinedGui._elements)
             {
                 if (element.isMouseOver())
@@ -52,6 +73,27 @@ namespace Cluster.GameMechanics.Interface
             }
 
             return false;
+        }
+        
+        private void updateInfos()
+        {
+            var player = Civilisation.getPlayer();
+            _ressourcesInfoBox.setText("Ressourcen: \t" + (int) player.ressources + "\n" +
+                                       "Forschung:\t" + (int) player.science + "\n" +
+                                       "Bevölkerung:\t" + player.population + " / " + player.maxPopulation);
+
+            _performanceInfoBox.setText("FPS: " + _fps + "\n" +
+                                        "1/FPS: " + (100.0f / (float) _fps) + " ms von 16 ms\n" +
+                                        "Particles rendered: " + Particle.rendered_count);
+            //Frames per second
+            _fps2++;
+            _msec2 = Environment.TickCount;
+            if (_msec2 - _msec >= 1000)
+            {
+                _msec = _msec2;
+                _fps = _fps2;
+                _fps2 = 0;
+            }
         }
     }
 }

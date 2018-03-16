@@ -1,4 +1,5 @@
 ﻿using System;
+using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 using Cluster.Mathematics;
@@ -10,6 +11,13 @@ namespace Cluster.GameMechanics.Interface
         private Planet _planet;
         private int _pickedIndex;
 
+        private Panel _panel;
+
+        public PlanetSelection()
+        {
+            _panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
+        }
+        
         public bool selectByPick(float x, float y)
         {
             foreach (Planet pl in Planet.planets)
@@ -31,6 +39,7 @@ namespace Cluster.GameMechanics.Interface
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -41,6 +50,23 @@ namespace Cluster.GameMechanics.Interface
             return false;
         }
 
+        public void setActive(bool active)
+        {
+            if (active)
+            {
+                _panel.enable();
+            }
+            else
+            {
+                _panel.disable();
+            }
+        }
+
+        public bool isMouseOver()
+        {
+            return _panel.isMouseOver();
+        }
+
         public Vec2 getCenterOfMass()
         {
             return new Vec2(_planet.x, _planet.y);
@@ -48,10 +74,22 @@ namespace Cluster.GameMechanics.Interface
 
         public void updateGui()
         {
+            _panel.enable();
+            _panel.clear();
+            if (_pickedIndex > -1 && _planet.infra[_pickedIndex] != null)
+            {
+                _panel.addLargeElement(new MeshButton(_planet.infra[_pickedIndex].blueprint.shape, 0, 0, Commons.Properties.BUTTON_SIZE_LARGE));
+            }
+            
+            _panel.updateState();
         }
 
         public void renderGui()
         {
+            if (_panel != null)
+            {
+                _panel.render();
+            }
         }
     }
 }

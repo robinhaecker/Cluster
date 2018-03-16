@@ -97,8 +97,7 @@ namespace Cluster
 			Technology.init();
 			Blueprint.init();
 			Prototype.init();
-	        CombinedGui.combinedGui.init();
-
+	        CombinedGui.init();
 
             //Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(2); // Uses the second Core or Processor for the Test
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;  	// Prevents "Normal" processes from interrupting Threads
@@ -113,7 +112,6 @@ namespace Cluster
 			multY = 1.0f / (float)this.Height;
 			width = this.Width;
 			height = this.Height;
-
         }
 
         protected override void OnLoad(EventArgs e)
@@ -138,7 +136,6 @@ namespace Cluster
 			//####################################################################################################################################################################
 
 			// Spielinhalte laden
-			UserInterface.init();
 			Space.init();
 
 			//####################################################################################################################################################################

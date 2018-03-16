@@ -14,7 +14,7 @@ namespace Cluster.GameMechanics.Interface.Commons
             RIGHT_CLICKED
         }
 
-        protected bool active;
+        protected bool _active;
         private String toolTip;
         protected ButtonState _state;
         protected float x;
@@ -22,19 +22,30 @@ namespace Cluster.GameMechanics.Interface.Commons
         protected float width;
         protected float height;
         protected Vec4 _color;
-
-        internal Button(float x, float y, float size = Properties.BUTTON_SIZE_DEFAULT)
+        
+        internal Button(float x = 0, float y = 0, float size = Properties.BUTTON_SIZE_DEFAULT)
         {
-            active = true;
+            _active = true;
             this.x = x;
             this.y = y;
             width = height = size;
+            _color = Properties.colorDefault;
         }
 
         public void setPosition(float x, float y)
         {
             this.x = x;
             this.y = y;
+        }
+        
+        public void enable()
+        {
+            _active = true;
+        }
+
+        public void disable()
+        {
+            _active = false;
         }
 
         public void updateState()
@@ -75,10 +86,10 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public bool isActive()
         {
-            return active;
+            return _active;
         }
 
-        public void render()
+        public virtual void render()
         {
             Primitives.setColor(_color.r(), _color.g(), _color.b(), _color.a());
             Primitives.drawRect(x, y, width, height);

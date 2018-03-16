@@ -9,7 +9,7 @@ namespace Cluster.GameMechanics.Interface.Commons
         private float _maxProgress;
         private int _anzahlFolgende;
 
-        internal ProgressBar(float x, float y, float size = Properties.BUTTON_SIZE_DEFAULT) : base(x, y, size)
+        internal ProgressBar(float x = 0, float y = 0, float size = Properties.BUTTON_SIZE_DEFAULT) : base(x, y, size)
         {
             height = Properties.PROGRESS_BAR_HEIGHT;
             setProgress(0.0f, 1.0f);

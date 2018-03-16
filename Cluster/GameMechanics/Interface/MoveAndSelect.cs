@@ -40,6 +40,20 @@ namespace Cluster.GameMechanics.Interface
         {
             changeView();
             selectStuff();
+            if (_selection != null)
+            {
+                _selection.updateGui();
+            }
+        }
+
+        public static bool isMouseOver()
+        {
+            if (_selection != null)
+            {
+                return _selection.isMouseOver();
+            }
+
+            return false;
         }
 
         private static void selectStuff()
@@ -88,8 +102,10 @@ namespace Cluster.GameMechanics.Interface
             _selection = null;
             foreach (ISelection selection in _selections)
             {
+                selection.setActive(false);
                 if (selection.selectByPick(mSpaceX, mSpaceY))
                 {
+                    selection.setActive(true);
                     _selection = selection;
                     return;
                 }
@@ -101,8 +117,10 @@ namespace Cluster.GameMechanics.Interface
             _selection = null;
             foreach (ISelection selection in _selections)
             {
+                selection.setActive(false);
                 if (selection.selectByBox(box))
                 {
+                    selection.setActive(true);
                     _selection = selection;
                     return;
                 }
@@ -155,38 +173,49 @@ namespace Cluster.GameMechanics.Interface
 
         private static void moveViewToFocus()
         {
-            if (_focus != null)
+            if (_focus == null)
             {
-                Space.scrollX = Space.scrollX * _focus.z + _focus.x * (1.0f - _focus.z);
-                Space.scrollY = Space.scrollY * _focus.z + _focus.y * (1.0f - _focus.z);
-                _focus.z -= 0.002f;
-                if (_focus.z <= 0.0f) _focus = null;
+                return;
+            }
+
+            Space.scrollX = Space.scrollX * _focus.z + _focus.x * (1.0f - _focus.z);
+            Space.scrollY = Space.scrollY * _focus.z + _focus.y * (1.0f - _focus.z);
+            _focus.z -= 0.002f;
+            if (_focus.z <= 0.0f)
+            {
+                _focus = null;
             }
         }
 
         public static void render()
         {
             renderSelectionBox();
+            if (_selection != null)
+            {
+                _selection.renderGui();
+            }
         }
 
         private static void renderSelectionBox()
         {
-            if (_selectionBox != null && Math.Abs(_selectionBox.z) + Math.Abs(_selectionBox.w) > 0.000001f)
+            if (_selectionBox == null || !(Math.Abs(_selectionBox.z) + Math.Abs(_selectionBox.w) > 0.000001f))
             {
-                Primitives.setColor(1.0f, 1.0f, 1.0f, 0.125f);
-                Primitives.setLineWidth(2.0f);
-                var box = new Vec4(
-                    Space.spaceToScreenX(_selectionBox.x),
-                    Space.spaceToScreenY(_selectionBox.y),
-                    Space.spaceToScreenX(_selectionBox.z),
-                    Space.spaceToScreenY(_selectionBox.w));
-                
-                Primitives.drawLine(box.x, box.y, box.x, box.w);
-                Primitives.drawLine(box.z, box.y, box.z, box.w);
-                Primitives.drawLine(box.x, box.y, box.z, box.y);
-                Primitives.drawLine(box.x, box.w, box.z, box.w);
-                Primitives.setLineWidth();
+                return;
             }
+
+            Primitives.setColor(1.0f, 1.0f, 1.0f, 0.125f);
+            Primitives.setLineWidth(2.0f);
+            var box = new Vec4(
+                Space.spaceToScreenX(_selectionBox.x),
+                Space.spaceToScreenY(_selectionBox.y),
+                Space.spaceToScreenX(_selectionBox.z),
+                Space.spaceToScreenY(_selectionBox.w));
+
+            Primitives.drawLine(box.x, box.y, box.x, box.w);
+            Primitives.drawLine(box.z, box.y, box.z, box.w);
+            Primitives.drawLine(box.x, box.y, box.z, box.y);
+            Primitives.drawLine(box.x, box.w, box.z, box.w);
+            Primitives.setLineWidth();
         }
     }
 }

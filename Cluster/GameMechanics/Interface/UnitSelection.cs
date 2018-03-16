@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cluster.GameMechanics.Behaviour;
+using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Mathematics;
 using OpenTK.Input;
@@ -11,6 +12,12 @@ namespace Cluster.GameMechanics.Interface
     {
         private readonly List<Unit> _units = new List<Unit>();
 
+        private Panel _panel;
+
+        public UnitSelection()
+        {
+            _panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
+        }
 
         public bool selectByPick(float x, float y)
         {
@@ -68,9 +75,26 @@ namespace Cluster.GameMechanics.Interface
             return _units.Count > 0;
         }
 
+        public bool isMouseOver()
+        {
+            return _panel.isMouseOver();
+        }
+
         public Vec2 getCenterOfMass()
         {
             return new Vec2(_units[0].x, _units[0].y);
+        }
+
+        public void setActive(bool active)
+        {
+            if (active)
+            {
+                _panel.enable();
+            }
+            else
+            {
+                _panel.disable();
+            }
         }
 
         public void updateGui()
