@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
+using Cluster.GameMechanics.Universe.CelestialBodies;
+using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Mathematics;
+using Cluster.Rendering.Draw2D;
 using OpenTK.Input;
 
 namespace Cluster.GameMechanics.Interface
@@ -13,8 +18,19 @@ namespace Cluster.GameMechanics.Interface
         private const float ZOOM_MAX = 1.75f;
         private const float ZOOM_MIN = 0.08f;
 
-        private static Vec3 _focus;
+        private static Vec3 _focus = null;
         private static ISelection _selection = null;
+
+        private static Vec4 _selectionBox = null;
+        private static float _selMx;
+        private static float _selMy;
+        private static readonly List<ISelection> _selections = new List<ISelection>();
+
+        public static void init()
+        {
+            _selections.Add(new PlanetSelection());
+            _selections.Add(new UnitSelection());
+        }
 
         private MoveAndSelect()
         {
@@ -23,7 +39,76 @@ namespace Cluster.GameMechanics.Interface
         public static void update()
         {
             changeView();
+            selectStuff();
         }
+
+        private static void selectStuff()
+        {
+            if (GuiMouse.mouseHitLeft && !CombinedGui.isMouseOver())
+            {
+                if (_selectionBox == null) // Selektionsbox anfangen.
+                {
+                    _selMx = GuiMouse.mouseX;
+                    _selMy = GuiMouse.mouseY;
+                    _selectionBox = new Vec4(
+                        Space.screenToSpaceX(GuiMouse.mouseX),
+                        Space.screenToSpaceY(GuiMouse.mouseY),
+                        0.0f,
+                        0.0f);
+                }
+
+                pick();
+            }
+            else if (GuiMouse.mousePressLeft && !GuiMouse.mouseHitLeft && _selectionBox != null)
+            {
+                // Selektionsbox-Ende ziehen bei gedrückter linker Maustaste.
+                _selectionBox.z = Space.screenToSpaceX(GuiMouse.mouseX);
+                _selectionBox.w = Space.screenToSpaceY(GuiMouse.mouseY);
+            }
+            else if (_selectionBox != null) // Maustaste nicht mehr gedrückt? Selektionsbox beenden.
+            {
+                if (Math.Abs(GuiMouse.mouseX - _selMx) + Math.Abs(GuiMouse.mouseY - _selMy) > 20.0f)
+                {
+                    selectByBox(_selectionBox);
+                }
+
+                _selectionBox = null;
+            }
+        }
+
+        private static void pick()
+        {
+            float mSpaceX = Space.screenToSpaceX(GuiMouse.mouseX);
+            float mSpaceY = Space.screenToSpaceY(GuiMouse.mouseY);
+            selectByPick(mSpaceX, mSpaceY);
+        }
+
+        private static void selectByPick(float mSpaceX, float mSpaceY)
+        {
+            _selection = null;
+            foreach (ISelection selection in _selections)
+            {
+                if (selection.selectByPick(mSpaceX, mSpaceY))
+                {
+                    _selection = selection;
+                    return;
+                }
+            }
+        }
+
+        private static void selectByBox(Vec4 box)
+        {
+            _selection = null;
+            foreach (ISelection selection in _selections)
+            {
+                if (selection.selectByBox(box))
+                {
+                    _selection = selection;
+                    return;
+                }
+            }
+        }
+
 
         private static void changeView()
         {
@@ -35,7 +120,7 @@ namespace Cluster.GameMechanics.Interface
         private static void scrollView()
         {
             Space.zoom = Math.Min(ZOOM_MAX, Math.Max(ZOOM_MIN, Space.zoom + GuiMouse.mouseZSpeed * 0.027f));
-            
+
             if (GuiMouse.mouseX < 10 && Space.scrollX > -SCROLL_BOUNDARY)
             {
                 Space.scrollX -= SCROLL_SPEED / Space.zoom;
@@ -76,6 +161,31 @@ namespace Cluster.GameMechanics.Interface
                 Space.scrollY = Space.scrollY * _focus.z + _focus.y * (1.0f - _focus.z);
                 _focus.z -= 0.002f;
                 if (_focus.z <= 0.0f) _focus = null;
+            }
+        }
+
+        public static void render()
+        {
+            renderSelectionBox();
+        }
+
+        private static void renderSelectionBox()
+        {
+            if (_selectionBox != null && Math.Abs(_selectionBox.z) + Math.Abs(_selectionBox.w) > 0.000001f)
+            {
+                Primitives.setColor(1.0f, 1.0f, 1.0f, 0.125f);
+                Primitives.setLineWidth(2.0f);
+                var box = new Vec4(
+                    Space.spaceToScreenX(_selectionBox.x),
+                    Space.spaceToScreenY(_selectionBox.y),
+                    Space.spaceToScreenX(_selectionBox.z),
+                    Space.spaceToScreenY(_selectionBox.w));
+                
+                Primitives.drawLine(box.x, box.y, box.x, box.w);
+                Primitives.drawLine(box.z, box.y, box.z, box.w);
+                Primitives.drawLine(box.x, box.y, box.z, box.y);
+                Primitives.drawLine(box.x, box.w, box.z, box.w);
+                Primitives.setLineWidth();
             }
         }
     }

@@ -12,7 +12,7 @@ namespace Cluster.GameMechanics.Interface
 
         public void init()
         {
-            
+            MoveAndSelect.init();
         }
 
         private CombinedGui()
@@ -34,10 +34,24 @@ namespace Cluster.GameMechanics.Interface
         public static void render()
         {
             Primitives.setDepth(-0.1f);
+            MoveAndSelect.render();
             foreach (var element in combinedGui._elements)
             {
                 element.render();
             }
+        }
+
+        public static bool isMouseOver()
+        {
+            foreach (var element in combinedGui._elements)
+            {
+                if (element.isMouseOver())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

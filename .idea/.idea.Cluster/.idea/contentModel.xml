@@ -33,6 +33,8 @@
             </e>
             <e p="ISelection.cs" t="Include" />
             <e p="MoveAndSelect.cs" t="Include" />
+            <e p="PlanetSelection.cs" t="Include" />
+            <e p="UnitSelection.cs" t="Include" />
             <e p="UserInterface.cs" t="Include" />
           </e>
           <e p="Universe" t="Include">

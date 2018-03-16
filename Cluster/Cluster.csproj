@@ -81,6 +81,8 @@
     <Compile Include="GameMechanics\Interface\Commons\Properties.cs" />
     <Compile Include="GameMechanics\Interface\ISelection.cs" />
     <Compile Include="GameMechanics\Interface\MoveAndSelect.cs" />
+    <Compile Include="GameMechanics\Interface\PlanetSelection.cs" />
+    <Compile Include="GameMechanics\Interface\UnitSelection.cs" />
     <Compile Include="GameMechanics\Interface\UserInterface.cs" />
     <Compile Include="GameMechanics\Universe\CelestialBodies\Planet.cs" />
     <Compile Include="GameMechanics\Universe\LivingThings\Building.cs" />

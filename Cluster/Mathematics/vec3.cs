@@ -1,5 +1,4 @@
 ﻿using System;
-using Cluster.Mathematics;
 
 namespace Cluster.Mathematics
 {
