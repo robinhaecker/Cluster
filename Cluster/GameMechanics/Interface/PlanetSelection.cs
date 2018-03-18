@@ -1,7 +1,9 @@
 ﻿using System;
+using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
+using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Interface
@@ -17,7 +19,7 @@ namespace Cluster.GameMechanics.Interface
         {
             _panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
         }
-        
+
         public bool selectByPick(float x, float y)
         {
             foreach (Planet pl in Planet.planets)
@@ -76,12 +78,58 @@ namespace Cluster.GameMechanics.Interface
         {
             _panel.enable();
             _panel.clear();
-            if (_pickedIndex > -1 && _planet.infra[_pickedIndex] != null)
+            if (_pickedIndex > -1)
             {
-                _panel.addLargeElement(new MeshButton(_planet.infra[_pickedIndex].blueprint.shape, 0, 0, Commons.Properties.BUTTON_SIZE_LARGE));
+                if (_planet.infra[_pickedIndex] != null)
+                {
+                    updateGuiForBuilding();
+                }
+                else
+                {
+                    updateGuiForTerrain();
+                }
+            }
+
+            _panel.updateState();
+        }
+
+        private void updateGuiForTerrain()
+        {
+            _panel.addLargeElement(
+                new MeshButton(null, Planet.terraImage[(int) _planet.terra[_pickedIndex], 0],
+                    0, 0, Commons.Properties.BUTTON_SIZE_LARGE));
+
+            var player = Civilisation.getPlayer();
+            if (_planet.canBuild(player))
+            {
+                foreach (var blueprint in Blueprint.listOfBlueprints(player, _planet.terra[_pickedIndex]))
+                {
+                    var meshButton = new MeshButton(blueprint.shape, null);
+                    
+                    string cres = "&r", cene = "&y";
+                    if (blueprint.getCost() <= player.ressources) cres = "&g";
+                    String text = "&h" + blueprint.name +
+                           "\n" + cres + "Ressourcen:" + blueprint.getCost().ToString().PadLeft(4, ' ') +
+                           "\n" + cene + "Energie:\t " + blueprint.getEnergyNeeds().ToString().PadLeft(4, ' ') +
+                           "\n&n" + blueprint.description[0] + "\n" + blueprint.description[1] + "\n" +
+                           blueprint.description[2];
+                    
+                    meshButton.setInfoText(text);
+                    _panel.addElement(meshButton);
+                }
             }
             
-            _panel.updateState();
+        }
+
+        private void updateGuiForBuilding()
+        {
+            _panel.addLargeElement(
+                new MeshButton(_planet.infra[_pickedIndex].blueprint.shape,
+                        Planet.terraImage[(int) _planet.terra[_pickedIndex], 1],
+                        0, 0, Commons.Properties.BUTTON_SIZE_LARGE)
+                    .setColor(_planet.infra[_pickedIndex].owner.red * 0.5f + 0.5f,
+                        _planet.infra[_pickedIndex].owner.green * 0.5f + 0.5f,
+                        _planet.infra[_pickedIndex].owner.blue * 0.5f + 0.5f));
         }
 
         public void renderGui()

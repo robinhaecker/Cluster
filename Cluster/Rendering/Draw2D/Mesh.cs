@@ -50,9 +50,7 @@ namespace Cluster.Rendering.Draw2D
 
 		public Mesh(string filename, bool centering = false, bool absolutePath = false)
 		{
-			FileStream file;
-			if (absolutePath) {file = File.OpenRead(filename);}
-			else			  {file = File.OpenRead(GameWindow.BASE_FOLDER + filename);}
+			FileStream file = File.OpenRead(absolutePath ? filename : GameWindow.BASE_FOLDER + filename);
 			BinaryReader reader = new BinaryReader(file);
 
 			vex = new List<Vertex>();
@@ -208,10 +206,10 @@ namespace Cluster.Rendering.Draw2D
 
 		public void drawFit(float x, float y, float width = 100.0f, float height = 100.0f, float clamp = 1.0f, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f)
 		{
-			float sc = Math.Max(Math.Max(box_x, box_y), 0.5f) * 2.5f;
+			float scale = Math.Max(Math.Max(box_x, box_y), 0.5f) * 2.5f;
 			mesh_shader.bind();
 			GL.Uniform2(mesh_shader.getUniformLocation("pos"), (x + width * 0.5f) * GameWindow.active.multX * 2.0f - 1.0f, (y + height * 0.5f) * GameWindow.active.multY * 2.0f - 0.0f);
-			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.multX / sc, height * GameWindow.active.multY / sc, clamp);
+			GL.Uniform3(mesh_shader.getUniformLocation("scale"), width * GameWindow.active.multX / scale, height * GameWindow.active.multY / scale, clamp);
 			GL.Uniform4(mesh_shader.getUniformLocation("col"), r, g, b, a);
 
 			GL.BindVertexArray(gl_data);

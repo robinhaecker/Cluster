@@ -9,7 +9,7 @@ namespace Cluster.GameMechanics.Interface
 {
     public class CombinedGui
     {
-        private static readonly CombinedGui combinedGui = new CombinedGui();
+        public static readonly CombinedGui combinedGui = new CombinedGui();
 
         private static int _fps;
         private static int _fps2;
@@ -19,6 +19,7 @@ namespace Cluster.GameMechanics.Interface
         private readonly List<IGui> _elements;
         private readonly InfoBox _ressourcesInfoBox;
         private readonly InfoBox _performanceInfoBox;
+        public readonly InfoBox toolTip;
 
         public static void init()
         {
@@ -31,9 +32,11 @@ namespace Cluster.GameMechanics.Interface
 
             _ressourcesInfoBox = new InfoBox(10, 10);
             _performanceInfoBox = new InfoBox(GameWindow.active.width, 10, InfoBox.SpecifiedCorner.UPPER_RIGHT);
-
+            toolTip = new InfoBox(10, GameWindow.active.height - 120, InfoBox.SpecifiedCorner.LOWER_LEFT);
+            
             _elements.Add(_ressourcesInfoBox);
             _elements.Add(_performanceInfoBox);
+            _elements.Add(toolTip);
         }
 
         public static void update()
@@ -85,6 +88,7 @@ namespace Cluster.GameMechanics.Interface
             _performanceInfoBox.setText("FPS: " + _fps + "\n" +
                                         "1/FPS: " + (100.0f / (float) _fps) + " ms von 16 ms\n" +
                                         "Particles rendered: " + Particle.rendered_count);
+            
             //Frames per second
             _fps2++;
             _msec2 = Environment.TickCount;

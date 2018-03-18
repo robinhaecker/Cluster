@@ -54,6 +54,10 @@ namespace Cluster.GameMechanics.Interface.Commons
             if (GuiMouse.isMouseInRect(x, y, width, height))
             {
                 _state = ButtonState.MOUSE_OVER;
+                if (!string.IsNullOrWhiteSpace(toolTip))
+                {
+                    CombinedGui.combinedGui.toolTip.setText(toolTip);
+                }
                 if (GuiMouse.mouseHitLeft)
                 {
                     _state = ButtonState.LEFT_CLICKED;

@@ -22,7 +22,7 @@ namespace Cluster.GameMechanics.Interface.Commons
             _y = y;
             _gridWidth = gridWidth;
             _gridHeight = gridHeight;
-            _gridSize = gridSize;
+            _gridSize = gridSize + 1.0f;
             _indexX = 0;
             _indexY = 0;
         }
@@ -70,7 +70,7 @@ namespace Cluster.GameMechanics.Interface.Commons
                 _indexX++;
             }
             addElement(largeElement);
-            _indexX++;
+            _indexX+=2;
             _indexY = 0;
         }
 

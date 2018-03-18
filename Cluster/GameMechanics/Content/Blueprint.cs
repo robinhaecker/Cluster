@@ -66,15 +66,26 @@ namespace Cluster.GameMechanics.Content
 		{
 			return energy;
 		}
-		public bool isBuildable(byte terrainType)
+		public bool isBuildable(Planet.Terrain terrainType)
 		{
-			return buildOn[terrainType];
+			return buildOn[(int)terrainType];
 		}
 		public bool isBuildable(Planet p, int pos)
 		{
 			return buildOn[(int)p.getTerrain(pos)];
 		}
 
+		public static IEnumerable<Blueprint> listOfBlueprints(Civilisation civ, Planet.Terrain terrain)
+		{
+			foreach (Blueprint blueprint in data)
+			{
+				if (blueprint.isBuildable(terrain) && blueprint.activation.researchedBy(civ))
+				{
+					yield return blueprint;
+				}
+			}
+		}
+		
 
 		public static void init()
 		{

@@ -12,7 +12,7 @@ namespace Cluster.GameMechanics.Interface.Commons
             LOWER_LEFT,
             LOWER_RIGHT
         }
-        
+
         private bool _active;
         private float _x;
         private float _y;
@@ -60,8 +60,13 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public void render()
         {
-            Text.setTextSize();
-            Text.drawText(_text, getTextX(), getTextY());
+            if (_text != null)
+            {
+                Text.setTextSize();
+                Text.drawText(_text, getTextX(), getTextY());
+            }
+
+            _text = null;
         }
 
         private float getTextX()
