@@ -71,7 +71,7 @@ namespace Cluster
         public GameWindow(int width=1920, int height=1080, string apptitle="Cluster")
             // set window resolution, title, and default behaviour
             : base(width, height, GraphicsMode.Default, apptitle,
-            GameWindowFlags.Fullscreen, DisplayDevice.Default,
+            GameWindowFlags.Default, DisplayDevice.Default,
                 // ask for an OpenGL 4.0 forward compatible context
             4, 0, GraphicsContextFlags.ForwardCompatible)
         {

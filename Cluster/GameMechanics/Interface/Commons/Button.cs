@@ -84,6 +84,11 @@ namespace Cluster.GameMechanics.Interface.Commons
             return state > ButtonState.NONE;
         }
 
+        public IGui getElementAtMousePosition()
+        {
+            return isMouseOver() ? this : null;
+        }
+
         public bool isActive()
         {
             return active;

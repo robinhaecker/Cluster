@@ -19,6 +19,7 @@ namespace Cluster.GameMechanics.Interface
         private readonly List<IGui> elements;
         private readonly InfoBox ressourcesInfoBox;
         private readonly InfoBox performanceInfoBox;
+        private readonly InfoBox toolTipBox;
 
         public static void init()
         {
@@ -31,9 +32,10 @@ namespace Cluster.GameMechanics.Interface
 
             ressourcesInfoBox = new InfoBox(10, 10);
             performanceInfoBox = new InfoBox(GameWindow.active.width, 10, InfoBox.SpecifiedCorner.UPPER_RIGHT);
-
+            toolTipBox = new InfoBox(10, GameWindow.active.height - 150, InfoBox.SpecifiedCorner.LOWER_LEFT);
             elements.Add(ressourcesInfoBox);
             elements.Add(performanceInfoBox);
+            elements.Add(toolTipBox);
         }
 
         public static void update()
@@ -85,6 +87,8 @@ namespace Cluster.GameMechanics.Interface
             performanceInfoBox.setText("FPS: " + fps + "\n" +
                                         "1/FPS: " + (100.0f / (float) fps) + " ms von 16 ms\n" +
                                         "Particles rendered: " + Particle.renderedCount);
+            
+            toolTipBox.setText(MoveAndSelect.getToolTipText());
             //Frames per second
             fps2++;
             msec2 = Environment.TickCount;

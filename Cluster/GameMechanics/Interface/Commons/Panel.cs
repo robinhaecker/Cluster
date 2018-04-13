@@ -97,6 +97,21 @@ namespace Cluster.GameMechanics.Interface.Commons
 
             return false;
         }
+        
+        public IGui getElementAtMousePosition()
+        {
+            foreach (IGui element in elements)
+            {
+                var elementAtMousePosition = element.getElementAtMousePosition();
+                if (elementAtMousePosition != null)
+                {
+                    return elementAtMousePosition;
+                }
+            }
+
+            return null;
+        }
+
 
         public bool isActive()
         {

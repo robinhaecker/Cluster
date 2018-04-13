@@ -24,6 +24,7 @@ namespace Cluster.GameMechanics.Interface.Commons
             this.x = x;
             this.y = y;
             this.corner = corner;
+            this.text = "";
         }
 
         public void setPosition(float x, float y)
@@ -51,6 +52,11 @@ namespace Cluster.GameMechanics.Interface.Commons
         public bool isMouseOver()
         {
             return false;
+        }
+        
+        public IGui getElementAtMousePosition()
+        {
+            return isMouseOver() ? this : null;
         }
 
         public bool isActive()

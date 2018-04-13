@@ -17,7 +17,7 @@ namespace Cluster.GameMechanics.Interface
         {
             panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
         }
-        
+
         public bool selectByPick(float x, float y)
         {
             foreach (Planet pl in Planet.planets)
@@ -67,6 +67,12 @@ namespace Cluster.GameMechanics.Interface
             return panel.isMouseOver();
         }
 
+        public string getToolTipText()
+        {
+            var elementAtMousePosition = panel.getElementAtMousePosition();
+            return (elementAtMousePosition as IToolTip)?.getInfoText();
+        }
+
         public Vec2 getCenterOfMass()
         {
             return new Vec2(planet.x, planet.y);
@@ -76,20 +82,28 @@ namespace Cluster.GameMechanics.Interface
         {
             panel.enable();
             panel.clear();
-            if (pickedIndex > -1 && planet.infra[pickedIndex] != null)
+            if (pickedIndex > -1)
             {
-                panel.addLargeElement(new MeshButton(planet.infra[pickedIndex].blueprint.shape, 0, 0, Commons.Properties.BUTTON_SIZE_LARGE));
+                if (planet.infra[pickedIndex] != null)
+                {
+                    panel.addLargeElement(new MeshButton(planet.infra[pickedIndex].blueprint.shape, 0, 0,
+                        Commons.Properties.BUTTON_SIZE_LARGE));
+                }
+                else
+                {
+                    var selectedTerrainButton = new MeshButton(Planet.terraImage[(int)planet.terra[pickedIndex]], 0, 0,
+                        Commons.Properties.BUTTON_SIZE_LARGE);
+                    selectedTerrainButton.setInfoText("Terrain Info Text\n bals\n sdfsgrwoj");
+                    panel.addLargeElement(selectedTerrainButton);
+                }
             }
-            
+
             panel.updateState();
         }
 
         public void renderGui()
         {
-            if (panel != null)
-            {
-                panel.render();
-            }
+            panel?.render();
         }
     }
 }

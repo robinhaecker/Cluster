@@ -79,6 +79,12 @@ namespace Cluster.GameMechanics.Interface
         {
             return panel.isMouseOver();
         }
+        
+        public string getToolTipText()
+        {
+            var elementAtMousePosition = panel.getElementAtMousePosition();
+            return (elementAtMousePosition as IToolTip)?.getInfoText();
+        }
 
         public Vec2 getCenterOfMass()
         {

@@ -15,6 +15,7 @@ namespace Cluster.GameMechanics.Interface
     {
         private const float SCROLL_BOUNDARY = 7000.0f;
         private const float SCROLL_SPEED = 1.75f;
+        private const float SCROLL_DELTA_PIXELS = 100.0f;
         private const float ZOOM_MAX = 1.75f;
         private const float ZOOM_MIN = 0.08f;
 
@@ -25,6 +26,9 @@ namespace Cluster.GameMechanics.Interface
         private static float selMx;
         private static float selMy;
         private static readonly List<ISelection> selections = new List<ISelection>();
+
+        private static float baseScrollX;
+        private static float baseScrollY;
 
         public static void init()
         {
@@ -40,20 +44,17 @@ namespace Cluster.GameMechanics.Interface
         {
             changeView();
             selectStuff();
-            if (selection != null)
-            {
-                selection.updateGui();
-            }
+            selection?.updateGui();
         }
 
         public static bool isMouseOver()
         {
-            if (selection != null)
-            {
-                return selection.isMouseOver();
-            }
+            return selection != null && selection.isMouseOver();
+        }
 
-            return false;
+        public static string getToolTipText()
+        {
+            return selection?.getToolTipText() ?? "";
         }
 
         private static void selectStuff()
@@ -158,6 +159,17 @@ namespace Cluster.GameMechanics.Interface
             {
                 Space.scrollY -= SCROLL_SPEED / Space.zoom;
             }
+
+            if (GuiMouse.mousePressMiddle)
+            {
+                Space.scrollX += (GuiMouse.mouseX - baseScrollX) / SCROLL_DELTA_PIXELS * SCROLL_SPEED / Space.zoom;
+                Space.scrollY -= (GuiMouse.mouseY - baseScrollY) / SCROLL_DELTA_PIXELS * SCROLL_SPEED / Space.zoom;
+            }
+            else
+            {
+                baseScrollX = GuiMouse.mouseX;
+                baseScrollY = GuiMouse.mouseY;
+            }
         }
 
         private static void updateFocus()
@@ -190,10 +202,7 @@ namespace Cluster.GameMechanics.Interface
         public static void render()
         {
             renderSelectionBox();
-            if (selection != null)
-            {
-                selection.renderGui();
-            }
+            selection?.renderGui();
         }
 
         private static void renderSelectionBox()

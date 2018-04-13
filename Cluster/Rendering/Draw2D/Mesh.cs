@@ -71,9 +71,9 @@ namespace Cluster.Rendering.Draw2D
             lines.Add(new Line(b, d));
             lines.Add(new Line(c, d));
 
-            boxX = 1.0f;
-            boxY = 1.0f;
-            radius = 1.5f;
+            boxX = 0.5f;
+            boxY = 0.5f;
+            radius = 0.75f;
             numVertices = 4;
             numLines = 6;
             numTriangles = 0;
