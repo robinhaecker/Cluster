@@ -19,22 +19,22 @@ namespace Cluster.GameMechanics.Universe
         public static Shader unitShader, unitShieldShader;
         public static Shader shotShader;
         public static Shader particleShader;
-        private static Shader _spaceShader;
+        private static Shader spaceShader;
 
-        private static DominanceMap _dominanceMap;
-        static Image _spaceTex0;
-        static Image _spaceTex1;
-        static Image _spaceTex2;
-        static Image _spaceTex3;
-        static int _glData;
-        static int _bufPos;
+        private static DominanceMap dominanceMap;
+        static Image spaceTex0;
+        static Image spaceTex1;
+        static Image spaceTex2;
+        static Image spaceTex3;
+        static int glData;
+        static int bufPos;
 
-        private static int _millisecs0, _millisecs1;
+        private static int millisecs0, millisecs1;
 
 
         public static void init()
         {
-            _spaceShader = new Shader(Resources.space_vert, Resources.space_frag);
+            spaceShader = new Shader(Resources.space_vert, Resources.space_frag);
             planetShader = new Shader(Resources.planet_vert, Resources.planet_frag);
             buildingShader = new Shader(Resources.building_vert, Resources.building_frag);
             unitShader = new Shader(Resources.unit_vert, Resources.unit_frag);
@@ -42,19 +42,19 @@ namespace Cluster.GameMechanics.Universe
             shotShader = new Shader(Resources.shot_vert, Resources.shot_frag, Resources.shot_geom);
             particleShader = new Shader(Resources.particle2D_vert, Resources.particle2D_frag);
 
-            _dominanceMap = new DominanceMap();
+            dominanceMap = new DominanceMap();
             
-            _spaceTex0 = new Image("space0.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
-            _spaceTex1 = new Image("space1.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
-            _spaceTex2 = new Image("space2.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
-            _spaceTex3 = new Image("space3.png").setClamp(TextureWrapMode.MirroredRepeat, TextureWrapMode.MirroredRepeat);
+            spaceTex0 = new Image("space0.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
+            spaceTex1 = new Image("space1.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
+            spaceTex2 = new Image("space2.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
+            spaceTex3 = new Image("space3.png").setClamp(TextureWrapMode.MirroredRepeat, TextureWrapMode.MirroredRepeat);
 
             create_vba();
             Planet.init();
             fillUniverse();
 
             Sector.init(); // Muss nach dem Erstellen der Zivilisationen gemacht werden, damit die Listen für Raumschiffe die richtige Anzahl haben.
-            _millisecs0 = _millisecs1 = 0;
+            millisecs0 = millisecs1 = 0;
         }
 
         private static void fillUniverse()
@@ -85,41 +85,40 @@ namespace Cluster.GameMechanics.Universe
         {
             float[] vertices = {-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f};
 
-            if (_glData == 0)
+            if (glData == 0)
             {
-                _glData = GL.GenVertexArray();
-                _bufPos = GL.GenBuffer();
+                glData = GL.GenVertexArray();
+                bufPos = GL.GenBuffer();
             }
-
-            GL.BindVertexArray(_glData);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufPos);
+            GL.BindVertexArray(glData);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufPos);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices,
                 BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(_glData, 0);
+            GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
             GL.BindVertexArray(0);
         }
 
         public static void render()
         {
-            _spaceShader.bind();
+            spaceShader.bind();
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, _spaceTex0.tex);
+            GL.BindTexture(TextureTarget.Texture2D, spaceTex0.tex);
             GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, _spaceTex1.tex);
+            GL.BindTexture(TextureTarget.Texture2D, spaceTex1.tex);
             GL.ActiveTexture(TextureUnit.Texture2);
-            GL.BindTexture(TextureTarget.Texture2D, _spaceTex2.tex);
+            GL.BindTexture(TextureTarget.Texture2D, spaceTex2.tex);
             GL.ActiveTexture(TextureUnit.Texture3);
-            GL.BindTexture(TextureTarget.Texture2D, _spaceTex3.tex);
+            GL.BindTexture(TextureTarget.Texture2D, spaceTex3.tex);
             GL.ActiveTexture(TextureUnit.Texture4);
-            _dominanceMap.bindTexture();
+            dominanceMap.bindTexture();
 
-            GL.Uniform3(_spaceShader.getUniformLocation("scroll"), scrollX, scrollY, zoom);
-            GL.Uniform3(_spaceShader.getUniformLocation("viewport"), GameWindow.active.width, GameWindow.active.height,
+            GL.Uniform3(spaceShader.getUniformLocation("scroll"), scrollX, scrollY, zoom);
+            GL.Uniform3(spaceShader.getUniformLocation("viewport"), GameWindow.active.width, GameWindow.active.height,
                 animation);
 
-            GL.BindVertexArray(_glData);
+            GL.BindVertexArray(glData);
             GL.DrawArrays(PrimitiveType.Quads, 0, 4);
             GL.BindVertexArray(0);
             /*
@@ -134,15 +133,15 @@ namespace Cluster.GameMechanics.Universe
 
         public static void update()
         {
-            _millisecs0 = Environment.TickCount;
-            float time = Math.Min(5.0f, (_millisecs0 - _millisecs1) / 10.0f);
-            _millisecs1 = _millisecs0;
+            millisecs0 = Environment.TickCount;
+            float time = Math.Min(5.0f, (millisecs0 - millisecs1) / 10.0f);
+            millisecs1 = millisecs0;
 
             Planet.simulate(time);
             Unit.update(time * 5.0f);
             Shot.update(time * 5.0f);
             Particle.update(time * 5.0f);
-            _dominanceMap.update();
+            dominanceMap.update();
         }
 
 

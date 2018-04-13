@@ -13,17 +13,17 @@ namespace Cluster.GameMechanics.Interface.Commons
             LOWER_RIGHT
         }
         
-        private bool _active;
-        private float _x;
-        private float _y;
-        private SpecifiedCorner _corner;
-        private String _text;
+        private bool active;
+        private float x;
+        private float y;
+        private SpecifiedCorner corner;
+        private String text;
 
         public InfoBox(float x, float y, SpecifiedCorner corner = SpecifiedCorner.UPPER_LEFT)
         {
-            _x = x;
-            _y = y;
-            _corner = corner;
+            this.x = x;
+            this.y = y;
+            this.corner = corner;
         }
 
         public void setPosition(float x, float y)
@@ -33,19 +33,19 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public void setPosition(float x, float y, SpecifiedCorner corner)
         {
-            _x = x;
-            _y = y;
-            _corner = corner;
+            this.x = x;
+            this.y = y;
+            this.corner = corner;
         }
 
         public void setText(String text)
         {
-            _text = text;
+            this.text = text;
         }
 
         public void updateState()
         {
-            _active = !String.IsNullOrWhiteSpace(_text);
+            active = !String.IsNullOrWhiteSpace(text);
         }
 
         public bool isMouseOver()
@@ -55,33 +55,33 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public bool isActive()
         {
-            return _active;
+            return active;
         }
 
         public void render()
         {
             Text.setTextSize();
-            Text.drawText(_text, getTextX(), getTextY());
+            Text.drawText(text, getTextX(), getTextY());
         }
 
         private float getTextX()
         {
-            if (_corner == SpecifiedCorner.LOWER_LEFT || _corner == SpecifiedCorner.UPPER_LEFT)
+            if (corner == SpecifiedCorner.LOWER_LEFT || corner == SpecifiedCorner.UPPER_LEFT)
             {
-                return _x;
+                return x;
             }
 
-            return _x + Text.estimatedTextWidth(_text);
+            return x + Text.estimatedTextWidth(text);
         }
 
         private float getTextY()
         {
-            if (_corner == SpecifiedCorner.UPPER_LEFT || _corner == SpecifiedCorner.UPPER_RIGHT)
+            if (corner == SpecifiedCorner.UPPER_LEFT || corner == SpecifiedCorner.UPPER_RIGHT)
             {
-                return _y;
+                return y;
             }
 
-            return _y - Text.textHeight(_text);
+            return y - Text.textHeight(text);
         }
     }
 }

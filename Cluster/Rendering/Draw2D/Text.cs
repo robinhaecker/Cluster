@@ -16,50 +16,50 @@ namespace Cluster.Rendering.Draw2D
     class Text
     {
         // Textdarstellung
-        static Shader text_shader;
+        static Shader textShader;
         static int font;
 
         const int TEXT_BUFFER_SIZE = 1000;
-        static float[] text_rgba; //r, g, b, a
-        static float[] text_pos; //x, y, scale
-        static float[] text_char; //chars
-        static int buf_rgba, buf_pos, buf_char;
+        static float[] textRgba; //r, g, b, a
+        static float[] textPos; //x, y, scale
+        static float[] textChar; //chars
+        static int bufRgba, bufPos, bufChar;
         static int vertexBufferArray;
-        static int num_chars;
+        static int numChars;
 
-        static float default_red = 1.0f,
-            default_green = 1.0f,
-            default_blue = 1.0f,
-            default_alpha = 1.0f,
-            default_fontsize = 20.0f;
+        static float defaultRed = 1.0f,
+            defaultGreen = 1.0f,
+            defaultBlue = 1.0f,
+            defaultAlpha = 1.0f,
+            defaultFontsize = 20.0f;
 
 
         public static void setColor(float r, float g, float b, float a)
         {
-            default_alpha = a;
-            default_red = r;
-            default_green = g;
-            default_blue = b;
+            defaultAlpha = a;
+            defaultRed = r;
+            defaultGreen = g;
+            defaultBlue = b;
         }
 
         public static void setTextSize(float sz = 20.0f)
         {
-            default_fontsize = sz;
+            defaultFontsize = sz;
         }
 
         public static Vec4 getColor()
         {
-            return new Vec4(default_red, default_green, default_blue, default_alpha);
+            return new Vec4(defaultRed, defaultGreen, defaultBlue, defaultAlpha);
         }
 
         public static float getTextSize()
         {
-            return default_fontsize;
+            return defaultFontsize;
         }
 
         public static void drawText(string text, float x, float y)
         {
-            drawText(text, x, y, default_fontsize, default_red, default_green, default_blue, default_alpha);
+            drawText(text, x, y, defaultFontsize, defaultRed, defaultGreen, defaultBlue, defaultAlpha);
         }
 
         public static void drawText(string text, float x, float y, float size, float r, float g, float b, float a)
@@ -218,32 +218,32 @@ namespace Cluster.Rendering.Draw2D
                 else
                 {
                     jump = false;
-                    text_rgba[num_chars * 4 + 0] = r;
-                    text_rgba[num_chars * 4 + 1] = g;
-                    text_rgba[num_chars * 4 + 2] = b;
-                    text_rgba[num_chars * 4 + 3] = a;
-                    text_pos[num_chars * 3 + 0] = x;
-                    text_pos[num_chars * 3 + 1] = y;
-                    text_pos[num_chars * 3 + 2] = size;
+                    textRgba[numChars * 4 + 0] = r;
+                    textRgba[numChars * 4 + 1] = g;
+                    textRgba[numChars * 4 + 2] = b;
+                    textRgba[numChars * 4 + 3] = a;
+                    textPos[numChars * 3 + 0] = x;
+                    textPos[numChars * 3 + 1] = y;
+                    textPos[numChars * 3 + 2] = size;
                     try
                     {
-                        text_char[num_chars] = (float) Convert.ToByte(chars[i]);
+                        textChar[numChars] = (float) Convert.ToByte(chars[i]);
                     }
                     catch
                     {
-                        text_char[num_chars] = 0.0f;
+                        textChar[numChars] = 0.0f;
                     }
 
                     x += size * 0.5f;
-                    num_chars++;
-                    if (num_chars >= TEXT_BUFFER_SIZE) renderText();
+                    numChars++;
+                    if (numChars >= TEXT_BUFFER_SIZE) renderText();
                 }
             }
         }
 
         public static float textHeight(string text, float size = -1.0f)
         {
-            if (size < 0.0f) size = default_fontsize;
+            if (size < 0.0f) size = defaultFontsize;
             float h = size;
             char[] chars = text.ToCharArray();
             for (int i = 0; i < text.Length - 1; i++)
@@ -259,7 +259,7 @@ namespace Cluster.Rendering.Draw2D
 
         public static float estimatedTextWidth(string text, float size = -1.0f)
         {
-            if (size < 0.0f) size = default_fontsize;
+            if (size < 0.0f) size = defaultFontsize;
             float width = 0.0f;
             foreach (string zeile in text.Split('\n'))
             {
@@ -269,11 +269,11 @@ namespace Cluster.Rendering.Draw2D
             return width;
         }
 
-        public static void init(string font_url = "Courier.png")
+        public static void init(string fontUrl = "Courier.png")
         {
-            text_shader = new Shader(Resources.text_vert, Resources.text_frag, Resources.text_geom);
+            textShader = new Shader(Resources.text_vert, Resources.text_frag, Resources.text_geom);
 
-            Bitmap data = new Bitmap(GameWindow.BASE_FOLDER + "textures/" + font_url);
+            Bitmap data = new Bitmap(GameWindow.BASE_FOLDER + "textures/" + fontUrl);
             BitmapData bdat = data.LockBits(new Rectangle(0, 0, data.Width, data.Height), ImageLockMode.ReadOnly,
                 System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             font = GL.GenTexture();
@@ -293,9 +293,9 @@ namespace Cluster.Rendering.Draw2D
 
 
             //font = new texture(FILE_DIRECTORY + "textures/Standard.png");
-            text_rgba = new float[TEXT_BUFFER_SIZE * 4];
-            text_pos = new float[TEXT_BUFFER_SIZE * 3];
-            text_char = new float[TEXT_BUFFER_SIZE];
+            textRgba = new float[TEXT_BUFFER_SIZE * 4];
+            textPos = new float[TEXT_BUFFER_SIZE * 3];
+            textChar = new float[TEXT_BUFFER_SIZE];
         }
 
         static void set_buffers_text()
@@ -326,52 +326,52 @@ namespace Cluster.Rendering.Draw2D
             {
                 vertexBufferArray = GL.GenVertexArray();
 
-                buf_rgba = GL.GenBuffer();
-                buf_char = GL.GenBuffer();
-                buf_pos = GL.GenBuffer();
+                bufRgba = GL.GenBuffer();
+                bufChar = GL.GenBuffer();
+                bufPos = GL.GenBuffer();
             }
 
 
             GL.BindVertexArray(vertexBufferArray);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, buf_rgba);
-            GL.BufferData(BufferTarget.ArrayBuffer, text_rgba.Length * sizeof(float), text_rgba,
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufRgba);
+            GL.BufferData(BufferTarget.ArrayBuffer, textRgba.Length * sizeof(float), textRgba,
                 BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(vertexBufferArray, 0);
+            GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, buf_char);
-            GL.BufferData(BufferTarget.ArrayBuffer, text_char.Length * sizeof(float), text_char,
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufChar);
+            GL.BufferData(BufferTarget.ArrayBuffer, textChar.Length * sizeof(float), textChar,
                 BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(vertexBufferArray, 1);
+            GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 1, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, buf_pos);
-            GL.BufferData(BufferTarget.ArrayBuffer, text_pos.Length * sizeof(float), text_pos,
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufPos);
+            GL.BufferData(BufferTarget.ArrayBuffer, textPos.Length * sizeof(float), textPos,
                 BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(vertexBufferArray, 2);
+            GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
         }
 
         internal static void renderText()
         {
-            if (num_chars == 0) return;
+            if (numChars == 0) return;
             //Console.WriteLine("renderText() -> num_chars = " + num_chars.ToString());
             set_buffers_text();
 
 
-            text_shader.bind();
+            textShader.bind();
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, font);
 
 
-            GL.Uniform3(text_shader.getUniformLocation("viewport"), 1.0f / (float) GameWindow.active.width,
+            GL.Uniform3(textShader.getUniformLocation("viewport"), 1.0f / (float) GameWindow.active.width,
                 1.0f / (float) GameWindow.active.height, 0.0f);
-            GL.DrawArrays(PrimitiveType.Points, 0, num_chars);
+            GL.DrawArrays(PrimitiveType.Points, 0, numChars);
 
             GL.BindVertexArray(0);
             GL.BindTexture(TextureTarget.Texture2D, 0);
             Shader.unbind();
-            num_chars = 0;
+            numChars = 0;
         }
     }
 }

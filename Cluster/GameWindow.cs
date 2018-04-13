@@ -43,16 +43,16 @@ namespace Cluster
 
 
         //Fensterinfos
-        string _title;
+        string title;
         public int width, height;
 		public float multX;
 	    public float multY;
-	    bool _fullscreen;
+	    bool fullscreen;
 
 
         //Performance-Messung
-        int _renderTime;
-	    int _swapbufferTime;
+        int renderTime;
+	    int swapbufferTime;
 	    Stopwatch watch;
 
 
@@ -68,17 +68,17 @@ namespace Cluster
 
 		//1440 900
 
-        public GameWindow(int width=1440, int height=900, string apptitle="Cluster")
+        public GameWindow(int width=1920, int height=1080, string apptitle="Cluster")
             // set window resolution, title, and default behaviour
             : base(width, height, GraphicsMode.Default, apptitle,
-            GameWindowFlags.FixedWindow, DisplayDevice.Default,
+            GameWindowFlags.Fullscreen, DisplayDevice.Default,
                 // ask for an OpenGL 4.0 forward compatible context
             4, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Console.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version));
 
             active = this;
-            _title = apptitle;
+            title = apptitle;
             this.width = width;
             this.height = height;
 
@@ -87,7 +87,7 @@ namespace Cluster
 
             watch = new Stopwatch();
             random = new Random();
-            _renderTime = 0;
+            renderTime = 0;
 
             keyboard = Keyboard.GetState();
             mouse = Mouse.GetState();
@@ -163,7 +163,7 @@ namespace Cluster
 			}*/
 
 
-			Text.drawText("Render Time: " + _renderTime.ToString() + "\nSwap Buffer Time: " + _swapbufferTime.ToString(), width-200, 5);
+			Text.drawText("Render Time: " + renderTime.ToString() + "\nSwap Buffer Time: " + swapbufferTime.ToString(), width-200, 5);
 
 
 			Space.update();
@@ -207,9 +207,9 @@ namespace Cluster
 
             //##################################################################################################
             // Ab hier nur noch Performance-Messung.
-            _renderTime = (int)watch.ElapsedMilliseconds;
+            renderTime = (int)watch.ElapsedMilliseconds;
             this.SwapBuffers();
-			_swapbufferTime = (int)watch.ElapsedMilliseconds;// -render_time;swapbuffer_time.ToString()
+			swapbufferTime = (int)watch.ElapsedMilliseconds;// -render_time;swapbuffer_time.ToString()
             watch.Stop();
 			//Console.WriteLine("Render Time: " + render_time.ToString() + ", time to swap buffers: " + swapbuffer_time.ToString());
 

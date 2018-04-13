@@ -15,8 +15,8 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             DESTROYED_DURING_CONSTRUCTION
         };
 
-        readonly Planet _planet;
-        readonly int _location;
+        readonly Planet planet;
+        readonly int location;
         public readonly Civilisation owner;
 
         public Blueprint blueprint;
@@ -31,8 +31,8 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public Building(Planet p, int pos, Blueprint blueprint, Civilisation owner)
         {
-            _planet = p;
-            _location = pos;
+            planet = p;
+            location = pos;
             this.blueprint = blueprint;
             this.owner = owner;
 
@@ -47,17 +47,17 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public Planet getPlanet()
         {
-            return _planet;
+            return planet;
         }
 
         public int getSpotId()
         {
-            return _location;
+            return location;
         }
 
         public float getSpotRotation()
         {
-            return ( _location + 0.5f) / _planet.size * 2.0f * (float) Math.PI;
+            return ( location + 0.5f) / planet.size * 2.0f * (float) Math.PI;
         }
 
         public float getHealthFraction()
@@ -171,7 +171,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             timer += dt;
             if (timer > 100.0f)
             {
-                _planet.infra[_location] = null;
+                planet.infra[location] = null;
             }
         }
 
@@ -209,8 +209,8 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private void useAbilityForMining(float dt)
         {
             float factor = 0.005f;
-            if (_planet.terra[_location] == Planet.Terrain.MOUNTAIN) factor = 0.0075f;
-            else if (_planet.terra[_location] == Planet.Terrain.RESSOURCES) factor = 0.02f;
+            if (planet.terra[location] == Planet.Terrain.MOUNTAIN) factor = 0.0075f;
+            else if (planet.terra[location] == Planet.Terrain.RESSOURCES) factor = 0.02f;
 
             owner.ressources += dt * factor * blueprint.specialStrength *
                                 owner.getMultiplicator(Civilisation.BONUS_RESSOURCES);

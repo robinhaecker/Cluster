@@ -12,8 +12,8 @@ namespace Cluster.Rendering.Draw2D
 {
     class Image
     {
-        static Shader _imageShader;
-        static List<Image> _rendered;
+        static Shader imageShader;
+        static List<Image> rendered;
         const int BUFFER_SIZE = 300;
 
 
@@ -22,19 +22,19 @@ namespace Cluster.Rendering.Draw2D
         float[] pos; //x, y, depth
 
 
-        static int _bufRgba;
-        private static int _bufPos;
-        static int _bufUv;
-        static int _vertexBufferArray;
-        int _numVertices;
-        private bool _inrenderlist;
+        static int bufRgba;
+        private static int bufPos;
+        static int bufUv;
+        static int vertexBufferArray;
+        int numVertices;
+        private bool inrenderlist;
 
 
         public int tex;
         float width, height;
-        float _scalex;
-        float _scaley;
-        private bool _center;
+        float scalex;
+        float scaley;
+        private bool center;
         List<Vec4> frames;
         public bool additiveBlending;
 
@@ -48,8 +48,8 @@ namespace Cluster.Rendering.Draw2D
             tex = glTextureId;
             width = 512.0f;
             height = 512.0f;
-            _scalex = 1.0f;
-            _scaley = 1.0f;
+            scalex = 1.0f;
+            scaley = 1.0f;
             frames = new List<Vec4>();
             frames.Add(new Vec4(0.0f, 0.0f, 1.0f / count, 1.0f / count2));
         }
@@ -83,8 +83,8 @@ namespace Cluster.Rendering.Draw2D
 
             width = (float) data.Width;
             height = (float) data.Height;
-            _scalex = 1.0f;
-            _scaley = 1.0f;
+            scalex = 1.0f;
+            scaley = 1.0f;
 
             frames = new List<Vec4>();
             frames.Add(new Vec4(0.0f, 0.0f, 1.0f, 1.0f));
@@ -118,17 +118,17 @@ namespace Cluster.Rendering.Draw2D
 
             width = (float) data.Width / (float) xframes;
             height = (float) data.Height / (float) yframes;
-            _scalex = 1.0f;
-            _scaley = 1.0f;
+            scalex = 1.0f;
+            scaley = 1.0f;
 
             frames = new List<Vec4>();
-            float fsc_x = 1.0f / (float) xframes, fsc_y = 1.0f / (float) yframes;
+            float fscX = 1.0f / (float) xframes, fscY = 1.0f / (float) yframes;
             for (int y = 0; y < yframes; y++)
             {
                 for (int x = 0; x < xframes; x++)
                 {
-                    frames.Add(new Vec4(fsc_x * (float) x, fsc_y * (float) y, fsc_x * (float) (x + 1),
-                        fsc_y * (float) (y + 1)));
+                    frames.Add(new Vec4(fscX * (float) x, fscY * (float) y, fscX * (float) (x + 1),
+                        fscY * (float) (y + 1)));
                 }
             }
         }
@@ -144,8 +144,8 @@ namespace Cluster.Rendering.Draw2D
 
         public void setScale(float sx, float sy)
         {
-            _scalex = sx;
-            _scaley = sy;
+            scalex = sx;
+            scaley = sy;
         }
 
         public void draw(float x, float y, float rot = 0.0f, int frame = 0)
@@ -153,121 +153,121 @@ namespace Cluster.Rendering.Draw2D
             frame = frame % frames.Count;
             rot = -rot;
 
-            if (!_inrenderlist)
+            if (!inrenderlist)
             {
-                _inrenderlist = true;
-                _rendered.Add(this);
+                inrenderlist = true;
+                rendered.Add(this);
             }
 
-            Vec2 a = new Vec2(0.5f * width * _scalex * (float) Math.Cos(rot),
-                0.5f * width * _scalex * (float) Math.Sin(rot));
-            Vec2 b = new Vec2(-0.5f * height * _scaley * (float) Math.Sin(rot),
-                0.5f * height * _scaley * (float) Math.Cos(rot));
+            Vec2 a = new Vec2(0.5f * width * scalex * (float) Math.Cos(rot),
+                0.5f * width * scalex * (float) Math.Sin(rot));
+            Vec2 b = new Vec2(-0.5f * height * scaley * (float) Math.Sin(rot),
+                0.5f * height * scaley * (float) Math.Cos(rot));
 
-            if (!_center)
+            if (!center)
             {
-                x += _scalex * width * 0.5f;
-                y += _scaley * height * 0.5f;
+                x += scalex * width * 0.5f;
+                y += scaley * height * 0.5f;
             }
 
-            rgba[_numVertices * 4 + 0] = Primitives.default_red;
-            rgba[_numVertices * 4 + 1] = Primitives.default_green;
-            rgba[_numVertices * 4 + 2] = Primitives.default_blue;
-            rgba[_numVertices * 4 + 3] = Primitives.default_alpha;
-            pos[_numVertices * 3 + 2] = Primitives.default_depth;
-            pos[_numVertices * 3 + 0] = x - a.x - b.x;
-            pos[_numVertices * 3 + 1] = y - a.y - b.y;
-            uv[_numVertices * 2 + 0] = (float) frames[frame].x;
-            uv[_numVertices * 2 + 1] = (float) frames[frame].y;
-            _numVertices++;
-            rgba[_numVertices * 4 + 0] = Primitives.default_red;
-            rgba[_numVertices * 4 + 1] = Primitives.default_green;
-            rgba[_numVertices * 4 + 2] = Primitives.default_blue;
-            rgba[_numVertices * 4 + 3] = Primitives.default_alpha;
-            pos[_numVertices * 3 + 2] = Primitives.default_depth;
-            pos[_numVertices * 3 + 0] = x - a.x + b.x;
-            pos[_numVertices * 3 + 1] = y - a.y + b.y;
-            uv[_numVertices * 2 + 0] = (float) frames[frame].x;
-            uv[_numVertices * 2 + 1] = (float) frames[frame].w;
-            _numVertices++;
-            rgba[_numVertices * 4 + 0] = Primitives.default_red;
-            rgba[_numVertices * 4 + 1] = Primitives.default_green;
-            rgba[_numVertices * 4 + 2] = Primitives.default_blue;
-            rgba[_numVertices * 4 + 3] = Primitives.default_alpha;
-            pos[_numVertices * 3 + 2] = Primitives.default_depth;
-            pos[_numVertices * 3 + 0] = x + a.x + b.x;
-            pos[_numVertices * 3 + 1] = y + a.y + b.y;
-            uv[_numVertices * 2 + 0] = (float) frames[frame].z;
-            uv[_numVertices * 2 + 1] = (float) frames[frame].w;
-            _numVertices++;
+            rgba[numVertices * 4 + 0] = Primitives.defaultRed;
+            rgba[numVertices * 4 + 1] = Primitives.defaultGreen;
+            rgba[numVertices * 4 + 2] = Primitives.defaultBlue;
+            rgba[numVertices * 4 + 3] = Primitives.defaultAlpha;
+            pos[numVertices * 3 + 2] = Primitives.defaultDepth;
+            pos[numVertices * 3 + 0] = x - a.x - b.x;
+            pos[numVertices * 3 + 1] = y - a.y - b.y;
+            uv[numVertices * 2 + 0] = (float) frames[frame].x;
+            uv[numVertices * 2 + 1] = (float) frames[frame].y;
+            numVertices++;
+            rgba[numVertices * 4 + 0] = Primitives.defaultRed;
+            rgba[numVertices * 4 + 1] = Primitives.defaultGreen;
+            rgba[numVertices * 4 + 2] = Primitives.defaultBlue;
+            rgba[numVertices * 4 + 3] = Primitives.defaultAlpha;
+            pos[numVertices * 3 + 2] = Primitives.defaultDepth;
+            pos[numVertices * 3 + 0] = x - a.x + b.x;
+            pos[numVertices * 3 + 1] = y - a.y + b.y;
+            uv[numVertices * 2 + 0] = (float) frames[frame].x;
+            uv[numVertices * 2 + 1] = (float) frames[frame].w;
+            numVertices++;
+            rgba[numVertices * 4 + 0] = Primitives.defaultRed;
+            rgba[numVertices * 4 + 1] = Primitives.defaultGreen;
+            rgba[numVertices * 4 + 2] = Primitives.defaultBlue;
+            rgba[numVertices * 4 + 3] = Primitives.defaultAlpha;
+            pos[numVertices * 3 + 2] = Primitives.defaultDepth;
+            pos[numVertices * 3 + 0] = x + a.x + b.x;
+            pos[numVertices * 3 + 1] = y + a.y + b.y;
+            uv[numVertices * 2 + 0] = (float) frames[frame].z;
+            uv[numVertices * 2 + 1] = (float) frames[frame].w;
+            numVertices++;
 
-            rgba[_numVertices * 4 + 0] = Primitives.default_red;
-            rgba[_numVertices * 4 + 1] = Primitives.default_green;
-            rgba[_numVertices * 4 + 2] = Primitives.default_blue;
-            rgba[_numVertices * 4 + 3] = Primitives.default_alpha;
-            pos[_numVertices * 3 + 2] = Primitives.default_depth;
-            pos[_numVertices * 3 + 0] = x - a.x - b.x;
-            pos[_numVertices * 3 + 1] = y - a.y - b.y;
-            uv[_numVertices * 2 + 0] = (float) frames[frame].x;
-            uv[_numVertices * 2 + 1] = (float) frames[frame].y;
-            _numVertices++;
-            rgba[_numVertices * 4 + 0] = Primitives.default_red;
-            rgba[_numVertices * 4 + 1] = Primitives.default_green;
-            rgba[_numVertices * 4 + 2] = Primitives.default_blue;
-            rgba[_numVertices * 4 + 3] = Primitives.default_alpha;
-            pos[_numVertices * 3 + 2] = Primitives.default_depth;
-            pos[_numVertices * 3 + 0] = x + a.x + b.x;
-            pos[_numVertices * 3 + 1] = y + a.y + b.y;
-            uv[_numVertices * 2 + 0] = (float) frames[frame].z;
-            uv[_numVertices * 2 + 1] = (float) frames[frame].w;
-            _numVertices++;
-            rgba[_numVertices * 4 + 0] = Primitives.default_red;
-            rgba[_numVertices * 4 + 1] = Primitives.default_green;
-            rgba[_numVertices * 4 + 2] = Primitives.default_blue;
-            rgba[_numVertices * 4 + 3] = Primitives.default_alpha;
-            pos[_numVertices * 3 + 2] = Primitives.default_depth;
-            pos[_numVertices * 3 + 0] = x + a.x - b.x;
-            pos[_numVertices * 3 + 1] = y + a.y - b.y;
-            uv[_numVertices * 2 + 0] = (float) frames[frame].z;
-            uv[_numVertices * 2 + 1] = (float) frames[frame].y;
-            _numVertices++;
+            rgba[numVertices * 4 + 0] = Primitives.defaultRed;
+            rgba[numVertices * 4 + 1] = Primitives.defaultGreen;
+            rgba[numVertices * 4 + 2] = Primitives.defaultBlue;
+            rgba[numVertices * 4 + 3] = Primitives.defaultAlpha;
+            pos[numVertices * 3 + 2] = Primitives.defaultDepth;
+            pos[numVertices * 3 + 0] = x - a.x - b.x;
+            pos[numVertices * 3 + 1] = y - a.y - b.y;
+            uv[numVertices * 2 + 0] = (float) frames[frame].x;
+            uv[numVertices * 2 + 1] = (float) frames[frame].y;
+            numVertices++;
+            rgba[numVertices * 4 + 0] = Primitives.defaultRed;
+            rgba[numVertices * 4 + 1] = Primitives.defaultGreen;
+            rgba[numVertices * 4 + 2] = Primitives.defaultBlue;
+            rgba[numVertices * 4 + 3] = Primitives.defaultAlpha;
+            pos[numVertices * 3 + 2] = Primitives.defaultDepth;
+            pos[numVertices * 3 + 0] = x + a.x + b.x;
+            pos[numVertices * 3 + 1] = y + a.y + b.y;
+            uv[numVertices * 2 + 0] = (float) frames[frame].z;
+            uv[numVertices * 2 + 1] = (float) frames[frame].w;
+            numVertices++;
+            rgba[numVertices * 4 + 0] = Primitives.defaultRed;
+            rgba[numVertices * 4 + 1] = Primitives.defaultGreen;
+            rgba[numVertices * 4 + 2] = Primitives.defaultBlue;
+            rgba[numVertices * 4 + 3] = Primitives.defaultAlpha;
+            pos[numVertices * 3 + 2] = Primitives.defaultDepth;
+            pos[numVertices * 3 + 0] = x + a.x - b.x;
+            pos[numVertices * 3 + 1] = y + a.y - b.y;
+            uv[numVertices * 2 + 0] = (float) frames[frame].z;
+            uv[numVertices * 2 + 1] = (float) frames[frame].y;
+            numVertices++;
             //System.Diagnostics.Debugger.Break();
-            if (_numVertices >= BUFFER_SIZE) renderImages();
+            if (numVertices >= BUFFER_SIZE) renderImages();
         }
 
 
         public static void init()
         {
-            _imageShader = new Shader(Resources.image_vert, Resources.image_frag);
-            _rendered = new List<Image>();
+            imageShader = new Shader(Resources.image_vert, Resources.image_frag);
+            rendered = new List<Image>();
         }
 
         void set_buffers()
         {
-            if (_vertexBufferArray == 0)
+            if (vertexBufferArray == 0)
             {
-                _vertexBufferArray = GL.GenVertexArray();
+                vertexBufferArray = GL.GenVertexArray();
 
-                _bufRgba = GL.GenBuffer();
-                _bufPos = GL.GenBuffer();
-                _bufUv = GL.GenBuffer();
+                bufRgba = GL.GenBuffer();
+                bufPos = GL.GenBuffer();
+                bufUv = GL.GenBuffer();
             }
 
 
-            GL.BindVertexArray(_vertexBufferArray);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufPos);
+            GL.BindVertexArray(vertexBufferArray);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufPos);
             GL.BufferData(BufferTarget.ArrayBuffer, pos.Length * sizeof(float), pos, BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(_vertexBufferArray, 0);
+            GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufRgba);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufRgba);
             GL.BufferData(BufferTarget.ArrayBuffer, rgba.Length * sizeof(float), rgba, BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(_vertexBufferArray, 1);
+            GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufUv);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufUv);
             GL.BufferData(BufferTarget.ArrayBuffer, uv.Length * sizeof(float), uv, BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(_vertexBufferArray, 2);
+            GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
 
             /*
@@ -304,27 +304,27 @@ namespace Cluster.Rendering.Draw2D
 
         internal static void renderImages()
         {
-            _imageShader.bind();
-            GL.Uniform3(_imageShader.getUniformLocation("viewport"), 1.0f / (float) GameWindow.active.width,
+            imageShader.bind();
+            GL.Uniform3(imageShader.getUniformLocation("viewport"), 1.0f / (float) GameWindow.active.width,
                 1.0f / (float) GameWindow.active.height, 0.0f);
 
-            foreach (Image im in _rendered)
+            foreach (Image im in rendered)
             {
-                if (im._numVertices == 0) return;
+                if (im.numVertices == 0) return;
                 im.set_buffers();
 
                 if (im.additiveBlending) GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, im.tex);
-                GL.DrawArrays(PrimitiveType.Triangles, 0, im._numVertices);
+                GL.DrawArrays(PrimitiveType.Triangles, 0, im.numVertices);
 
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-                im._numVertices = 0;
-                im._inrenderlist = false;
+                im.numVertices = 0;
+                im.inrenderlist = false;
             }
 
-            _rendered.Clear();
+            rendered.Clear();
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
             Shader.unbind();

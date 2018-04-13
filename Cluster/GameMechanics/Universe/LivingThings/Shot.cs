@@ -20,12 +20,12 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private const int RENDER_ARRSIZE_COL = 3;
         private const int RENDER_ARRSIZE_ALPHAS = 2;
         
-        private static int _renderShotCount;
-        private static int _countshots;
-        static int _shotGlData;
-        static int _bufSh0;
-        static int _bufSh1;
-        static int _bufSh2;
+        private static int renderShotCount;
+        private static int countshots;
+        static int shotGlData;
+        static int bufSh0;
+        static int bufSh1;
+        static int bufSh2;
 
         private static readonly float[] renderBufPos = new float[MAX_SHOT_RENDERINGS * RENDER_ARRSIZE_POS];
         private static readonly float[] renderBufCol = new float[MAX_SHOT_RENDERINGS * RENDER_ARRSIZE_COL];
@@ -34,104 +34,104 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         public static readonly List<Shot>[] list = {new List<Shot>(), new List<Shot>()};
         public static readonly List<Shot> removed = new List<Shot>();
 
-        private readonly FiredAgainst _against;
+        private readonly FiredAgainst against;
 
-        private readonly Prototype.WeaponType _weaponType;
-        readonly Civilisation _owner;
-        private readonly Unit _from;
-        Unit _aimUnit;
+        private readonly Prototype.WeaponType weaponType;
+        readonly Civilisation owner;
+        private readonly Unit @from;
+        Unit aimUnit;
 
-        readonly Planet _aimPlanet;
+        readonly Planet aimPlanet;
         //Asteroid aim_asteroid;
 
         public float x, y, v, rot; // Position, Geschwindigkeit, Richtung
-        float _damage; // Stärke des Schadens
-        float _lifespan; // Wie lange hält der Schuss noch durch
-        private readonly float _red;
-        private readonly float _green;
-        private readonly float _blue;
-        private readonly float _alpha;
-        private readonly float _length;
+        float damage; // Stärke des Schadens
+        float lifespan; // Wie lange hält der Schuss noch durch
+        private readonly float red;
+        private readonly float green;
+        private readonly float blue;
+        private readonly float alpha;
+        private readonly float length;
 
 
         public Shot(Unit from, Unit aim = null, byte inrange = 1)
         {
-            _red = _green = _blue = _alpha = 1.0f;
-            _length = 13.5f;
-            _against = FiredAgainst.UNITS;
+            red = green = blue = alpha = 1.0f;
+            length = 13.5f;
+            against = FiredAgainst.UNITS;
 
-            this._from = from;
-            _owner = from.getOwner();
-            _aimUnit = aim;
-            _weaponType = from.getPrototype().weaponType;
+            this.@from = from;
+            owner = from.getOwner();
+            aimUnit = aim;
+            weaponType = from.getPrototype().weaponType;
             x = from.x;
             y = from.y;
             v = 100.0f;
             rot = from.rot;
-            _damage = from.getPrototype().getAttack(_owner);
-            _lifespan = 10.0f;
+            damage = from.getPrototype().getAttack(owner);
+            lifespan = 10.0f;
 
-            if (_weaponType == Prototype.WeaponType.PERSECUTE_AND_LASER)
+            if (weaponType == Prototype.WeaponType.PERSECUTE_AND_LASER)
             {
-                _red = 0.25f;
-                _green = 1.0f;
-                _blue = 0.4f;
-                _length = 5.0f;
+                red = 0.25f;
+                green = 1.0f;
+                blue = 0.4f;
+                length = 5.0f;
                 if (inrange == 2) return; // Zu nahe dran --> zurück ohne hinzufügen des Schusses.
-                else if (inrange == 1) _weaponType = Prototype.WeaponType.LASER; // Laserwaffe für Nahkampf
-                else _weaponType = Prototype.WeaponType.PERSECUTE; // Lenkraketen für Fernkampf (oder anders herum?)
+                else if (inrange == 1) weaponType = Prototype.WeaponType.LASER; // Laserwaffe für Nahkampf
+                else weaponType = Prototype.WeaponType.PERSECUTE; // Lenkraketen für Fernkampf (oder anders herum?)
             }
 
-            if (_weaponType == Prototype.WeaponType.LASER)
+            if (weaponType == Prototype.WeaponType.LASER)
             {
-                _green = _blue = 0.0f;
-                _alpha = 0.35f;
-                _lifespan = 2.0f;
-                _damage /= _lifespan;
+                green = blue = 0.0f;
+                alpha = 0.35f;
+                lifespan = 2.0f;
+                damage /= lifespan;
                 x = y = 0.0f; // Wird bei Lasern für relativen Offset zum Zeichnen benutzt.
             }
 
 
-            list[(int)_against].Add(this);
+            list[(int)against].Add(this);
         }
 
         public Shot(Shot from)
         {
-            _red = _alpha = 1.0f;
-            _green = (float) GameWindow.random.NextDouble();
-            _blue = 0.0f;
-            _length = 4.5f;
-            _against = FiredAgainst.UNITS;
+            red = alpha = 1.0f;
+            green = (float) GameWindow.random.NextDouble();
+            blue = 0.0f;
+            length = 4.5f;
+            against = FiredAgainst.UNITS;
 
-            this._from = from._from;
-            _owner = from._owner;
-            _aimUnit = null;
-            _weaponType = Prototype.WeaponType.STD;
+            this.@from = from.@from;
+            owner = from.owner;
+            aimUnit = null;
+            weaponType = Prototype.WeaponType.STD;
             x = (float) from.x;
             y = (float) from.y;
-            v = _green * 50.0f + 30.0f;
+            v = green * 50.0f + 30.0f;
             rot = (float) (GameWindow.random.NextDouble() * 2.0f * Math.PI);
-            _damage = from._damage + _green * 10.0f;
-            _lifespan = 10.0f;
+            damage = from.damage + green * 10.0f;
+            lifespan = 10.0f;
 
-            list[(int)_against].Add(this);
+            list[(int)against].Add(this);
         }
 
         public Shot(Unit from, Planet pl, int index)
         {
-            this._from = from;
-            _owner = from.getOwner();
-            _damage = from.getPrototype().getAttack(_owner);
-            _lifespan = 10.0f;
+            this.@from = from;
+            owner = from.getOwner();
+            damage = from.getPrototype().getAttack(owner);
+            lifespan = 10.0f;
 
-            _red = _owner.red * 0.25f + 0.75f;
-            _green = _owner.green * 0.25f + 0.75f;
-            _blue = _owner.blue * 0.25f + 0.75f;
-            _alpha = 0.5f;
-            _length = 25.0f;
-            _against = FiredAgainst.BUILDINGS;
+            red = owner.red * 0.25f + 0.75f;
+            green = owner.green * 0.25f + 0.75f;
+            blue = owner.blue * 0.25f + 0.75f;
+            alpha = 0.5f;
+            length = 25.0f;
+            against = FiredAgainst.BUILDINGS;
 
-            _aimPlanet = pl;
+            aimPlanet = pl;
 
 
             x = (float) from.x;
@@ -143,29 +143,29 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                 pl.x + (double) pl.size * 20.0 * Math.Cos(((double) index + 0.5) / (double) pl.size * 2.0 * Math.PI) -
                 x);
 
-            list[(int)_against].Add(this);
+            list[(int)against].Add(this);
         }
 
 
         public static void update(float t = 1.0f)
         {
-            _countshots = 0;
+            countshots = 0;
             foreach (Shot s in list[(int)FiredAgainst.UNITS])
             {
                 s.simAgainstUnits(t);
-                _countshots++;
+                countshots++;
             }
 
             foreach (Shot s in list[(int)FiredAgainst.BUILDINGS])
             {
                 s.simAgainstBuildings(t);
-                _countshots++;
+                countshots++;
             }
 
             // Entferne Schüsse, die nicht mehr gebraucht werden.
             foreach (Shot s in removed)
             {
-                list[(int)s._against].Remove(s);
+                list[(int)s.against].Remove(s);
             }
 
             removed.Clear();
@@ -174,15 +174,15 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private void simAlways(float t)
         {
-            if (_weaponType != Prototype.WeaponType.LASER)
+            if (weaponType != Prototype.WeaponType.LASER)
             {
                 x += v * (float) Math.Cos(rot) * t * 0.002f;
                 y += v * (float) Math.Sin(rot) * t * 0.002f;
             }
 
-            _lifespan -= t * 0.002f;
+            lifespan -= t * 0.002f;
 
-            if (_lifespan <= 0.0)
+            if (lifespan <= 0.0)
             {
                 removed.Add(this);
             }
@@ -191,31 +191,31 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private void simAgainstUnits(float t)
         {
             // Kollisionscheck, Lenkbewegungen etc.
-            if (_weaponType != Prototype.WeaponType.LASER)
+            if (weaponType != Prototype.WeaponType.LASER)
             {
                 float neardist = 1000.0f;
                 Sector s = Sector.get(x, y);
                 for (int i = 0; i < Civilisation.count + 1; i++)
                 {
-                    if (i == _owner.getId()) continue;
+                    if (i == owner.getId()) continue;
                     foreach (Unit u in s.ships[i])
                     {
                         float dst = (float) Math.Sqrt((u.x - x) * (u.x - x) + (u.y - y) * (u.y - y));
                         if (dst < 5.0f * u.getPrototype().shapeScaling * u.getPrototype().shape.radius)
                         {
-                            u.damage(_damage);
+                            u.damage(damage);
                             removed.Add(this);
                             return;
                         }
-                        else if (_weaponType == Prototype.WeaponType.FIND_AIM && dst < neardist)
+                        else if (weaponType == Prototype.WeaponType.FIND_AIM && dst < neardist)
                         {
                             neardist = dst;
-                            _aimUnit = u;
+                            aimUnit = u;
                         }
-                        else if (_weaponType == Prototype.WeaponType.EXPLOSIVE && dst <
+                        else if (weaponType == Prototype.WeaponType.EXPLOSIVE && dst <
                                  30.0f * u.getPrototype().shapeScaling * u.getPrototype().shape.radius + 150.0f)
                         {
-                            for (int j = 0; j < 15 + _owner.getMultiplicator(Civilisation.BONUS_WEAPONS_EXPLOSIVE); j++)
+                            for (int j = 0; j < 15 + owner.getMultiplicator(Civilisation.BONUS_WEAPONS_EXPLOSIVE); j++)
                             {
                                 // ReSharper disable once ObjectCreationAsStatement -> Wird direkt in Liste gespeichert (Konstruktor)
                                 new Shot(this);
@@ -227,19 +227,19 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     }
                 }
 
-                if (_weaponType == Prototype.WeaponType.FIND_AIM || _weaponType == Prototype.WeaponType.PERSECUTE)
+                if (weaponType == Prototype.WeaponType.FIND_AIM || weaponType == Prototype.WeaponType.PERSECUTE)
                 {
-                    turnTowards(_aimUnit.x - x, _aimUnit.y - y, t * 0.002);
+                    turnTowards(aimUnit.x - x, aimUnit.y - y, t * 0.002);
                 }
             }
             else // Laserwaffen anders handeln.
             {
                 float mult = 1.0f;
-                if (_from != null && _aimUnit.getPrototype().goodAgainst() == _from.getPrototype().shipClass)
+                if (@from != null && aimUnit.getPrototype().goodAgainst() == @from.getPrototype().shipClass)
                     mult = 0.15f;
-                _aimUnit.damage(_damage * mult);
-                _damage *= 0.95f;
-                if (_aimUnit.isDead()) _lifespan -= t * 0.005f;
+                aimUnit.damage(damage * mult);
+                damage *= 0.95f;
+                if (aimUnit.isDead()) lifespan -= t * 0.005f;
             }
 
             // Allgemeine Bewegungen
@@ -249,30 +249,30 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private void simAgainstBuildings(float t)
         {
             // Kollisionscheck etc.
-            float dx = x - _aimPlanet.x, dy = y - _aimPlanet.y;
+            float dx = x - aimPlanet.x, dy = y - aimPlanet.y;
             float dst = (float) Math.Sqrt(dx * dx + dy * dy);
-            if (dst < _aimPlanet.size * 20.0f)
+            if (dst < aimPlanet.size * 20.0f)
             {
                 removed.Add(this);
                 int feld = (int) (((2.0 * Math.PI + Math.Atan2(dy, dx)) % (2.0 * Math.PI)) *
-                                  (_aimPlanet.size / (2.0 * Math.PI)));
-                if (_aimPlanet.infra[feld] != null && _aimPlanet.infra[feld].owner != _owner)
+                                  (aimPlanet.size / (2.0 * Math.PI)));
+                if (aimPlanet.infra[feld] != null && aimPlanet.infra[feld].owner != owner)
                 {
-                    if (_aimPlanet.terra[feld] == Planet.Terrain.MOUNTAIN)
+                    if (aimPlanet.terra[feld] == Planet.Terrain.MOUNTAIN)
                     {
-                        _damage *= 0.5f;
+                        damage *= 0.5f;
                     }
-                    else if (_aimPlanet.terra[feld] == Planet.Terrain.WATER)
+                    else if (aimPlanet.terra[feld] == Planet.Terrain.WATER)
                     {
-                        _damage *= 0.33f;
+                        damage *= 0.33f;
                     }
 
-                    if (_aimPlanet.effect[feld] == Planet.Effect.RAIN)
+                    if (aimPlanet.effect[feld] == Planet.Effect.RAIN)
                     {
-                        _damage *= 0.5f;
+                        damage *= 0.5f;
                     } // Niederschlag/Wolken/Schneesturm reduziert Zielgenauigkeit und Schaden um 50%
 
-                    _aimPlanet.infra[feld].damage(_damage);
+                    aimPlanet.infra[feld].damage(damage);
                     return;
                 }
             }
@@ -284,7 +284,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public static void render()
         {
-            _renderShotCount = 0;
+            renderShotCount = 0;
             /*float x0 = Space.screenToSpaceX(0), y0 = Space.screenToSpaceY(0);
             float x1 = Space.screenToSpaceX(GameWindow.active.width), y1 = Space.screenToSpaceY(GameWindow.active.height);
             
@@ -297,38 +297,38 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                 {
                     if (true) //Space.isVisible(s.x, s.y))//Math.Abs(s.x - cx) <= dx && Math.Abs(s.y - cy) <= dy)
                     {
-                        renderBufCol[_renderShotCount * RENDER_ARRSIZE_COL + 0] = s._red;
-                        renderBufCol[_renderShotCount * RENDER_ARRSIZE_COL + 1] = s._green;
-                        renderBufCol[_renderShotCount * RENDER_ARRSIZE_COL + 2] = s._blue;
+                        renderBufCol[renderShotCount * RENDER_ARRSIZE_COL + 0] = s.red;
+                        renderBufCol[renderShotCount * RENDER_ARRSIZE_COL + 1] = s.green;
+                        renderBufCol[renderShotCount * RENDER_ARRSIZE_COL + 2] = s.blue;
 
-                        if (s._weaponType == Prototype.WeaponType.LASER)
+                        if (s.weaponType == Prototype.WeaponType.LASER)
                         {
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 0] =
-                                s._from.x + (float) Math.Cos(s._from.rot) * s.x - (float) Math.Sin(s._from.rot) * s.y;
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 1] =
-                                s._from.y + (float) Math.Sin(s._from.rot) * s.x + (float) Math.Cos(s._from.rot) * s.y;
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 2] = s._aimUnit.x;
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 3] = s._aimUnit.y;
-                            renderBufAlphas[_renderShotCount * RENDER_ARRSIZE_ALPHAS + 0] =
-                                s._alpha * Math.Min(1.0f, s._lifespan);
-                            renderBufAlphas[_renderShotCount * RENDER_ARRSIZE_ALPHAS + 1] =
-                                s._alpha * Math.Min(1.0f, s._lifespan);
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 0] =
+                                s.@from.x + (float) Math.Cos(s.@from.rot) * s.x - (float) Math.Sin(s.@from.rot) * s.y;
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 1] =
+                                s.@from.y + (float) Math.Sin(s.@from.rot) * s.x + (float) Math.Cos(s.@from.rot) * s.y;
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 2] = s.aimUnit.x;
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 3] = s.aimUnit.y;
+                            renderBufAlphas[renderShotCount * RENDER_ARRSIZE_ALPHAS + 0] =
+                                s.alpha * Math.Min(1.0f, s.lifespan);
+                            renderBufAlphas[renderShotCount * RENDER_ARRSIZE_ALPHAS + 1] =
+                                s.alpha * Math.Min(1.0f, s.lifespan);
                         }
                         else
                         {
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 0] = s.x;
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 1] = s.y;
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 2] =
-                                s.x - (float) Math.Cos(s.rot) * s._length;
-                            renderBufPos[_renderShotCount * RENDER_ARRSIZE_POS + 3] =
-                                s.y - (float) Math.Sin(s.rot) * s._length;
-                            renderBufAlphas[_renderShotCount * RENDER_ARRSIZE_ALPHAS + 0] = 0.0f;
-                            renderBufAlphas[_renderShotCount * RENDER_ARRSIZE_ALPHAS + 1] =
-                                s._alpha * Math.Min(1.0f, s._lifespan);
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 0] = s.x;
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 1] = s.y;
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 2] =
+                                s.x - (float) Math.Cos(s.rot) * s.length;
+                            renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 3] =
+                                s.y - (float) Math.Sin(s.rot) * s.length;
+                            renderBufAlphas[renderShotCount * RENDER_ARRSIZE_ALPHAS + 0] = 0.0f;
+                            renderBufAlphas[renderShotCount * RENDER_ARRSIZE_ALPHAS + 1] =
+                                s.alpha * Math.Min(1.0f, s.lifespan);
                         }
 
-                        _renderShotCount++;
-                        if (_renderShotCount >= MAX_SHOT_RENDERINGS)
+                        renderShotCount++;
+                        if (renderShotCount >= MAX_SHOT_RENDERINGS)
                         {
                             render_part2();
                             return;
@@ -337,7 +337,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                 }
             }
 
-            if (_renderShotCount > 0)
+            if (renderShotCount > 0)
             {
                 render_part2();
             }
@@ -348,32 +348,32 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             GL.LineWidth(2.0f);
             GL.Disable(EnableCap.DepthTest);
 
-            if (_shotGlData == 0)
+            if (shotGlData == 0)
             {
-                _shotGlData = GL.GenVertexArray();
-                _bufSh0 = GL.GenBuffer();
-                _bufSh1 = GL.GenBuffer();
-                _bufSh2 = GL.GenBuffer();
+                shotGlData = GL.GenVertexArray();
+                bufSh0 = GL.GenBuffer();
+                bufSh1 = GL.GenBuffer();
+                bufSh2 = GL.GenBuffer();
             }
 
-            GL.BindVertexArray(_shotGlData);
+            GL.BindVertexArray(shotGlData);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufSh0);
-            GL.BufferData(BufferTarget.ArrayBuffer, (_renderShotCount + 1) * RENDER_ARRSIZE_POS * sizeof(float),
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufSh0);
+            GL.BufferData(BufferTarget.ArrayBuffer, (renderShotCount + 1) * RENDER_ARRSIZE_POS * sizeof(float),
                 renderBufPos, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexArrayAttrib(_shotGlData, 0);
+            GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, RENDER_ARRSIZE_POS, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufSh1);
-            GL.BufferData(BufferTarget.ArrayBuffer, (_renderShotCount + 1) * RENDER_ARRSIZE_COL * sizeof(float),
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufSh1);
+            GL.BufferData(BufferTarget.ArrayBuffer, (renderShotCount + 1) * RENDER_ARRSIZE_COL * sizeof(float),
                 renderBufCol, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexArrayAttrib(_shotGlData, 1);
+            GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, RENDER_ARRSIZE_COL, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufSh2);
-            GL.BufferData(BufferTarget.ArrayBuffer, (_renderShotCount + 1) * RENDER_ARRSIZE_ALPHAS * sizeof(float),
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufSh2);
+            GL.BufferData(BufferTarget.ArrayBuffer, (renderShotCount + 1) * RENDER_ARRSIZE_ALPHAS * sizeof(float),
                 renderBufAlphas, BufferUsageHint.DynamicDraw);
-            GL.EnableVertexArrayAttrib(_shotGlData, 2);
+            GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, RENDER_ARRSIZE_ALPHAS, VertexAttribPointerType.Float, false, 0, 0);
 
 
@@ -381,7 +381,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             GL.Uniform3(Space.shotShader.getUniformLocation("viewport"), GameWindow.active.multX,
                 GameWindow.active.multY, Space.animation);
             GL.Uniform3(Space.shotShader.getUniformLocation("scroll"), Space.scrollX, Space.scrollY, Space.zoom);
-            GL.DrawArrays(PrimitiveType.Points, 0, _renderShotCount);
+            GL.DrawArrays(PrimitiveType.Points, 0, renderShotCount);
 
 
             GL.BindVertexArray(0);
@@ -391,7 +391,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public Prototype.WeaponType getWeaponType()
         {
-            return _weaponType;
+            return weaponType;
         }
 
 

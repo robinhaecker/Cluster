@@ -32,13 +32,13 @@ namespace Cluster.GameMechanics.Content
 		Mesh shape;             // Darstellung als Bild
 
 		byte bonus;             // Welche Art Bonus?
-		float bonus_strength;   // Wie stark ist der Bonus?
+		float bonusStrength;   // Wie stark ist der Bonus?
 		int cost;               // Wieviele Forschungspunkte werden gebraucht?
-		bool triggered_only;    // Wird nicht im Tech-Tree angezeigt, da nur Spontan-Entdeckung möglich?
+		bool triggeredOnly;    // Wird nicht im Tech-Tree angezeigt, da nur Spontan-Entdeckung möglich?
 
 		int era;                        // Wie weit hinten im Techtree wird die Technologie angezeigt?
 		List<Technology> requirements;  // Welche Technologien sind die Voraussetzung?
-		List<Technology> leads_to;      // Für welche Technologien bildet diese die Grundlage?
+		List<Technology> leadsTo;      // Für welche Technologien bildet diese die Grundlage?
 		//List<int> int_req;
 
 
@@ -93,15 +93,15 @@ namespace Cluster.GameMechanics.Content
 			file.Close();
 		}*/
 
-		public Technology(string file_directory, string file_name)
+		public Technology(string fileDirectory, string fileName)
 		{
 			//Console.WriteLine("Load Technology: " + file_directory + file_name);
 
-			using (StreamReader file = new StreamReader(file_directory + file_name, System.Text.Encoding.Default))
+			using (StreamReader file = new StreamReader(fileDirectory + fileName, System.Text.Encoding.Default))
 			{
 				id = count; count++; data.Add(this);
 				requirements = new List<Technology>();
-				leads_to = new List<Technology>();
+				leadsTo = new List<Technology>();
 
 				file.ReadLine();        //.Rohmaterial für Technologiedaten
 				file.ReadLine();        //.
@@ -113,19 +113,19 @@ namespace Cluster.GameMechanics.Content
 				description[1] = file.ReadLine();
 				description[2] = file.ReadLine();
 				file.ReadLine();        //.Grafikdatei
-				string gfx_file = file.ReadLine();
-				if (File.Exists(file_directory + "gfx/" + gfx_file)) shape = new Mesh(file_directory + "gfx/" + gfx_file, false, true);
+				string gfxFile = file.ReadLine();
+				if (File.Exists(fileDirectory + "gfx/" + gfxFile)) shape = new Mesh(fileDirectory + "gfx/" + gfxFile, false, true);
 				file.ReadLine();        //.Bonus
-				string bonus_txt = file.ReadLine();
-				bonus = getBonusFromTxt(bonus_txt);
+				string bonusTxt = file.ReadLine();
+				bonus = getBonusFromTxt(bonusTxt);
 				file.ReadLine();        //.Stärke des Bonus
-				bonus_strength = float.Parse(file.ReadLine());
+				bonusStrength = float.Parse(file.ReadLine());
 				file.ReadLine();        //.Era
 				era = int.Parse(file.ReadLine());
 				file.ReadLine();        //.Forschungspunkte
 				cost = int.Parse(file.ReadLine());
 				file.ReadLine();        //.Triggered Only
-				triggered_only = (file.ReadLine() == "ja");
+				triggeredOnly = (file.ReadLine() == "ja");
 				file.ReadLine();        //.Voraussetzungen
 
 				bool exit = false;
@@ -146,7 +146,7 @@ namespace Cluster.GameMechanics.Content
 						if (req != null)
 						{
 							requirements.Add(req);
-							req.leads_to.Add(this);
+							req.leadsTo.Add(this);
 						}
 					}
 					else

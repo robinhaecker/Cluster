@@ -48,9 +48,9 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
         // statics
         public static readonly List<Planet> planets = new List<Planet>();
-        static int _countId;
+        static int countId;
 
-        private static Mesh[,] _jungle;
+        private static Mesh[,] jungle;
         public static Mesh[] terraImage;
 
 
@@ -65,30 +65,30 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
         public float[] timer;
         public Building[] infra;
 
-        private readonly int _random;
-        private readonly int _id;
+        private readonly int random;
+        private readonly int id;
 
-        private bool _canseeTemp;
-        private bool _seenbefore;
+        private bool canseeTemp;
+        private bool seenbefore;
         internal float red;
         internal float green;
         internal float blue;
 
-        int _glData, _bufPos, _bufTer, _bufCol;
-        private bool _glDataUpdate;
+        int glData, bufPos, bufTer, bufCol;
+        private bool glDataUpdate;
 
 
         // constructors
         public Planet(float x, float y, int size = 15)
         {
             planets.Add(this);
-            _id = _countId;
-            _countId++;
-            _glDataUpdate = true;
+            id = countId;
+            countId++;
+            glDataUpdate = true;
 
             this.x = x;
             this.y = y;
-            _random = GameWindow.random.Next(1000);
+            random = GameWindow.random.Next(1000);
 
             this.size = size;
             terra = new Terrain[size];
@@ -103,14 +103,14 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             green = 1.0f;
             blue = 1.0f;
 
-            red = Civilisation.data[_random % Civilisation.count].red;
-            green = Civilisation.data[_random % Civilisation.count].green;
-            blue = Civilisation.data[_random % Civilisation.count].blue;
+            red = Civilisation.data[random % Civilisation.count].red;
+            green = Civilisation.data[random % Civilisation.count].green;
+            blue = Civilisation.data[random % Civilisation.count].blue;
 
-            _seenbefore = false;
-            _canseeTemp = false;
+            seenbefore = false;
+            canseeTemp = false;
 
-            name = "Planet_" + _id.ToString();
+            name = "Planet_" + id.ToString();
             climate = (Climate) GameWindow.random.Next(NUMBER_OF_CLIMATES);
 
             //Planeten mit Landschaft fuellen
@@ -158,9 +158,9 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 }
                 else
                 {
-                    terra[i] = Terrain.FERTILE;
+                    terra[i] = Terrain.FERTILE; /*
                     build(i, Blueprint.data[GameWindow.random.Next(Blueprint.count)],
-                        Civilisation.data[GameWindow.random.Next(Civilisation.count)], false);
+                        Civilisation.data[GameWindow.random.Next(Civilisation.count)], false);*/
                 }
 
                 //Console.WriteLine(terra[i].ToString());
@@ -171,13 +171,13 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
         // Initiation
         public static void init()
         {
-            _jungle = new Mesh[JUNGLE_VARIETY, NUMBER_OF_CLIMATES];
+            jungle = new Mesh[JUNGLE_VARIETY, NUMBER_OF_CLIMATES];
             for (byte i = 0; i < JUNGLE_VARIETY; i++)
             {
                 for (byte j = 0; j < NUMBER_OF_CLIMATES; j++)
                 {
                     //jungle[i,j] = new Mesh("planets/tree" + i.ToString() + ".vg");
-                    _jungle[i, j] = new Mesh("planets/tree_" + j.ToString() + "_" + i.ToString() + ".vg");
+                    jungle[i, j] = new Mesh("planets/tree_" + j.ToString() + "_" + i.ToString() + ".vg");
                 }
             }
 
@@ -415,8 +415,8 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                             colour[(i * PLANET_DETAIL + j + 1) * 3 + 0] = 0.2f;
                             colour[(i * PLANET_DETAIL + j + 1) * 3 + 1] = 0.2f;
                             colour[(i * PLANET_DETAIL + j + 1) * 3 + 2] = 0.2f;
-                            if (( j > PLANET_DETAIL * 0.45) &&
-                                ( j < PLANET_DETAIL * 0.55))
+                            if ((j > PLANET_DETAIL * 0.45) &&
+                                (j < PLANET_DETAIL * 0.55))
                             {
                                 colour[(i * PLANET_DETAIL + j + 1) * 3 + 0] = 0.5f;
                                 colour[(i * PLANET_DETAIL + j + 1) * 3 + 1] = 0.0f;
@@ -491,7 +491,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                     {
                         height = baseHeight;
                     }
-                    
+
                     //Vertices setzen
                     double alpha = 2.0 * (double) Math.PI * ((double) i + ((double) j / (double) PLANET_DETAIL)) /
                                    (double) size;
@@ -510,47 +510,47 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
 
             //Create the vertex array object.
-            if (_glData == 0)
+            if (glData == 0)
             {
-                _glData = GL.GenVertexArray();
-                _bufPos = GL.GenBuffer();
-                _bufTer = GL.GenBuffer();
-                _bufCol = GL.GenBuffer();
+                glData = GL.GenVertexArray();
+                bufPos = GL.GenBuffer();
+                bufTer = GL.GenBuffer();
+                bufCol = GL.GenBuffer();
             }
 
-            GL.BindVertexArray(_glData);
+            GL.BindVertexArray(glData);
 
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufPos);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufPos);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices,
                 BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(_glData, 0);
+            GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufTer);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufTer);
             GL.BufferData(BufferTarget.ArrayBuffer, terrain.Length * sizeof(float), terrain,
                 BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(_glData, 1);
+            GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 1, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _bufCol);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufCol);
             GL.BufferData(BufferTarget.ArrayBuffer, colour.Length * sizeof(float), colour, BufferUsageHint.StaticDraw);
-            GL.EnableVertexArrayAttrib(_glData, 2);
+            GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.BindVertexArray(0);
-            _glDataUpdate = false;
+            glDataUpdate = false;
         }
 
         private void _render()
         {
-            if (_glDataUpdate) prepare_vba();
+            if (glDataUpdate) prepare_vba();
 
             GL.Uniform1(Space.planetShader.getUniformLocation("pos_x"), (float) x);
             GL.Uniform1(Space.planetShader.getUniformLocation("pos_y"), (float) y);
             GL.Uniform1(Space.planetShader.getUniformLocation("size"), (float) size);
             GL.Uniform3(Space.planetShader.getUniformLocation("rgb"), red, green, blue);
 
-            GL.BindVertexArray(_glData);
+            GL.BindVertexArray(glData);
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, size * PLANET_DETAIL + 2);
             GL.DrawArrays(PrimitiveType.LineLoop, 1, size * PLANET_DETAIL + 1);
             GL.BindVertexArray(0);
@@ -571,12 +571,12 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 var transp = 1.0f;
                 if (terra[ii] == Terrain.JUNGLE)
                 {
-                    int cc = (_random * size + ii) % JUNGLE_VARIETY;
+                    int cc = (random * size + ii) % JUNGLE_VARIETY;
                     if (infra[ii] != null) transp = 1.0f - infra[ii].getHealthFraction() * 0.75f;
                     GL.Uniform3(Space.buildingShader.getUniformLocation("info"), (float) ii, 1.0f, transp);
                     GL.Uniform3(Space.buildingShader.getUniformLocation("rgb"), 1.0f, 1.0f, 1.0f);
-                    GL.BindVertexArray(_jungle[cc, (int) climate].gl_data);
-                    GL.DrawArrays(PrimitiveType.Lines, 0, _jungle[cc, (int) climate].num_lines * 2);
+                    GL.BindVertexArray(jungle[cc, (int) climate].glData);
+                    GL.DrawArrays(PrimitiveType.Lines, 0, jungle[cc, (int) climate].numLines * 2);
                 }
 
                 if (infra[ii] == null)
@@ -591,15 +591,15 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                     transp = 1.0f - infra[ii].timer * 0.01f;
                 if (infra[ii].status == Building.Status.UNDER_CONSTRUCTION ||
                     infra[ii].status == Building.Status.DESTROYED_DURING_CONSTRUCTION)
-                    ycut = infra[ii].getHealthFraction() * infra[ii].blueprint.shape.box_y;
+                    ycut = infra[ii].getHealthFraction() * infra[ii].blueprint.shape.boxY;
 
 
                 GL.Uniform3(Space.buildingShader.getUniformLocation("info"), (float) ii, (float) ycut, transp);
                 GL.Uniform3(Space.buildingShader.getUniformLocation("rgb"), 0.5f + 0.5f * infra[ii].owner.red,
                     0.5f + 0.5f * infra[ii].owner.green, 0.5f + 0.5f * infra[ii].owner.blue);
 
-                GL.BindVertexArray(infra[ii].blueprint.shape.gl_data);
-                GL.DrawArrays(PrimitiveType.Lines, 0, infra[ii].blueprint.shape.num_lines * 2);
+                GL.BindVertexArray(infra[ii].blueprint.shape.glData);
+                GL.DrawArrays(PrimitiveType.Lines, 0, infra[ii].blueprint.shape.numLines * 2);
             }
 
             GL.BindVertexArray(0);
@@ -919,7 +919,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             {
                 float subfield = (float) GameWindow.random.NextDouble();
                 var height = 20.0f * size + 100.0f + 30.0f * ((float) GameWindow.random.NextDouble() - 0.5f) *
-                               (1.0f - 4.0f * (subfield - 0.5f) * (subfield - 0.5f));
+                             (1.0f - 4.0f * (subfield - 0.5f) * (subfield - 0.5f));
                 if (climate == Climate.COLD)
                 {
                     height = 20.0f * size + 10.0f + 50.0f * ((float) GameWindow.random.NextDouble()) *
@@ -934,7 +934,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 var rot = (float) Math.PI * 2.0f * (subfield + i) / size;
                 var particle = new Particle(x + (float) Math.Cos(rot) * height, y + (float) Math.Sin(rot) * height);
                 particle.setSpeed(-(float) Math.Sin(rot) * (float) Math.Sin(timer[i] * 0.1f + i) * 30.0f,
-                    (float) Math.Cos(rot) * (float) Math.Sin(timer[i] * 0.1f +  i) * 30.0f);
+                    (float) Math.Cos(rot) * (float) Math.Sin(timer[i] * 0.1f + i) * 30.0f);
                 if (climate == Climate.COLD)
                 {
                     particle.setColor(1.0f, 1.0f, 1.0f, 0.05f);

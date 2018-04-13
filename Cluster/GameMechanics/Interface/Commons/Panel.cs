@@ -4,79 +4,79 @@ namespace Cluster.GameMechanics.Interface.Commons
 {
     public class Panel : IGui
     {
-        private bool _active;
-        private float _x;
-        private float _y;
-        private List<IGui> _elements;
-        private int _gridWidth;
-        private int _gridHeight;
-        private float _gridSize;
-        private int _indexX;
-        private int _indexY;
+        private bool active;
+        private float x;
+        private float y;
+        private List<IGui> elements;
+        private int gridWidth;
+        private int gridHeight;
+        private float gridSize;
+        private int indexX;
+        private int indexY;
 
         public Panel(float x, float y, int gridWidth, int gridHeight, float gridSize = Properties.BUTTON_SIZE_DEFAULT)
         {
-            _active = true;
-            _elements = new List<IGui>();
-            _x = x;
-            _y = y;
-            _gridWidth = gridWidth;
-            _gridHeight = gridHeight;
-            _gridSize = gridSize;
-            _indexX = 0;
-            _indexY = 0;
+            active = true;
+            elements = new List<IGui>();
+            this.x = x;
+            this.y = y;
+            this.gridWidth = gridWidth;
+            this.gridHeight = gridHeight;
+            this.gridSize = gridSize;
+            indexX = 0;
+            indexY = 0;
         }
 
         public void setPosition(float x, float y)
         {
-            _x = x;
-            _y = y;
+            this.x = x;
+            this.y = y;
         }
 
         public void enable()
         {
-            _active = true;
+            active = true;
         }
 
         public void disable()
         {
-            _active = false;
+            active = false;
         }
 
         public void clear()
         {
-            _elements.Clear();
-            _indexX = 0;
-            _indexY = 0;
+            elements.Clear();
+            indexX = 0;
+            indexY = 0;
         }
 
         public void addElement(IGui element)
         {
-            _elements.Add(element);
-            element.setPosition(_x + _indexX * _gridSize, _y + _indexY * _gridSize);
-            _indexY++;
-            if (_indexY >= _gridHeight)
+            elements.Add(element);
+            element.setPosition(x + indexX * gridSize, y + indexY * gridSize);
+            indexY++;
+            if (indexY >= gridHeight)
             {
-                _indexY = 0;
-                _indexX++;
+                indexY = 0;
+                indexX++;
             }
         }
 
         public void addLargeElement(IGui largeElement)
         {
-            if (_indexY > 0)
+            if (indexY > 0)
             {
-                _indexY = 0;
-                _indexX++;
+                indexY = 0;
+                indexX++;
             }
             addElement(largeElement);
-            _indexX++;
-            _indexY = 0;
+            indexX++;
+            indexY = 0;
         }
 
         public void updateState()
         {
-            foreach (IGui element in _elements)
+            foreach (IGui element in elements)
             {
                 if (element.isActive())
                 {
@@ -87,7 +87,7 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public bool isMouseOver()
         {
-            foreach (IGui element in _elements)
+            foreach (IGui element in elements)
             {
                 if (element.isActive() && element.isMouseOver())
                 {
@@ -100,12 +100,12 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public bool isActive()
         {
-            return _active;
+            return active;
         }
 
         public void render()
         {
-            foreach (IGui element in _elements)
+            foreach (IGui element in elements)
             {
                 if (element.isActive())
                 {

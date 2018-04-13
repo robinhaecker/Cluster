@@ -18,18 +18,18 @@ namespace Cluster.GameMechanics.Interface
         private const float ZOOM_MAX = 1.75f;
         private const float ZOOM_MIN = 0.08f;
 
-        private static Vec3 _focus = null;
-        private static ISelection _selection = null;
+        private static Vec3 focus = null;
+        private static ISelection selection = null;
 
-        private static Vec4 _selectionBox = null;
-        private static float _selMx;
-        private static float _selMy;
-        private static readonly List<ISelection> _selections = new List<ISelection>();
+        private static Vec4 selectionBox = null;
+        private static float selMx;
+        private static float selMy;
+        private static readonly List<ISelection> selections = new List<ISelection>();
 
         public static void init()
         {
-            _selections.Add(new PlanetSelection());
-            _selections.Add(new UnitSelection());
+            selections.Add(new PlanetSelection());
+            selections.Add(new UnitSelection());
         }
 
         private MoveAndSelect()
@@ -40,17 +40,17 @@ namespace Cluster.GameMechanics.Interface
         {
             changeView();
             selectStuff();
-            if (_selection != null)
+            if (selection != null)
             {
-                _selection.updateGui();
+                selection.updateGui();
             }
         }
 
         public static bool isMouseOver()
         {
-            if (_selection != null)
+            if (selection != null)
             {
-                return _selection.isMouseOver();
+                return selection.isMouseOver();
             }
 
             return false;
@@ -60,11 +60,11 @@ namespace Cluster.GameMechanics.Interface
         {
             if (GuiMouse.mouseHitLeft && !CombinedGui.isMouseOver())
             {
-                if (_selectionBox == null) // Selektionsbox anfangen.
+                if (selectionBox == null) // Selektionsbox anfangen.
                 {
-                    _selMx = GuiMouse.mouseX;
-                    _selMy = GuiMouse.mouseY;
-                    _selectionBox = new Vec4(
+                    selMx = GuiMouse.mouseX;
+                    selMy = GuiMouse.mouseY;
+                    selectionBox = new Vec4(
                         Space.screenToSpaceX(GuiMouse.mouseX),
                         Space.screenToSpaceY(GuiMouse.mouseY),
                         0.0f,
@@ -73,20 +73,20 @@ namespace Cluster.GameMechanics.Interface
 
                 pick();
             }
-            else if (GuiMouse.mousePressLeft && !GuiMouse.mouseHitLeft && _selectionBox != null)
+            else if (GuiMouse.mousePressLeft && !GuiMouse.mouseHitLeft && selectionBox != null)
             {
                 // Selektionsbox-Ende ziehen bei gedrückter linker Maustaste.
-                _selectionBox.z = Space.screenToSpaceX(GuiMouse.mouseX);
-                _selectionBox.w = Space.screenToSpaceY(GuiMouse.mouseY);
+                selectionBox.z = Space.screenToSpaceX(GuiMouse.mouseX);
+                selectionBox.w = Space.screenToSpaceY(GuiMouse.mouseY);
             }
-            else if (_selectionBox != null) // Maustaste nicht mehr gedrückt? Selektionsbox beenden.
+            else if (selectionBox != null) // Maustaste nicht mehr gedrückt? Selektionsbox beenden.
             {
-                if (Math.Abs(GuiMouse.mouseX - _selMx) + Math.Abs(GuiMouse.mouseY - _selMy) > 20.0f)
+                if (Math.Abs(GuiMouse.mouseX - selMx) + Math.Abs(GuiMouse.mouseY - selMy) > 20.0f)
                 {
-                    selectByBox(_selectionBox);
+                    selectByBox(selectionBox);
                 }
 
-                _selectionBox = null;
+                selectionBox = null;
             }
         }
 
@@ -99,14 +99,14 @@ namespace Cluster.GameMechanics.Interface
 
         private static void selectByPick(float mSpaceX, float mSpaceY)
         {
-            _selection = null;
-            foreach (ISelection selection in _selections)
+            selection = null;
+            foreach (ISelection selection in selections)
             {
                 selection.setActive(false);
                 if (selection.selectByPick(mSpaceX, mSpaceY))
                 {
                     selection.setActive(true);
-                    _selection = selection;
+                    MoveAndSelect.selection = selection;
                     return;
                 }
             }
@@ -114,14 +114,14 @@ namespace Cluster.GameMechanics.Interface
 
         private static void selectByBox(Vec4 box)
         {
-            _selection = null;
-            foreach (ISelection selection in _selections)
+            selection = null;
+            foreach (ISelection selection in selections)
             {
                 selection.setActive(false);
                 if (selection.selectByBox(box))
                 {
                     selection.setActive(true);
-                    _selection = selection;
+                    MoveAndSelect.selection = selection;
                     return;
                 }
             }
@@ -162,43 +162,43 @@ namespace Cluster.GameMechanics.Interface
 
         private static void updateFocus()
         {
-            if (!GameWindow.mouse.IsButtonDown(MouseButton.Middle) || _selection == null)
+            if (!GameWindow.mouse.IsButtonDown(MouseButton.Middle) || selection == null)
             {
                 return;
             }
 
-            var position = _selection.getCenterOfMass();
-            _focus = new Vec3(position.x, position.y, 1.0f);
+            var position = selection.getCenterOfMass();
+            focus = new Vec3(position.x, position.y, 1.0f);
         }
 
         private static void moveViewToFocus()
         {
-            if (_focus == null)
+            if (focus == null)
             {
                 return;
             }
 
-            Space.scrollX = Space.scrollX * _focus.z + _focus.x * (1.0f - _focus.z);
-            Space.scrollY = Space.scrollY * _focus.z + _focus.y * (1.0f - _focus.z);
-            _focus.z -= 0.002f;
-            if (_focus.z <= 0.0f)
+            Space.scrollX = Space.scrollX * focus.z + focus.x * (1.0f - focus.z);
+            Space.scrollY = Space.scrollY * focus.z + focus.y * (1.0f - focus.z);
+            focus.z -= 0.002f;
+            if (focus.z <= 0.0f)
             {
-                _focus = null;
+                focus = null;
             }
         }
 
         public static void render()
         {
             renderSelectionBox();
-            if (_selection != null)
+            if (selection != null)
             {
-                _selection.renderGui();
+                selection.renderGui();
             }
         }
 
         private static void renderSelectionBox()
         {
-            if (_selectionBox == null || !(Math.Abs(_selectionBox.z) + Math.Abs(_selectionBox.w) > 0.000001f))
+            if (selectionBox == null || !(Math.Abs(selectionBox.z) + Math.Abs(selectionBox.w) > 0.000001f))
             {
                 return;
             }
@@ -206,10 +206,10 @@ namespace Cluster.GameMechanics.Interface
             Primitives.setColor(1.0f, 1.0f, 1.0f, 0.125f);
             Primitives.setLineWidth(2.0f);
             var box = new Vec4(
-                Space.spaceToScreenX(_selectionBox.x),
-                Space.spaceToScreenY(_selectionBox.y),
-                Space.spaceToScreenX(_selectionBox.z),
-                Space.spaceToScreenY(_selectionBox.w));
+                Space.spaceToScreenX(selectionBox.x),
+                Space.spaceToScreenY(selectionBox.y),
+                Space.spaceToScreenX(selectionBox.z),
+                Space.spaceToScreenY(selectionBox.w));
 
             Primitives.drawLine(box.x, box.y, box.x, box.w);
             Primitives.drawLine(box.z, box.y, box.z, box.w);
