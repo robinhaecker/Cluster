@@ -12,7 +12,7 @@ namespace Cluster.GameMechanics.Interface.Commons
             this.mesh = mesh;
             this.background = background;
         }
-        
+
         public override void render()
         {
             base.render();

@@ -66,18 +66,16 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             return health / healthMax;
         }
 
-        public List<Prototype> listOfPrototypes(Civilisation civ)
+        public IEnumerable<Prototype> listOfPrototypes()
         {
-            var list = new List<Prototype>();
-            if (blueprint.specials == Blueprint.SpecialAbility.SHIPS)
+            if (blueprint.specials != Blueprint.SpecialAbility.SHIPS) yield break;
+            foreach (Prototype pr in Prototype.data)
             {
-                foreach (Prototype pr in Prototype.data)
+                if (pr.activation.researchedBy(owner) && blueprint.specialStrength >= pr.infraLevel)
                 {
-                    if (pr.activation.researchedBy(civ) && blueprint.specialStrength >= pr.infraLevel) list.Add(pr);
+                    yield return pr;
                 }
             }
-
-            return list;
         }
 
         public void produceUnit(Prototype type)
@@ -95,7 +93,6 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     production.RemoveAt(i);
                     if (i == 0) productionTimer = 0.0f;
                     owner.ressources += type.cost;
-                    Console.WriteLine(i.ToString());
                     break;
                 }
             }

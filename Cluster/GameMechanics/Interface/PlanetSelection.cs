@@ -86,18 +86,49 @@ namespace Cluster.GameMechanics.Interface
             panel.clear();
             if (pickedIndex > -1)
             {
-                if (planet.infra[pickedIndex] != null)
+                var building = planet.infra[pickedIndex];
+                if (building != null)
                 {
-                    var mainButton = new MeshButton(planet.infra[pickedIndex].blueprint.shape,
-                        Planet.terraImage[(int)planet.terra[pickedIndex]],
+                    var mainButton = new MeshButton(building.blueprint.shape,
+                        Planet.terraImage[(int) planet.terra[pickedIndex]],
                         0, 0,
                         Commons.Properties.BUTTON_SIZE_LARGE);
-                    mainButton.setInfoText(planet.infra[pickedIndex].getInfoText());
+                    mainButton.setInfoText(building.getInfoText());
                     panel.addLargeElement(mainButton);
+                    if (building.health > 0 && building.owner == Civilisation.getPlayer())
+                    {
+                        foreach (var prototype in building.listOfPrototypes())
+                        {
+                            var button = new ProgressBar(prototype.shape);
+                            if (building.production.Count > 0 && prototype.Equals(building.production[0]))
+                            {
+                                button.setProgress(building.productionTimer);
+                            }
+
+                            button.setAnzahlFolgende(building.getProductionCount(prototype));
+                            button.onLeftClick(() =>
+                            {
+                                if (Civilisation.getPlayer().ressources >= prototype.getCost())
+                                {
+                                    building.produceUnit(prototype);
+                                }
+
+                                return 0;
+                            });
+                            button.onRightClick(() =>
+                            {
+                                building.abortUnit(prototype);
+                                return 0;
+                            });
+
+                            button.setInfoText(prototype.getInfoText());
+                            panel.addElement(button);
+                        }
+                    }
                 }
                 else
                 {
-                    var mainButton = new MeshButton(Planet.terraImage[(int)planet.terra[pickedIndex]], 
+                    var mainButton = new MeshButton(Planet.terraImage[(int) planet.terra[pickedIndex]],
                         null,
                         0, 0,
                         Commons.Properties.BUTTON_SIZE_LARGE);
@@ -108,7 +139,7 @@ namespace Cluster.GameMechanics.Interface
                         var button = new MeshButton(blueprint.shape);
                         button.setInfoText(blueprint.getInfoText());
                         button.onLeftClick(() => blueprint.isBuildable(planet, pickedIndex)
-                                                && Civilisation.getPlayer().ressources >= blueprint.getCost()
+                                                 && Civilisation.getPlayer().ressources >= blueprint.getCost()
                             ? planet.build(pickedIndex, blueprint, Civilisation.getPlayer())
                             : null);
                         panel.addElement(button);

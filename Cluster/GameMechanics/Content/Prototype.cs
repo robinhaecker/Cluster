@@ -282,5 +282,11 @@ namespace Cluster.GameMechanics.Content
                     return Class.NONE;
             }
         }
+
+        public string getInfoText()
+        {
+            return name + "\n" +
+                   string.Join("\n", description);
+        }
     }
 }

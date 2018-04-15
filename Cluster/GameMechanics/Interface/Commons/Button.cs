@@ -59,7 +59,7 @@ namespace Cluster.GameMechanics.Interface.Commons
             active = false;
         }
 
-        public void updateState()
+        public virtual void updateState()
         {
             state = ButtonState.NONE;
             if (GuiMouse.isMouseInRect(x, y, width, height))
