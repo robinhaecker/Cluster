@@ -13,7 +13,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
     {
         public static readonly List<Unit> units = new List<Unit>();
         public static readonly List<Unit> removed = new List<Unit>();
-        static int _idCounter;
+        static int idCounter;
 
         public enum Effect
         {
@@ -24,7 +24,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             STUNNED
         }
 
-        private static int _displayShieldCount;
+        private static int displayShieldCount;
         private const int DISPLAY_SHIELD_VARIABLES_XYSCALE = 3;
         private const int DISPLAY_SHIELD_VARIABLES_PERCENTAGES = 2;
         private const int DISPLAY_SHIELD_VARIABLES_COLOR = 4;
@@ -38,29 +38,29 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private static readonly float[] shieldGlArray2 =
             new float[DISPLAY_SHIELD_VARIABLES_COLOR * Civilisation.TOTAL_MAX_POPULATION];
 
-        private static int _shieldGlData;
-        private static int _bufSh0;
-        private static int _bufSh1;
-        private static int _bufSh2;
+        private static int shieldGlData;
+        private static int bufSh0;
+        private static int bufSh1;
+        private static int bufSh2;
 
 
         // Instance-specific variables
-        int _id;
-        readonly Prototype _prototype;
-        readonly Civilisation _owner;
+        int id;
+        readonly Prototype prototype;
+        readonly Civilisation owner;
 
         public float x, y, rot, v;
-        float _health;
-        float _shield;
+        float health;
+        float shield;
 
         public bool isSelected;
-        float _reloadTimer;
-        float _gotHitTimer;
-        float _currentEffectTimer;
-        Effect _currentEffect;
+        float reloadTimer;
+        float gotHitTimer;
+        float currentEffectTimer;
+        Effect currentEffect;
 
-        Sector _sector;
-        readonly Target _target;
+        Sector sector;
+        readonly Target target;
         public Unit enemy;
         public byte inrange;
         public float enemyDistance;
@@ -69,52 +69,52 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         // Constructors
         public Unit(Prototype p, Civilisation civ, float x, float y, float alpha = 0.0f)
         {
-            _id = _idCounter;
-            _idCounter++;
+            id = idCounter;
+            idCounter++;
 
-            _prototype = p;
-            _owner = civ;
+            prototype = p;
+            owner = civ;
             this.x = x;
             this.y = y;
             rot = alpha;
             v = 0.0f;
 
-            _health = _prototype.getHealth(civ);
-            _shield = _prototype.getShields(civ);
+            health = prototype.getHealth(civ);
+            shield = prototype.getShields(civ);
 
-            _reloadTimer = 0.0f;
-            _gotHitTimer = 0.0f;
-            _currentEffectTimer = 1.0f;
-            _currentEffect = Effect.SPAWNING;
-            _target = new Target();
-            _target.update(x, y);
+            reloadTimer = 0.0f;
+            gotHitTimer = 0.0f;
+            currentEffectTimer = 1.0f;
+            currentEffect = Effect.SPAWNING;
+            target = new Target();
+            target.update(x, y);
 
             units.Add(this);
         }
 
         public Unit(Prototype p, Building b)
         {
-            _id = _idCounter;
-            _idCounter++;
+            id = idCounter;
+            idCounter++;
 
             Planet pl = b.getPlanet();
 
-            _prototype = p;
-            _owner = b.owner;
+            prototype = p;
+            owner = b.owner;
             rot = b.getSpotRotation();
             x = pl.x + (float) Math.Cos(rot) * (pl.size * 20.0f + 75.0f);
             y = pl.y + (float) Math.Sin(rot) * (pl.size * 20.0f + 75.0f);
             v = 0.0f;
 
-            _reloadTimer = 0.0f;
-            _gotHitTimer = 0.0f;
-            _currentEffectTimer = 1.0f;
-            _currentEffect = Effect.SPAWNING;
-            _target = new Target();
-            _target.update(pl, -1, b.getSpotId());
+            reloadTimer = 0.0f;
+            gotHitTimer = 0.0f;
+            currentEffectTimer = 1.0f;
+            currentEffect = Effect.SPAWNING;
+            target = new Target();
+            target.update(pl, -1, b.getSpotId());
 
-            _health = _prototype.getHealth(b.owner);
-            _shield = _prototype.getShields(b.owner);
+            health = prototype.getHealth(b.owner);
+            shield = prototype.getShields(b.owner);
 
             units.Add(this);
         }
@@ -122,7 +122,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public static void render()
         {
-            _displayShieldCount = 0;
+            displayShieldCount = 0;
 
             GL.LineWidth(1.5f);
             GL.Disable(EnableCap.DepthTest);
@@ -131,93 +131,93 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             foreach (Unit u in Unit.units)
             {
                 var alpha = 1.0f;
-                var scale = u._prototype.shapeScaling * 5.0f;
-                switch (u._currentEffect)
+                var scale = u.prototype.shapeScaling * 5.0f;
+                switch (u.currentEffect)
                 {
                     case Effect.SPAWNING:
-                        scale *= Math.Min(1.0f, Math.Max(0.0f, 1.0f - u._currentEffectTimer));
+                        scale *= Math.Min(1.0f, Math.Max(0.0f, 1.0f - u.currentEffectTimer));
                         break;
                     case Effect.EXPLODE:
-                        alpha = u._currentEffectTimer * 0.5f;
+                        alpha = u.currentEffectTimer * 0.5f;
                         break;
                 }
 
                 GL.Uniform3(Space.unitShader.getUniformLocation("pos"), (float) (u.x - Space.scrollX),
                     (float) (u.y - Space.scrollY), (float) u.rot);
-                GL.Uniform4(Space.unitShader.getUniformLocation("col"), (float) u._owner.red, (float) u._owner.green,
-                    (float) u._owner.blue, alpha);
+                GL.Uniform4(Space.unitShader.getUniformLocation("col"), (float) u.owner.red, (float) u.owner.green,
+                    (float) u.owner.blue, alpha);
                 GL.Uniform3(Space.unitShader.getUniformLocation("scale"), scale,
                     (float) (Space.zoom * GameWindow.active.multX), (float) (Space.zoom * GameWindow.active.multY));
 
-                GL.BindVertexArray(u._prototype.shape.gl_data);
-                GL.DrawArrays(PrimitiveType.Lines, 0, u._prototype.shape.num_lines * 2);
+                GL.BindVertexArray(u.prototype.shape.glData);
+                GL.DrawArrays(PrimitiveType.Lines, 0, u.prototype.shape.numLines * 2);
 
 
                 // Daten für Schuztschilddarstellung setzen.
-                if (u.isAlive() && (u._gotHitTimer > 0.0f || u.isSelected))
+                if (u.isAlive() && (u.gotHitTimer > 0.0f || u.isSelected))
                 {
-                    shieldGlArray0[DISPLAY_SHIELD_VARIABLES_XYSCALE * _displayShieldCount + 0] = u.x;
-                    shieldGlArray0[DISPLAY_SHIELD_VARIABLES_XYSCALE * _displayShieldCount + 1] = u.y;
-                    shieldGlArray0[DISPLAY_SHIELD_VARIABLES_XYSCALE * _displayShieldCount + 2] = scale;
+                    shieldGlArray0[DISPLAY_SHIELD_VARIABLES_XYSCALE * displayShieldCount + 0] = u.x;
+                    shieldGlArray0[DISPLAY_SHIELD_VARIABLES_XYSCALE * displayShieldCount + 1] = u.y;
+                    shieldGlArray0[DISPLAY_SHIELD_VARIABLES_XYSCALE * displayShieldCount + 2] = scale;
 
-                    shieldGlArray1[DISPLAY_SHIELD_VARIABLES_PERCENTAGES * _displayShieldCount + 0] =
+                    shieldGlArray1[DISPLAY_SHIELD_VARIABLES_PERCENTAGES * displayShieldCount + 0] =
                         u.getHealthFraction();
-                    shieldGlArray1[DISPLAY_SHIELD_VARIABLES_PERCENTAGES * _displayShieldCount + 1] =
+                    shieldGlArray1[DISPLAY_SHIELD_VARIABLES_PERCENTAGES * displayShieldCount + 1] =
                         u.getShieldFraction();
 
                     if (u.isSelected)
                     {
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 0] =
-                            u._owner.red * 0.75f + 0.25f;
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 1] =
-                            u._owner.green * 0.75f + 0.25f;
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 2] =
-                            u._owner.blue * 0.75f + 0.25f;
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 3] = 1.5f;
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 0] =
+                            u.owner.red * 0.75f + 0.25f;
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 1] =
+                            u.owner.green * 0.75f + 0.25f;
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 2] =
+                            u.owner.blue * 0.75f + 0.25f;
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 3] = 1.5f;
                     }
                     else
                     {
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 0] = u._owner.red;
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 1] = u._owner.green;
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 2] = u._owner.blue;
-                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * _displayShieldCount + 3] =
-                            Math.Min(1.0f, u._gotHitTimer);
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 0] = u.owner.red;
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 1] = u.owner.green;
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 2] = u.owner.blue;
+                        shieldGlArray2[DISPLAY_SHIELD_VARIABLES_COLOR * displayShieldCount + 3] =
+                            Math.Min(1.0f, u.gotHitTimer);
                     }
 
-                    _displayShieldCount++;
+                    displayShieldCount++;
                 }
             }
 
             // Schutzschilde zeichnen.
-            if (_displayShieldCount > 0)
+            if (displayShieldCount > 0)
             {
-                if (_shieldGlData == 0)
+                if (shieldGlData == 0)
                 {
-                    _shieldGlData = GL.GenVertexArray();
-                    _bufSh0 = GL.GenBuffer();
-                    _bufSh1 = GL.GenBuffer();
-                    _bufSh2 = GL.GenBuffer();
+                    shieldGlData = GL.GenVertexArray();
+                    bufSh0 = GL.GenBuffer();
+                    bufSh1 = GL.GenBuffer();
+                    bufSh2 = GL.GenBuffer();
                 }
 
-                GL.BindVertexArray(_shieldGlData);
+                GL.BindVertexArray(shieldGlData);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _bufSh0);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, bufSh0);
                 GL.BufferData(BufferTarget.ArrayBuffer, shieldGlArray0.Length * sizeof(float), shieldGlArray0,
                     BufferUsageHint.StaticDraw);
-                GL.EnableVertexArrayAttrib(_shieldGlData, 0);
+                GL.EnableVertexAttribArray(0);
                 GL.VertexAttribPointer(0, DISPLAY_SHIELD_VARIABLES_XYSCALE, VertexAttribPointerType.Float, false, 0, 0);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _bufSh1);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, bufSh1);
                 GL.BufferData(BufferTarget.ArrayBuffer, shieldGlArray1.Length * sizeof(float), shieldGlArray1,
                     BufferUsageHint.StaticDraw);
-                GL.EnableVertexArrayAttrib(_shieldGlData, 1);
+                GL.EnableVertexAttribArray(1);
                 GL.VertexAttribPointer(1, DISPLAY_SHIELD_VARIABLES_PERCENTAGES, VertexAttribPointerType.Float, false, 0,
                     0);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _bufSh2);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, bufSh2);
                 GL.BufferData(BufferTarget.ArrayBuffer, shieldGlArray2.Length * sizeof(float), shieldGlArray2,
                     BufferUsageHint.StaticDraw);
-                GL.EnableVertexArrayAttrib(_shieldGlData, 2);
+                GL.EnableVertexAttribArray(2);
                 GL.VertexAttribPointer(2, DISPLAY_SHIELD_VARIABLES_COLOR, VertexAttribPointerType.Float, false, 0, 0);
 
 
@@ -226,7 +226,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     GameWindow.active.multY, Space.animation);
                 GL.Uniform3(Space.unitShieldShader.getUniformLocation("scroll"), Space.scrollX, Space.scrollY,
                     Space.zoom);
-                GL.DrawArrays(PrimitiveType.Points, 0, _displayShieldCount);
+                GL.DrawArrays(PrimitiveType.Points, 0, displayShieldCount);
             }
 
             GL.BindVertexArray(0);
@@ -246,7 +246,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         {
             foreach (Unit u in Unit.units)
             {
-                u._owner.population += u._prototype.getPopulation();
+                u.owner.population += u.prototype.getPopulation();
                 u.simulate(t);
             }
         }
@@ -263,7 +263,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         {
             foreach (Unit u in Unit.removed)
             {
-                u._sector.removeUnit(u);
+                u.sector.removeUnit(u);
                 units.Remove(u);
             }
 
@@ -273,7 +273,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private void simulate(float t)
         {
             updateSector();
-            if (_health > 0)
+            if (health > 0)
             {
                 simAlive(t);
             }
@@ -289,7 +289,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private void simHitTimer(float t)
         {
-            _gotHitTimer = Math.Max(0.0f, _gotHitTimer - t * 0.001f);
+            gotHitTimer = Math.Max(0.0f, gotHitTimer - t * 0.001f);
         }
 
         private void simMovement(float t)
@@ -300,19 +300,19 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private void simEffects(float t)
         {
-            if (_currentEffect != Effect.NONE)
+            if (currentEffect != Effect.NONE)
             {
-                _currentEffectTimer -= t * 0.001f;
-                if (_currentEffectTimer <= 0.0f)
+                currentEffectTimer -= t * 0.001f;
+                if (currentEffectTimer <= 0.0f)
                 {
-                    _currentEffectTimer = 0.0f;
-                    if (_currentEffect == Effect.EXPLODE) // Wenn fertig explodiert, dann Einheit aus Liste löschen.
+                    currentEffectTimer = 0.0f;
+                    if (currentEffect == Effect.EXPLODE) // Wenn fertig explodiert, dann Einheit aus Liste löschen.
                     {
                         remove();
                         return;
                     }
 
-                    _currentEffect = Effect.NONE;
+                    currentEffect = Effect.NONE;
                 }
             }
         }
@@ -326,7 +326,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         {
             rechargeShield(t);
 
-            var deltaMission = _target.getPosition() - new Vec2(x, y);
+            var deltaMission = target.getPosition() - new Vec2(x, y);
             var delta = getDirectionToNextWaypoint();
 
             simMoveAndShoot(t, delta, deltaMission);
@@ -336,10 +336,10 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private Vec2 getDirectionToNextWaypoint()
         {
-            var delta = _target.getWaypoint() - new Vec2(x, y);
+            var delta = target.getWaypoint() - new Vec2(x, y);
             if (delta.length() < 50.0)
             {
-                delta = _target.nextWaypoint() - new Vec2(x, y);
+                delta = target.nextWaypoint() - new Vec2(x, y);
             }
 
             return delta;
@@ -347,7 +347,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private void simMoveAndShoot(float t, Vec2 delta, Vec2 deltaMission)
         {
-            if (_currentEffect == Effect.SPAWNING || _currentEffect == Effect.STUNNED)
+            if (currentEffect == Effect.SPAWNING || currentEffect == Effect.STUNNED)
             {
                 return;
             }
@@ -358,9 +358,9 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private void rechargeShield(float t)
         {
-            var maxshield = _prototype.getShields(_owner);
-            _shield = Math.Min(_shield + t * 0.002f * (float) Math.Sqrt(maxshield), maxshield);
-            _reloadTimer = Math.Max(_reloadTimer - t * 0.005f, 0.0f);
+            var maxshield = prototype.getShields(owner);
+            shield = Math.Min(shield + t * 0.002f * (float) Math.Sqrt(maxshield), maxshield);
+            reloadTimer = Math.Max(reloadTimer - t * 0.005f, 0.0f);
         }
 
         private double simAttackEnemy(float t, Vec2 delta)
@@ -369,11 +369,11 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             if (enemy != null)
             {
                 bool aimtowards = false;
-                if ((_prototype.weaponType == Prototype.WeaponType.LASER &&
-                     (enemyDistance < _prototype.weaponRange)) ||
-                    (_prototype.weaponType != Prototype.WeaponType.STD &&
-                     _prototype.weaponType != Prototype.WeaponType.EXPLOSIVE &&
-                     (enemyDistance < _prototype.weaponRange) && _prototype.shipClass != Prototype.Class.HUNTER))
+                if ((prototype.weaponType == Prototype.WeaponType.LASER &&
+                     (enemyDistance < prototype.weaponRange)) ||
+                    (prototype.weaponType != Prototype.WeaponType.STD &&
+                     prototype.weaponType != Prototype.WeaponType.EXPLOSIVE &&
+                     (enemyDistance < prototype.weaponRange) && prototype.shipClass != Prototype.Class.HUNTER))
                 {
                     rotationSpeed = turnTowards(delta.x, delta.y, t * 0.001);
                 }
@@ -386,10 +386,10 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     }
                 }
 
-                if ((_reloadTimer <= 0.0f) && (enemyDistance < _prototype.weaponRange) &&
-                    (aimtowards || (_prototype.weaponType == Prototype.WeaponType.PERSECUTE ||
-                                    _prototype.weaponType == Prototype.WeaponType.LASER ||
-                                    _prototype.weaponType == Prototype.WeaponType.FIND_AIM)))
+                if ((reloadTimer <= 0.0f) && (enemyDistance < prototype.weaponRange) &&
+                    (aimtowards || (prototype.weaponType == Prototype.WeaponType.PERSECUTE ||
+                                    prototype.weaponType == Prototype.WeaponType.LASER ||
+                                    prototype.weaponType == Prototype.WeaponType.FIND_AIM)))
                 {
                     fireWeapons();
                 }
@@ -405,10 +405,10 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         void simAccellerate(float t, double rotationSpeed, float missionDistance)
         {
-            float maxSpeed = _prototype.getSpeed();
-            if (missionDistance < 1000.0 && _prototype.shipClass == Prototype.Class.HUNTER &&
-                !(_prototype.shipClass != Prototype.Class.WARSHIP && enemy != null) &&
-                _prototype.specials == Prototype.ShipAbility.ASTEROID_MINING)
+            float maxSpeed = prototype.getSpeed();
+            if (missionDistance < 1000.0 && prototype.shipClass == Prototype.Class.HUNTER &&
+                !(prototype.shipClass != Prototype.Class.WARSHIP && enemy != null) &&
+                prototype.specials == Prototype.ShipAbility.ASTEROID_MINING)
             {
                 //if (!orbit_enemy)v=Max(v-0.01*max_speed*t, max_speed*0.2); else
                 v = Math.Max(v - 0.01f * maxSpeed * t, maxSpeed * 0.5f);
@@ -441,26 +441,26 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public bool damage(float dmg)
         {
-            if (_health <= 0.0f) return false;
-            _gotHitTimer = 3.0f;
+            if (health <= 0.0f) return false;
+            gotHitTimer = 3.0f;
 
-            if (_shield > dmg)
+            if (shield > dmg)
             {
-                _shield -= dmg;
+                shield -= dmg;
                 return false;
             }
 
-            dmg -= _shield;
-            _shield = 0.0f;
+            dmg -= shield;
+            shield = 0.0f;
 
-            _health -= dmg;
-            if (_health <= 0.0f)
+            health -= dmg;
+            if (health <= 0.0f)
             {
-                _health = 0.0f;
-                _currentEffect = Effect.EXPLODE;
-                _currentEffectTimer = 1.0f;
+                health = 0.0f;
+                currentEffect = Effect.EXPLODE;
+                currentEffectTimer = 1.0f;
 
-                for (int i = 0; i < 50 + (int) Math.Sqrt(_prototype.healthMax / 50.0f); i++)
+                for (int i = 0; i < 50 + (int) Math.Sqrt(prototype.healthMax / 50.0f); i++)
                 {
                     float speed = (float) GameWindow.random.NextDouble();
                     float angle = (float) GameWindow.random.NextDouble() * 2.0f * (float) Math.PI;
@@ -479,19 +479,19 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         void fireWeapons()
         {
-            _reloadTimer = _prototype.reloadTime;
-            if (inrange > 0 || (_prototype.weaponType != Prototype.WeaponType.LASER))
+            reloadTimer = prototype.reloadTime;
+            if (inrange > 0 || (prototype.weaponType != Prototype.WeaponType.LASER))
             {
                 var shot = new Shot(this, enemy, inrange);
-                if (_prototype.shipClass == Prototype.Class.WARSHIP && inrange > 0)
+                if (prototype.shipClass == Prototype.Class.WARSHIP && inrange > 0)
                 {
                     shot = new Shot(this, enemy, (byte) (2 - inrange));
                     shot.rot += (float) Math.PI * 0.25f;
-                    if (shot.getWeaponType() == Prototype.WeaponType.LASER) shot.x -= 20.0f * _prototype.shapeScaling;
+                    if (shot.getWeaponType() == Prototype.WeaponType.LASER) shot.x -= 20.0f * prototype.shapeScaling;
 
                     shot = new Shot(this, enemy, (byte) (2 - inrange));
                     shot.rot -= (float) Math.PI * 0.25f;
-                    if (shot.getWeaponType() == Prototype.WeaponType.LASER) shot.x += 20.0f * _prototype.shapeScaling;
+                    if (shot.getWeaponType() == Prototype.WeaponType.LASER) shot.x += 20.0f * prototype.shapeScaling;
                 }
             }
 
@@ -548,21 +548,21 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                 return;
             }
 
-            if (_reloadTimer <= 0.0f && _prototype.attack > 0.0f)
+            if (reloadTimer <= 0.0f && prototype.attack > 0.0f)
             {
                 int feld;
                 Planet bombard = planetInRange(out feld);
                 if (bombard != null)
                 {
                     new Shot(this, bombard, feld);
-                    if (_prototype.weaponType == Prototype.WeaponType.EXPLOSIVE)
+                    if (prototype.weaponType == Prototype.WeaponType.EXPLOSIVE)
                     {
                         new Shot(this, bombard, feld);
                         new Shot(this, bombard, feld);
                         new Shot(this, bombard, feld);
                     }
 
-                    _reloadTimer = _prototype.reloadTime;
+                    reloadTimer = prototype.reloadTime;
                 }
             }
         }
@@ -581,7 +581,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     for (int f = 0; f <= dF; f++)
                     {
                         int tmp = (planet.size + feld + f) % planet.size;
-                        if (planet.infra[tmp] != null && planet.infra[tmp].owner != _owner)
+                        if (planet.infra[tmp] != null && planet.infra[tmp].owner != owner)
                         {
                             bombardIndex = tmp;
                             return planet;
@@ -593,7 +593,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                         }
 
                         tmp = (planet.size + feld - f) % planet.size;
-                        if (planet.infra[tmp] != null && planet.infra[tmp].owner != _owner)
+                        if (planet.infra[tmp] != null && planet.infra[tmp].owner != owner)
                         {
                             bombardIndex = tmp;
                             return planet;
@@ -609,12 +609,12 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public Prototype getPrototype()
         {
-            return _prototype;
+            return prototype;
         }
 
         public bool isDead()
         {
-            return (_health <= 0.0) || (_currentEffect == Effect.EXPLODE);
+            return (health <= 0.0) || (currentEffect == Effect.EXPLODE);
         }
 
         public bool isAlive()
@@ -624,30 +624,30 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public float getMaxHealth()
         {
-            return _prototype.healthMax;
+            return prototype.healthMax;
         }
 
         public float getMaxShields()
         {
-            return _prototype.shields;
+            return prototype.shields;
         }
 
         public Civilisation getOwner()
         {
-            return _owner;
+            return owner;
         }
 
         private void updateSector()
         {
-            if (_sector != null)
+            if (sector != null)
             {
-                if (_sector.containsPoint(x, y)) return;
-                _sector.removeUnit(this);
-                _sector = null;
+                if (sector.containsPoint(x, y)) return;
+                sector.removeUnit(this);
+                sector = null;
             }
 
-            _sector = Sector.get(x, y);
-            _sector.addUnit(this);
+            sector = Sector.get(x, y);
+            sector.addUnit(this);
         }
 
         private double turnTowards(float deltaX, float deltaY, double maxAngle = Math.PI)
@@ -663,12 +663,12 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public float getHealthFraction()
         {
-            return _health / _prototype.getHealth(_owner);
+            return health / prototype.getHealth(owner);
         }
 
         public float getShieldFraction()
         {
-            return _shield / _prototype.getShields(_owner);
+            return shield / prototype.getShields(owner);
         }
     }
 }

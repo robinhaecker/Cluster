@@ -30,15 +30,15 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         public static int player;
         public static int count;
 
-        static List<string> _names;
+        static List<string> names;
 
-        readonly int _id;
+        readonly int id;
         internal readonly string name;
         public readonly float red, green, blue;
-        readonly bool _alive;
+        readonly bool alive;
 
         public readonly bool[] tech;
-        readonly float[] _boni;
+        readonly float[] boni;
         public float ressources;
         public float science;
         public int population;
@@ -63,12 +63,12 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private Civilisation()
         {
-            _id = count;
+            id = count;
             count++;
             data.Add(this);
-            _alive = true;
+            alive = true;
             tech = new bool[Technology.count];
-            _boni = new float[NUMBER_OF_BONI];
+            boni = new float[NUMBER_OF_BONI];
             ressources = 1000.0f;
             science = 0.0f;
             population = 0;
@@ -91,28 +91,28 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private static void loadNames()
         {
-            _names = new List<string>();
+            names = new List<string>();
             using (StreamReader file =
                 new StreamReader(GameWindow.BASE_FOLDER + "civs/names.txt", Encoding.Default))
             {
                 while (!file.EndOfStream)
                 {
-                    _names.Add(file.ReadLine());
+                    names.Add(file.ReadLine());
                 }
             }
         }
 
         private static string getRandomName()
         {
-            int i = GameWindow.random.Next(_names.Count);
-            var s = _names[i];
-            _names.RemoveAt(i);
+            int i = GameWindow.random.Next(names.Count);
+            var s = names[i];
+            names.RemoveAt(i);
             return s;
         }
 
         private Vec3 getRandomColors()
         {
-            switch (_id)
+            switch (id)
             {
                 case 0:
                     return new Vec3(0.2f, 0.2f, 1.0f);
@@ -152,7 +152,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             int num = 0;
             foreach (Civilisation civ in data)
             {
-                if (civ._alive) num++;
+                if (civ.alive) num++;
             }
 
             return num;
@@ -165,12 +165,12 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public int getId()
         {
-            return _id;
+            return id;
         }
 
         public float getMultiplicator(byte id)
         {
-            return (1.0f + _boni[id]);
+            return (1.0f + boni[id]);
         }
 
         public int populationLeft()

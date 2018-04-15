@@ -14,14 +14,14 @@ namespace Cluster.GameMechanics.Behaviour
         private const int MAX_PIXEL_SPREAD = TEXTURE_SIZE / 16;
         private const float MAX_PIXEL_SPREAD_DISTANCE = (MAX_PIXEL_SPREAD - 0.5f) * (MAX_PIXEL_SPREAD - 0.5f);
 
-        private float[] _data;
-        private int _tex;
+        private float[] data;
+        private int tex;
 
         private void init()
         {
-            _data = new float[TEXTURE_SIZE * TEXTURE_SIZE * COMPONENTS_PER_PIXEL];
-            _tex = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, _tex);
+            data = new float[TEXTURE_SIZE * TEXTURE_SIZE * COMPONENTS_PER_PIXEL];
+            tex = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, tex);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int) TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
@@ -35,7 +35,7 @@ namespace Cluster.GameMechanics.Behaviour
 
         public void update()
         {
-            if (_tex == 0)
+            if (tex == 0)
             {
                 init();
             }
@@ -51,14 +51,14 @@ namespace Cluster.GameMechanics.Behaviour
                 for (int j = 0; j < TEXTURE_SIZE; j++)
                 {
                     float reduction = 0.9999f;
-                    if (_data[(i * TEXTURE_SIZE + j) * COMPONENTS_PER_PIXEL + 3] >= 5.0f)
+                    if (data[(i * TEXTURE_SIZE + j) * COMPONENTS_PER_PIXEL + 3] >= 5.0f)
                     {
                         reduction = 0.99f;
                     }
 
                     for (int k = 0; k < COMPONENTS_PER_PIXEL; k++)
                     {
-                        _data[(i * TEXTURE_SIZE + j) * COMPONENTS_PER_PIXEL + k] *= reduction;
+                        data[(i * TEXTURE_SIZE + j) * COMPONENTS_PER_PIXEL + k] *= reduction;
                     }
                 }
             }
@@ -81,15 +81,15 @@ namespace Cluster.GameMechanics.Behaviour
 
         private void updateTexture()
         {
-            GL.BindTexture(TextureTarget.Texture2D, _tex);
+            GL.BindTexture(TextureTarget.Texture2D, tex);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TEXTURE_SIZE, TEXTURE_SIZE, 0,
-                PixelFormat.Rgba, PixelType.Float, _data);
+                PixelFormat.Rgba, PixelType.Float, data);
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public void bindTexture()
         {
-            GL.BindTexture(TextureTarget.Texture2D, _tex);
+            GL.BindTexture(TextureTarget.Texture2D, tex);
         }
 
         private void spreadColor(float red, float green, float blue, float x, float y, float spreadIntensity = 1.0f)
@@ -107,10 +107,10 @@ namespace Cluster.GameMechanics.Behaviour
                     if (distance < 1.0)
                     {
                         float intensity = (1.0f - distance) * 0.007f * spreadIntensity;
-                        _data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 0] += 0.3f * red * intensity;
-                        _data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 1] += 0.3f * green * intensity;
-                        _data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 2] += 0.3f * blue * intensity;
-                        _data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 3] += intensity;
+                        data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 0] += 0.3f * red * intensity;
+                        data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 1] += 0.3f * green * intensity;
+                        data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 2] += 0.3f * blue * intensity;
+                        data[(px * TEXTURE_SIZE + py) * COMPONENTS_PER_PIXEL + 3] += intensity;
                     }
                 }
             }

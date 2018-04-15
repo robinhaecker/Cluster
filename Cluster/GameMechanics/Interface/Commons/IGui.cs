@@ -7,5 +7,6 @@
         bool isMouseOver();
         bool isActive();
         void render();
+        IGui getElementAtMousePosition();
     }
 }

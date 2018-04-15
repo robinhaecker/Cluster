@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
@@ -9,17 +9,17 @@ namespace Cluster.GameMechanics.Interface
 {
     public class CombinedGui
     {
-        public static readonly CombinedGui combinedGui = new CombinedGui();
+        private static readonly CombinedGui combinedGui = new CombinedGui();
 
-        private static int _fps;
-        private static int _fps2;
-        private static int _msec;
-        private static int _msec2;
+        private static int fps;
+        private static int fps2;
+        private static int msec;
+        private static int msec2;
 
-        private readonly List<IGui> _elements;
-        private readonly InfoBox _ressourcesInfoBox;
-        private readonly InfoBox _performanceInfoBox;
-        public readonly InfoBox toolTip;
+        private readonly List<IGui> elements;
+        private readonly InfoBox ressourcesInfoBox;
+        private readonly InfoBox performanceInfoBox;
+        private readonly InfoBox toolTipBox;
 
         public static void init()
         {
@@ -28,22 +28,21 @@ namespace Cluster.GameMechanics.Interface
 
         private CombinedGui()
         {
-            _elements = new List<IGui>();
+            elements = new List<IGui>();
 
-            _ressourcesInfoBox = new InfoBox(10, 10);
-            _performanceInfoBox = new InfoBox(GameWindow.active.width, 10, InfoBox.SpecifiedCorner.UPPER_RIGHT);
-            toolTip = new InfoBox(10, GameWindow.active.height - 120, InfoBox.SpecifiedCorner.LOWER_LEFT);
-            
-            _elements.Add(_ressourcesInfoBox);
-            _elements.Add(_performanceInfoBox);
-            _elements.Add(toolTip);
+            ressourcesInfoBox = new InfoBox(10, 10);
+            performanceInfoBox = new InfoBox(GameWindow.active.width, 10, InfoBox.SpecifiedCorner.UPPER_RIGHT);
+            toolTipBox = new InfoBox(10, GameWindow.active.height - 150, InfoBox.SpecifiedCorner.LOWER_LEFT);
+            elements.Add(ressourcesInfoBox);
+            elements.Add(performanceInfoBox);
+            elements.Add(toolTipBox);
         }
 
         public static void update()
         {
             MoveAndSelect.update();
             combinedGui.updateInfos();
-            foreach (var element in combinedGui._elements)
+            foreach (var element in combinedGui.elements)
             {
                 element.updateState();
             }
@@ -54,7 +53,7 @@ namespace Cluster.GameMechanics.Interface
         {
             Primitives.setDepth(-0.1f);
             MoveAndSelect.render();
-            foreach (var element in combinedGui._elements)
+            foreach (var element in combinedGui.elements)
             {
                 element.render();
             }
@@ -67,7 +66,7 @@ namespace Cluster.GameMechanics.Interface
                 return true;
             }
             
-            foreach (var element in combinedGui._elements)
+            foreach (var element in combinedGui.elements)
             {
                 if (element.isMouseOver())
                 {
@@ -81,22 +80,23 @@ namespace Cluster.GameMechanics.Interface
         private void updateInfos()
         {
             var player = Civilisation.getPlayer();
-            _ressourcesInfoBox.setText("Ressourcen: \t" + (int) player.ressources + "\n" +
+            ressourcesInfoBox.setText("Ressourcen: \t" + (int) player.ressources + "\n" +
                                        "Forschung:\t" + (int) player.science + "\n" +
                                        "Bevölkerung:\t" + player.population + " / " + player.maxPopulation);
 
-            _performanceInfoBox.setText("FPS: " + _fps + "\n" +
-                                        "1/FPS: " + (100.0f / (float) _fps) + " ms von 16 ms\n" +
-                                        "Particles rendered: " + Particle.rendered_count);
+            performanceInfoBox.setText("FPS: " + fps + "\n" +
+                                        "1/FPS: " + (100.0f / (float) fps) + " ms von 16 ms\n" +
+                                        "Particles rendered: " + Particle.renderedCount);
             
+            toolTipBox.setText(MoveAndSelect.getToolTipText());
             //Frames per second
-            _fps2++;
-            _msec2 = Environment.TickCount;
-            if (_msec2 - _msec >= 1000)
+            fps2++;
+            msec2 = Environment.TickCount;
+            if (msec2 - msec >= 1000)
             {
-                _msec = _msec2;
-                _fps = _fps2;
-                _fps2 = 0;
+                msec = msec2;
+                fps = fps2;
+                fps2 = 0;
             }
         }
     }

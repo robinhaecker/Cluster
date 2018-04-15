@@ -137,7 +137,7 @@ namespace Cluster.Rendering.Appearance
         }
 
 
-        public void Bind()
+        public void bind()
         {
 			GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
@@ -146,25 +146,25 @@ namespace Cluster.Rendering.Appearance
 			//GL.Scissor(0, 0, width, height);
         }
 
-        static public void Unbind()
+        static public void unbind()
         {
 			GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 			//GL.Enable(EnableCap.ScissorTest);
         }
 
-		public void BindTexture(int layer = 0)
+		public void bindTexture(int layer = 0)
 		{
 			GL.ActiveTexture(TextureUnit.Texture0 + layer);
 			GL.BindTexture(TextureTarget.Texture2D, texture);
 		}
 
-		public void BindDepthTexture(int layer = 0)
+		public void bindDepthTexture(int layer = 0)
 		{
 			GL.ActiveTexture(TextureUnit.Texture0 + layer);
 			GL.BindTexture(TextureTarget.Texture2D, depthtexture);
 		}
 
-		public int GetTexture()
+		public int getTexture()
 		{
 			return texture;
 		}

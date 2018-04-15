@@ -1,4 +1,5 @@
-﻿using Cluster.Mathematics;
+﻿using System;
+using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Interface
 {
@@ -12,5 +13,6 @@ namespace Cluster.GameMechanics.Interface
         Vec2 getCenterOfMass();
         void updateGui();
         void renderGui();
+        string getToolTipText();
     }
 }

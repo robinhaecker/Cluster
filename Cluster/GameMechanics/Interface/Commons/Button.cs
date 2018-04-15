@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Cluster.Mathematics;
 using Cluster.Rendering.Draw2D;
 
@@ -14,22 +14,22 @@ namespace Cluster.GameMechanics.Interface.Commons
             RIGHT_CLICKED
         }
 
-        protected bool _active;
+        protected bool active;
         private String toolTip;
-        protected ButtonState _state;
+        protected ButtonState state;
         protected float x;
         protected float y;
         protected float width;
         protected float height;
-        protected Vec4 _color;
+        protected Vec4 color;
         
         internal Button(float x = 0, float y = 0, float size = Properties.BUTTON_SIZE_DEFAULT)
         {
-            _active = true;
+            active = true;
             this.x = x;
             this.y = y;
             width = height = size;
-            _color = Properties.colorDefault;
+            color = Properties.colorDefault;
         }
 
         public void setPosition(float x, float y)
@@ -40,31 +40,27 @@ namespace Cluster.GameMechanics.Interface.Commons
         
         public void enable()
         {
-            _active = true;
+            active = true;
         }
 
         public void disable()
         {
-            _active = false;
+            active = false;
         }
 
         public void updateState()
         {
-            _state = ButtonState.NONE;
+            state = ButtonState.NONE;
             if (GuiMouse.isMouseInRect(x, y, width, height))
             {
-                _state = ButtonState.MOUSE_OVER;
-                if (!string.IsNullOrWhiteSpace(toolTip))
-                {
-                    CombinedGui.combinedGui.toolTip.setText(toolTip);
-                }
+                state = ButtonState.MOUSE_OVER;
                 if (GuiMouse.mouseHitLeft)
                 {
-                    _state = ButtonState.LEFT_CLICKED;
+                    state = ButtonState.LEFT_CLICKED;
                 }
                 else if (GuiMouse.mouseHitRight)
                 {
-                    _state = ButtonState.RIGHT_CLICKED;
+                    state = ButtonState.RIGHT_CLICKED;
                 }
             }
 
@@ -75,27 +71,32 @@ namespace Cluster.GameMechanics.Interface.Commons
         {
             if (isMouseOver())
             {
-                _color = Properties.colorHighlight;
+                color = Properties.colorHighlight;
             }
             else
             {
-                _color = Properties.colorDefault;
+                color = Properties.colorDefault;
             }
         }
 
         public bool isMouseOver()
         {
-            return _state > ButtonState.NONE;
+            return state > ButtonState.NONE;
+        }
+
+        public IGui getElementAtMousePosition()
+        {
+            return isMouseOver() ? this : null;
         }
 
         public bool isActive()
         {
-            return _active;
+            return active;
         }
 
         public virtual void render()
         {
-            Primitives.setColor(_color.r(), _color.g(), _color.b(), _color.a());
+            Primitives.setColor(color.r(), color.g(), color.b(), color.a());
             Primitives.drawRect(x, y, width, height);
         }
 

@@ -10,13 +10,13 @@ namespace Cluster.GameMechanics.Interface
 {
     public class UnitSelection : ISelection
     {
-        private readonly List<Unit> _units = new List<Unit>();
+        private readonly List<Unit> units = new List<Unit>();
 
-        private Panel _panel;
+        private Panel panel;
 
         public UnitSelection()
         {
-            _panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
+            panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
         }
 
         public bool selectByPick(float x, float y)
@@ -28,10 +28,10 @@ namespace Cluster.GameMechanics.Interface
             var unit = pick(x, y);
             if (unit != null)
             {
-                _units.Add(unit);
+                units.Add(unit);
             }
 
-            return _units.Count > 0;
+            return units.Count > 0;
         }
 
         private Unit pick(float x, float y)
@@ -64,36 +64,42 @@ namespace Cluster.GameMechanics.Interface
             {
                 var isInBox = (Math.Abs(cx - unit.x) < dx && Math.Abs(cy - unit.y) < dy);
                 var mayBeAdded = unit.isAlive() && unit.getOwner().getId() == Civilisation.player;
-                var notYetInList = !_units.Contains(unit);
+                var notYetInList = !units.Contains(unit);
                 if (isInBox && mayBeAdded && notYetInList)
                 {
-                    _units.Add(unit);
+                    units.Add(unit);
                     unit.isSelected = true;
                 }
             }
 
-            return _units.Count > 0;
+            return units.Count > 0;
         }
 
         public bool isMouseOver()
         {
-            return _panel.isMouseOver();
+            return panel.isMouseOver();
+        }
+        
+        public string getToolTipText()
+        {
+            var elementAtMousePosition = panel.getElementAtMousePosition();
+            return (elementAtMousePosition as IToolTip)?.getInfoText();
         }
 
         public Vec2 getCenterOfMass()
         {
-            return new Vec2(_units[0].x, _units[0].y);
+            return new Vec2(units[0].x, units[0].y);
         }
 
         public void setActive(bool active)
         {
             if (active)
             {
-                _panel.enable();
+                panel.enable();
             }
             else
             {
-                _panel.disable();
+                panel.disable();
             }
         }
 
@@ -107,12 +113,12 @@ namespace Cluster.GameMechanics.Interface
 
         private void deselectAll()
         {
-            foreach (var unit in _units)
+            foreach (var unit in units)
             {
                 unit.isSelected = false;
             }
 
-            _units.Clear();
+            units.Clear();
         }
     }
 }

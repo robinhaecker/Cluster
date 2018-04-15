@@ -5,9 +5,9 @@ namespace Cluster.GameMechanics.Interface.Commons
 {
     public class ProgressBar : Button
     {
-        private float _progress;
-        private float _maxProgress;
-        private int _anzahlFolgende;
+        private float progress;
+        private float maxProgress;
+        private int anzahlFolgende;
 
         internal ProgressBar(float x = 0, float y = 0, float size = Properties.BUTTON_SIZE_DEFAULT) : base(x, y, size)
         {
@@ -17,22 +17,22 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public void setProgress(float progress, float maxProgress = -1)
         {
-            _progress = progress;
+            this.progress = progress;
             if (maxProgress > 0)
             {
-                _maxProgress = maxProgress;
+                this.maxProgress = maxProgress;
             }
         }
 
         private void setAnzahlFolgende(int anzahl = 0)
         {
-            _anzahlFolgende = anzahl;
+            anzahlFolgende = anzahl;
         }
 
         public new void updateState()
         {
             base.updateState();
-            _progress = Math.Min(Math.Max(0, _progress), _maxProgress);
+            progress = Math.Min(Math.Max(0, progress), maxProgress);
         }
 
         public new void render()
@@ -41,18 +41,18 @@ namespace Cluster.GameMechanics.Interface.Commons
             Primitives.setColor(Properties.colorYes.r(), Properties.colorYes.g(), Properties.colorYes.b(), Properties.colorYes.a());
             Primitives.drawRect(x, y, width * percentage, height);
             
-            Primitives.setColor(_color.r(), _color.g(), _color.b(), _color.a());
+            Primitives.setColor(color.r(), color.g(), color.b(), color.a());
             Primitives.drawRect(x + width * percentage, y, width * (1.0f - percentage), height);
-            if (_anzahlFolgende > 0)
+            if (anzahlFolgende > 0)
             {
                 Text.setTextSize(15.0f);
-                Text.drawText(_anzahlFolgende.ToString(), x + width - 15.0f, y);
+                Text.drawText(anzahlFolgende.ToString(), x + width - 15.0f, y);
             }
         }
 
         private float getPercentage()
         {
-            return _progress / _maxProgress;
+            return progress / maxProgress;
         }
     }
 }

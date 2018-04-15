@@ -17,14 +17,14 @@ namespace Cluster.GameMechanics.Behaviour
 		private const float SECTOR_SIZE = 700.0f;
 		private const float ORIGIN = -SECTOR_SIZE * SECTOR_COUNT * 0.5f;
 
-		private static Sector[,] _data;
+		private static Sector[,] data;
 
-		Vec2 _p0, _p1;
-		int _posX;
-		int _posY;
+		Vec2 p0, p1;
+		int posX;
+		int posY;
 
-		private List<Sector> _neighbors;
-		private List<Sector> _extendedSector;
+		private List<Sector> neighbors;
+		private List<Sector> extendedSector;
 
 		public readonly List<Unit>[] ships;
 		//List<Shot> shots;
@@ -48,19 +48,19 @@ namespace Cluster.GameMechanics.Behaviour
 
 		public static void init()
 		{
-			_data = new Sector[SECTOR_COUNT+1, SECTOR_COUNT+1];
+			data = new Sector[SECTOR_COUNT+1, SECTOR_COUNT+1];
 
 			for (int x = 0; x < SECTOR_COUNT+1; x++)
 			{
 				for (int y = 0; y < SECTOR_COUNT+1; y++)
 				{
-					_data[x, y] = new Sector();
-					_data[x, y]._p0 = new Vec2(ORIGIN + x * SECTOR_SIZE, ORIGIN + y * SECTOR_SIZE);
-					_data[x, y]._p1 = _data[x, y]._p0 + new Vec2(SECTOR_SIZE, SECTOR_SIZE);
-					_data[x, y]._posX = x;
-					_data[x, y]._posY = y;
-					_data[x, y]._neighbors = new List<Sector>();
-					_data[x, y]._extendedSector = new List<Sector>();
+					data[x, y] = new Sector();
+					data[x, y].p0 = new Vec2(ORIGIN + x * SECTOR_SIZE, ORIGIN + y * SECTOR_SIZE);
+					data[x, y].p1 = data[x, y].p0 + new Vec2(SECTOR_SIZE, SECTOR_SIZE);
+					data[x, y].posX = x;
+					data[x, y].posY = y;
+					data[x, y].neighbors = new List<Sector>();
+					data[x, y].extendedSector = new List<Sector>();
 				}
 			}
 
@@ -68,19 +68,19 @@ namespace Cluster.GameMechanics.Behaviour
 			{
 				for (int y = 0; y < SECTOR_COUNT; y++)
 				{
-					_data[x, y]._extendedSector.Add(_data[x    , y]);
-					_data[x, y]._extendedSector.Add(_data[x + 1, y]);
-					_data[x, y]._extendedSector.Add(_data[x, y + 1]);
-					_data[x, y]._extendedSector.Add(_data[x + 1, y + 1]);
+					data[x, y].extendedSector.Add(data[x    , y]);
+					data[x, y].extendedSector.Add(data[x + 1, y]);
+					data[x, y].extendedSector.Add(data[x, y + 1]);
+					data[x, y].extendedSector.Add(data[x + 1, y + 1]);
 
 					//--------------------------------------------------
-					_data[x, y]._neighbors.Add(_data[x + 1, y    ]);
-					_data[x, y]._neighbors.Add(_data[x,     y + 1]);
-					_data[x, y]._neighbors.Add(_data[x + 1, y+1  ]);
+					data[x, y].neighbors.Add(data[x + 1, y    ]);
+					data[x, y].neighbors.Add(data[x,     y + 1]);
+					data[x, y].neighbors.Add(data[x + 1, y+1  ]);
 					//--------------------------------------------------
-					_data[x+1, y  ]._neighbors.Add(_data[x, y]);
-					_data[x,   y+1]._neighbors.Add(_data[x, y]);
-					_data[x+1, y+1]._neighbors.Add(_data[x, y]);
+					data[x+1, y  ].neighbors.Add(data[x, y]);
+					data[x,   y+1].neighbors.Add(data[x, y]);
+					data[x+1, y+1].neighbors.Add(data[x, y]);
 				}
 			}
 		}
@@ -99,17 +99,17 @@ namespace Cluster.GameMechanics.Behaviour
 
 		public static Sector get(float x, float y)
 		{
-			return _data[Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((x - ORIGIN) / SECTOR_SIZE))),
+			return data[Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((x - ORIGIN) / SECTOR_SIZE))),
 						Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((y - ORIGIN) / SECTOR_SIZE)))];
 		}
 
 		public bool containsPoint(float x, float y)
 		{
-			return _p0.x >= x && _p0.y >= y && _p1.x <= x && _p1.y <= y;
+			return p0.x >= x && p0.y >= y && p1.x <= x && p1.y <= y;
 		}
 		public bool containsPoint(double x, double y)
 		{
-			return _p0.x >= x && _p0.y >= y && _p1.x <= x && _p1.y <= y;
+			return p0.x >= x && p0.y >= y && p1.x <= x && p1.y <= y;
 		}
 
 
@@ -127,9 +127,9 @@ namespace Cluster.GameMechanics.Behaviour
 			resetAllEnemyDistanceValues();
 
 			// Für alle Sektoren...
-			foreach (var sector0 in _data)
+			foreach (var sector0 in data)
 			{
-				foreach (var sector1 in sector0._extendedSector)
+				foreach (var sector1 in sector0.extendedSector)
 				{
 					// Alle Zivilisationen checken...
 					for (int i = 0; i < Civilisation.count + 1; i++)

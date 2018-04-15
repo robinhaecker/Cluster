@@ -25,9 +25,9 @@ namespace Cluster.GameMechanics.Behaviour
 
 		byte type;
 		Planet planet;
-		int planet_field;
+		int planetField;
 		Unit unit;
-		float space_x, space_y;
+		float spaceX, spaceY;
 
 		List<Vec2> waypoints;
 		double previously;
@@ -36,7 +36,7 @@ namespace Cluster.GameMechanics.Behaviour
 		public Target()
 		{
 			planet = null;
-			planet_field = -1;
+			planetField = -1;
 			unit = null;
 			type = TARGET_SPACE;
 			waypoints = new List<Vec2>();
@@ -44,22 +44,22 @@ namespace Cluster.GameMechanics.Behaviour
 		public Target(float x, float y)
 		{
 			planet = null;
-			planet_field = -1;
+			planetField = -1;
 			unit = null;
 			type = TARGET_SPACE;
-			space_x = (float)x;
-			space_y = (float)y;
+			spaceX = (float)x;
+			spaceY = (float)y;
 			waypoints = new List<Vec2>();
 		}
 
 
-		public void update(Planet p, int index = -1, int soft_index = -1)
+		public void update(Planet p, int index = -1, int softIndex = -1)
 		{
 			unit = null;
 			type = TARGET_PLANET;
 			planet = p;
-			planet_field = index;
-			if (soft_index != -1) previously = soft_index;
+			planetField = index;
+			if (softIndex != -1) previously = softIndex;
 			else previously = index;
 		}
 		public void update(Unit u)
@@ -86,13 +86,13 @@ namespace Cluster.GameMechanics.Behaviour
 					if (unit.isDead())
 					{
 						type = TARGET_SPACE;
-						space_x = (float)unit.x;
-						space_y = (float)unit.y;
+						spaceX = (float)unit.x;
+						spaceY = (float)unit.y;
 					}
 					return (float)unit.x;
 
 				default:
-					return space_x;
+					return spaceX;
 			}
 		}
 		public float getY()
@@ -106,13 +106,13 @@ namespace Cluster.GameMechanics.Behaviour
 					if (unit.isDead())
 					{
 						type = TARGET_SPACE;
-						space_x = (float)unit.x;
-						space_y = (float)unit.y;
+						spaceX = (float)unit.x;
+						spaceY = (float)unit.y;
 					}
 					return (float)unit.y;
 
 				default:
-					return space_y;
+					return spaceY;
 			}
 		}
 
@@ -156,7 +156,7 @@ namespace Cluster.GameMechanics.Behaviour
 				case TARGET_PLANET:
 					double phi = 0.0f;
 					float height = planet.size * 20.0f + 150.0f + (float)GameWindow.random.NextDouble() * 350.0f;
-					if (planet_field == -1)
+					if (planetField == -1)
 					{
 						double delta = (GameWindow.random.NextDouble()-0.5) * 4.0 + 0.5;
 						phi = (((double)previously + delta) / (double)planet.size) * 2.0 * Math.PI;
@@ -165,8 +165,8 @@ namespace Cluster.GameMechanics.Behaviour
 					else
 					{
 						double delta = (GameWindow.random.NextDouble()-0.5) * 2.0 + 0.5;
-						phi = (((double)planet_field + delta) / (double)planet.size) * 2.0 * Math.PI;
-						previously = ((double)planet_field + delta + (double)planet.size) % (double)planet.size;
+						phi = (((double)planetField + delta) / (double)planet.size) * 2.0 * Math.PI;
+						previously = ((double)planetField + delta + (double)planet.size) % (double)planet.size;
 					}
 					wp = new Vec2((float)planet.x + (float)Math.Cos(phi) * height,
 								  (float)planet.y + (float)Math.Sin(phi) * height);
@@ -180,8 +180,8 @@ namespace Cluster.GameMechanics.Behaviour
 					return wp;
 
 				default:
-					wp = new Vec2(space_x + 100.0f * ((float)GameWindow.random.NextDouble() - 0.5f),
-								  space_y + 100.0f * ((float)GameWindow.random.NextDouble() - 0.5f));
+					wp = new Vec2(spaceX + 100.0f * ((float)GameWindow.random.NextDouble() - 0.5f),
+								  spaceY + 100.0f * ((float)GameWindow.random.NextDouble() - 0.5f));
 					waypoints.Add(wp);
 					return wp;
 			}
