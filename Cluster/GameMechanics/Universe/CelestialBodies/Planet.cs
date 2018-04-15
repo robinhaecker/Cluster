@@ -158,9 +158,9 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 }
                 else
                 {
-                    terra[i] = Terrain.FERTILE; /*
+                    terra[i] = Terrain.FERTILE;
                     build(i, Blueprint.data[GameWindow.random.Next(Blueprint.count)],
-                        Civilisation.data[GameWindow.random.Next(Civilisation.count)], false);*/
+                        Civilisation.data[GameWindow.random.Next(Civilisation.count)], false);
                 }
 
                 //Console.WriteLine(terra[i].ToString());
@@ -182,14 +182,14 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             }
 
             terraImage = new Mesh[NUMBER_OF_TERRAIN_TYPES];
-            terraImage[0] = new Mesh("planets/terra0.vg");
-            terraImage[1] = new Mesh("planets/terra1.vg");
-            terraImage[2] = new Mesh("planets/terra2.vg");
-            terraImage[3] = new Mesh("planets/terra3.vg");
-            terraImage[4] = new Mesh("planets/terra4.vg");
-            terraImage[5] = new Mesh("planets/terra5.vg");
-            terraImage[6] = new Mesh("planets/terra6.vg");
-            terraImage[7] = new Mesh("planets/terra7.vg");
+            terraImage[0] = new Mesh("planets/terra0b.vg");
+            terraImage[1] = new Mesh("planets/terra1b.vg");
+            terraImage[2] = new Mesh("planets/terra2b.vg");
+            terraImage[3] = new Mesh("planets/terra3b.vg");
+            terraImage[4] = new Mesh("planets/terra4b.vg");
+            terraImage[5] = new Mesh("planets/terra5b.vg");
+            terraImage[6] = new Mesh("planets/terra6b.vg");
+            terraImage[7] = new Mesh("planets/terra7b.vg");
         }
 
 

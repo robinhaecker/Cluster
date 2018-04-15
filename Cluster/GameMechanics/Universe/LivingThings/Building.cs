@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 
@@ -249,6 +250,13 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             }
 
             return false;
+        }
+
+        public string getInfoText()
+        {
+            return blueprint.getName()+" ("+(int)health+"/"+(int)+healthMax+")\n"+
+                   "Besitzer: "+(owner?.name ?? "Niemand")+"\n"+
+                string.Join("\n", blueprint.description);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Cluster.GameMechanics.Interface.Commons
         public static readonly Vec4 colorNo = new Vec4(1.0f, 0.25f, 0.25f, 0.5f);
 
         public const float BUTTON_SIZE_DEFAULT = 50.0f;
-        public const float BUTTON_SIZE_LARGE = 100.0f;
+        public const float BUTTON_SIZE_LARGE = 102.0f;
         public const float PROGRESS_BAR_HEIGHT = 10.0f;
         
     }

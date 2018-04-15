@@ -1,7 +1,9 @@
 ﻿using System;
+using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
+using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Interface
@@ -86,15 +88,31 @@ namespace Cluster.GameMechanics.Interface
             {
                 if (planet.infra[pickedIndex] != null)
                 {
-                    panel.addLargeElement(new MeshButton(planet.infra[pickedIndex].blueprint.shape, 0, 0,
-                        Commons.Properties.BUTTON_SIZE_LARGE));
+                    var mainButton = new MeshButton(planet.infra[pickedIndex].blueprint.shape,
+                        Planet.terraImage[(int)planet.terra[pickedIndex]],
+                        0, 0,
+                        Commons.Properties.BUTTON_SIZE_LARGE);
+                    mainButton.setInfoText(planet.infra[pickedIndex].getInfoText());
+                    panel.addLargeElement(mainButton);
                 }
                 else
                 {
-                    var selectedTerrainButton = new MeshButton(Planet.terraImage[(int)planet.terra[pickedIndex]], 0, 0,
+                    var mainButton = new MeshButton(Planet.terraImage[(int)planet.terra[pickedIndex]], 
+                        null,
+                        0, 0,
                         Commons.Properties.BUTTON_SIZE_LARGE);
-                    selectedTerrainButton.setInfoText("Terrain Info Text\n bals\n sdfsgrwoj");
-                    panel.addLargeElement(selectedTerrainButton);
+                    mainButton.setInfoText(planet.getTerrainType(pickedIndex));
+                    panel.addLargeElement(mainButton);
+                    foreach (Blueprint blueprint in Blueprint.getAllBuildableOn(planet, pickedIndex))
+                    {
+                        var button = new MeshButton(blueprint.shape);
+                        button.setInfoText(blueprint.getInfoText());
+                        button.onLeftClick(() => blueprint.isBuildable(planet, pickedIndex)
+                                                && Civilisation.getPlayer().ressources >= blueprint.getCost()
+                            ? planet.build(pickedIndex, blueprint, Civilisation.getPlayer())
+                            : null);
+                        panel.addElement(button);
+                    }
                 }
             }
 

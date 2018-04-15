@@ -44,7 +44,6 @@ namespace Cluster.GameMechanics.Content
 		public readonly float energy;           // Energiebedarf des Gebäudes
 		public bool[] buildOn;        // Gibt an, auf welchen Terraintypen das Gebäude gebaut werden kann.
 
-
 		public bool upgradeOnly;              // Kann das Gebäude nur als Upgrade aus einem bereits bestehenden hervorgehen?
 		public readonly List<Blueprint> developInto;   // Liste an weiteren Gebäuden, in die geupgradet werden kann
 		public readonly Technology activation;          // Die Technologie, die benötigt wird, um das Gebäude freizuschalten.
@@ -134,10 +133,6 @@ namespace Cluster.GameMechanics.Content
 			}
 		}
 
-
-
-
-
 		Blueprint getUpgradeFrom(string bpname)
 		{
 			foreach (var blueprint in Blueprint.data)
@@ -195,7 +190,20 @@ namespace Cluster.GameMechanics.Content
 			return SpecialAbility.NONE;
 		}
 
+		public static IEnumerable<Blueprint> getAllBuildableOn(Planet planet, int pos)
+		{
+			foreach (var blueprint in data)
+			{
+				if (blueprint.isBuildable(planet, pos))
+				{
+					yield return blueprint;
+				}
+			}
+		}
 
-
+		public string getInfoText()
+		{
+			return name + "\n" + string.Join("\n", description);
+		}
 	}
 }

@@ -15,13 +15,15 @@ namespace Cluster.GameMechanics.Interface.Commons
         }
 
         protected bool active;
-        private String toolTip;
+        private string toolTip;
         protected ButtonState state;
         protected float x;
         protected float y;
         protected float width;
         protected float height;
         protected Vec4 color;
+        private Func<object> applyOnLeftClick;
+        private Func<object> applyOnRightClick;
         
         internal Button(float x = 0, float y = 0, float size = Properties.BUTTON_SIZE_DEFAULT)
         {
@@ -32,6 +34,15 @@ namespace Cluster.GameMechanics.Interface.Commons
             color = Properties.colorDefault;
         }
 
+        public void onLeftClick(Func<object> functionToUseOnClick)
+        {
+            applyOnLeftClick = functionToUseOnClick;
+        }
+        public void onRightClick(Func<object> functionToUseOnClick)
+        {
+            applyOnRightClick = functionToUseOnClick;
+        }
+        
         public void setPosition(float x, float y)
         {
             this.x = x;
@@ -57,10 +68,12 @@ namespace Cluster.GameMechanics.Interface.Commons
                 if (GuiMouse.mouseHitLeft)
                 {
                     state = ButtonState.LEFT_CLICKED;
+                    applyOnLeftClick?.Invoke();
                 }
                 else if (GuiMouse.mouseHitRight)
                 {
                     state = ButtonState.RIGHT_CLICKED;
+                    applyOnRightClick?.Invoke();
                 }
             }
 
