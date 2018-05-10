@@ -22,7 +22,7 @@ namespace Cluster.GameMechanics.Interface.Commons
             this.y = y;
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
-            this.gridSize = gridSize;
+            this.gridSize = gridSize + 2;
             indexX = 0;
             indexY = 0;
         }
@@ -64,12 +64,12 @@ namespace Cluster.GameMechanics.Interface.Commons
 
         public void addLargeElement(IGui largeElement)
         {
+            addElement(largeElement);
             if (indexY > 0)
             {
                 indexY = 0;
                 indexX++;
             }
-            addElement(largeElement);
             indexX++;
             indexY = 0;
         }

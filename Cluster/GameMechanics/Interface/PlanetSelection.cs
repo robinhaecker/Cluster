@@ -1,7 +1,9 @@
-﻿﻿using System;
+﻿using System;
+using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
+using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Interface
@@ -84,17 +86,64 @@ namespace Cluster.GameMechanics.Interface
             panel.clear();
             if (pickedIndex > -1)
             {
-                if (planet.infra[pickedIndex] != null)
+                var building = planet.infra[pickedIndex];
+                if (building != null)
                 {
-                    panel.addLargeElement(new MeshButton(planet.infra[pickedIndex].blueprint.shape, 0, 0,
-                        Commons.Properties.BUTTON_SIZE_LARGE));
+                    var mainButton = new MeshButton(building.blueprint.shape,
+                        Planet.terraImage[(int) planet.terra[pickedIndex]],
+                        0, 0,
+                        Commons.Properties.BUTTON_SIZE_LARGE);
+                    mainButton.setInfoText(building.getInfoText());
+                    panel.addLargeElement(mainButton);
+                    if (building.health > 0 && building.owner == Civilisation.getPlayer())
+                    {
+                        foreach (var prototype in building.listOfPrototypes())
+                        {
+                            var button = new ProgressBar(prototype.shape);
+                            if (building.production.Count > 0 && prototype.Equals(building.production[0]))
+                            {
+                                button.setProgress(building.productionTimer);
+                            }
+
+                            button.setAnzahlFolgende(building.getProductionCount(prototype));
+                            button.onLeftClick(() =>
+                            {
+                                if (Civilisation.getPlayer().ressources >= prototype.getCost())
+                                {
+                                    building.produceUnit(prototype);
+                                }
+
+                                return 0;
+                            });
+                            button.onRightClick(() =>
+                            {
+                                building.abortUnit(prototype);
+                                return 0;
+                            });
+
+                            button.setInfoText(prototype.getInfoText());
+                            panel.addElement(button);
+                        }
+                    }
                 }
                 else
                 {
-                    var selectedTerrainButton = new MeshButton(Planet.terraImage[(int)planet.terra[pickedIndex]], 0, 0,
+                    var mainButton = new MeshButton(Planet.terraImage[(int) planet.terra[pickedIndex]],
+                        null,
+                        0, 0,
                         Commons.Properties.BUTTON_SIZE_LARGE);
-                    selectedTerrainButton.setInfoText("Terrain Info Text\n bals\n sdfsgrwoj");
-                    panel.addLargeElement(selectedTerrainButton);
+                    mainButton.setInfoText(planet.getTerrainType(pickedIndex));
+                    panel.addLargeElement(mainButton);
+                    foreach (Blueprint blueprint in Blueprint.getAllBuildableOn(planet, pickedIndex))
+                    {
+                        var button = new MeshButton(blueprint.shape);
+                        button.setInfoText(blueprint.getInfoText());
+                        button.onLeftClick(() => blueprint.isBuildable(planet, pickedIndex)
+                                                 && Civilisation.getPlayer().ressources >= blueprint.getCost()
+                            ? planet.build(pickedIndex, blueprint, Civilisation.getPlayer())
+                            : null);
+                        panel.addElement(button);
+                    }
                 }
             }
 

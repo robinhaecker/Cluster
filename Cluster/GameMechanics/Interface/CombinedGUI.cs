@@ -32,7 +32,7 @@ namespace Cluster.GameMechanics.Interface
 
             ressourcesInfoBox = new InfoBox(10, 10);
             performanceInfoBox = new InfoBox(GameWindow.active.width, 10, InfoBox.SpecifiedCorner.UPPER_RIGHT);
-            toolTipBox = new InfoBox(10, GameWindow.active.height - 150, InfoBox.SpecifiedCorner.LOWER_LEFT);
+            toolTipBox = new InfoBox(10, GameWindow.active.height - 130, InfoBox.SpecifiedCorner.LOWER_LEFT);
             elements.Add(ressourcesInfoBox);
             elements.Add(performanceInfoBox);
             elements.Add(toolTipBox);
