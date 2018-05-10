@@ -19,7 +19,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private const int RENDER_ARRSIZE_POS = 4;
         private const int RENDER_ARRSIZE_COL = 3;
         private const int RENDER_ARRSIZE_ALPHAS = 2;
-        
+
         private static int renderShotCount;
         private static int countshots;
         static int shotGlData;
@@ -92,7 +92,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             }
 
 
-            list[(int)against].Add(this);
+            list[(int) against].Add(this);
         }
 
         public Shot(Shot from)
@@ -114,7 +114,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             damage = from.damage + green * 10.0f;
             lifespan = 10.0f;
 
-            list[(int)against].Add(this);
+            list[(int) against].Add(this);
         }
 
         public Shot(Unit from, Planet pl, int index)
@@ -127,7 +127,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             red = owner.red * 0.25f + 0.75f;
             green = owner.green * 0.25f + 0.75f;
             blue = owner.blue * 0.25f + 0.75f;
-            alpha = 0.5f;
+            alpha = 0.75f;
             length = 25.0f;
             against = FiredAgainst.BUILDINGS;
 
@@ -143,20 +143,20 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                 pl.x + (double) pl.size * 20.0 * Math.Cos(((double) index + 0.5) / (double) pl.size * 2.0 * Math.PI) -
                 x);
 
-            list[(int)against].Add(this);
+            list[(int) against].Add(this);
         }
 
 
         public static void update(float t = 1.0f)
         {
             countshots = 0;
-            foreach (Shot s in list[(int)FiredAgainst.UNITS])
+            foreach (Shot s in list[(int) FiredAgainst.UNITS])
             {
                 s.simAgainstUnits(t);
                 countshots++;
             }
 
-            foreach (Shot s in list[(int)FiredAgainst.BUILDINGS])
+            foreach (Shot s in list[(int) FiredAgainst.BUILDINGS])
             {
                 s.simAgainstBuildings(t);
                 countshots++;
@@ -165,7 +165,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             // Entferne Schüsse, die nicht mehr gebraucht werden.
             foreach (Shot s in removed)
             {
-                list[(int)s.against].Remove(s);
+                list[(int) s.against].Remove(s);
             }
 
             removed.Clear();
@@ -322,7 +322,8 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                                 s.x - (float) Math.Cos(s.rot) * s.length;
                             renderBufPos[renderShotCount * RENDER_ARRSIZE_POS + 3] =
                                 s.y - (float) Math.Sin(s.rot) * s.length;
-                            renderBufAlphas[renderShotCount * RENDER_ARRSIZE_ALPHAS + 0] = 0.0f;
+                            renderBufAlphas[renderShotCount * RENDER_ARRSIZE_ALPHAS + 0] =
+                                s.alpha * Math.Min(1.0f, s.lifespan) * 0.25f;
                             renderBufAlphas[renderShotCount * RENDER_ARRSIZE_ALPHAS + 1] =
                                 s.alpha * Math.Min(1.0f, s.lifespan);
                         }
@@ -345,7 +346,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         static void render_part2()
         {
-            GL.LineWidth(2.0f);
+            GL.LineWidth(3.0f);
             GL.Disable(EnableCap.DepthTest);
 
             if (shotGlData == 0)

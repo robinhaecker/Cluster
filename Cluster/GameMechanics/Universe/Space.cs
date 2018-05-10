@@ -15,6 +15,7 @@ namespace Cluster.GameMechanics.Universe
         public static float animation = 0.0f;
 
         public static Shader planetShader;
+        public static Shader planetAtmosphereShader;
         public static Shader buildingShader;
         public static Shader unitShader, unitShieldShader;
         public static Shader shotShader;
@@ -26,6 +27,7 @@ namespace Cluster.GameMechanics.Universe
         static Image spaceTex1;
         static Image spaceTex2;
         static Image spaceTex3;
+        public static Image planetTex0;
         static int glData;
         static int bufPos;
 
@@ -36,6 +38,7 @@ namespace Cluster.GameMechanics.Universe
         {
             spaceShader = new Shader(Resources.space_vert, Resources.space_frag);
             planetShader = new Shader(Resources.planet_vert, Resources.planet_frag);
+            planetAtmosphereShader = new Shader(Resources.atmosphere_vert, Resources.atmosphere_frag, Resources.atmosphere_geom);
             buildingShader = new Shader(Resources.building_vert, Resources.building_frag);
             unitShader = new Shader(Resources.unit_vert, Resources.unit_frag);
             unitShieldShader = new Shader(Resources.shield_vert, Resources.shield_frag, Resources.shield_geom);
@@ -48,6 +51,7 @@ namespace Cluster.GameMechanics.Universe
             spaceTex1 = new Image("space1.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
             spaceTex2 = new Image("space2.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
             spaceTex3 = new Image("space3.png").setClamp(TextureWrapMode.MirroredRepeat, TextureWrapMode.MirroredRepeat);
+            planetTex0 = new Image("planet1.png").setClamp(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
 
             create_vba();
             Planet.init();

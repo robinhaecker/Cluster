@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,12 +63,12 @@ namespace Cluster.Rendering.Appearance
 			//GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthbuffer);
 			
 
-			Console.WriteLine("Framebuffer status: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
+			Debug.WriteLine("Framebuffer status: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Framebuffer error: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
+                Debug.WriteLine("Framebuffer error: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
                 Console.ForegroundColor = ConsoleColor.White;
             }
 
@@ -117,7 +118,7 @@ namespace Cluster.Rendering.Appearance
 			GL.DrawBuffers(bufs.Length, bufs);
 
 
-			Console.WriteLine("Framebuffer status: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
+			Debug.WriteLine("Framebuffer status: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
 
 			GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 

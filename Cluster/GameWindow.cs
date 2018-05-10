@@ -75,7 +75,7 @@ namespace Cluster
                 // ask for an OpenGL 4.0 forward compatible context
             4, 0, GraphicsContextFlags.ForwardCompatible)
         {
-            Console.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version));
+            Debug.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version));
 
             active = this;
             title = apptitle;
@@ -211,7 +211,7 @@ namespace Cluster
             this.SwapBuffers();
 			swapbufferTime = (int)watch.ElapsedMilliseconds;// -render_time;swapbuffer_time.ToString()
             watch.Stop();
-			//Console.WriteLine("Render Time: " + render_time.ToString() + ", time to swap buffers: " + swapbuffer_time.ToString());
+			//Debug.WriteLine("Render Time: " + render_time.ToString() + ", time to swap buffers: " + swapbuffer_time.ToString());
 
             glError("onRenderFrame");
         }
@@ -227,7 +227,7 @@ namespace Cluster
 
             if (position != "") position = " (" + position + ")";
 
-            if (text != "NoError") Console.WriteLine("OpenGL-Error"+position+": " + err.ToString());
+            if (text != "NoError") Debug.WriteLine("OpenGL-Error"+position+": " + err.ToString());
             Console.ForegroundColor = ConsoleColor.White;
         }
 

@@ -6,7 +6,7 @@ using Cluster.GameMechanics.Universe.CelestialBodies;
 
 namespace Cluster.GameMechanics.Universe.LivingThings
 {
-    class Building
+    public class Building
     {
         public enum Status
         {

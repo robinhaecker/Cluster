@@ -13,7 +13,7 @@ namespace Cluster.GameMechanics.Interface
 {
     public class MoveAndSelect
     {
-        private const float SCROLL_BOUNDARY = 7000.0f;
+        private const float SCROLL_BOUNDARY = 8000.0f;
         private const float SCROLL_SPEED = 1.75f;
         private const float SCROLL_DELTA_PIXELS = 100.0f;
         private const float ZOOM_MAX = 1.75f;

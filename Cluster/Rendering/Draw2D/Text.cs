@@ -68,7 +68,7 @@ namespace Cluster.Rendering.Draw2D
             float x0 = x;
             int offset = 0;
             bool jump = false;
-            //Console.WriteLine("drawText() -> "+text);
+            //Debug.WriteLine("drawText() -> "+text);
             char[] chars = text.ToCharArray();
             for (int i = 0; i < text.Length; i++)
             {
@@ -355,7 +355,7 @@ namespace Cluster.Rendering.Draw2D
         internal static void renderText()
         {
             if (numChars == 0) return;
-            //Console.WriteLine("renderText() -> num_chars = " + num_chars.ToString());
+            //Debug.WriteLine("renderText() -> num_chars = " + num_chars.ToString());
             set_buffers_text();
 
 

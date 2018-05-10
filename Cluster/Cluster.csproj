@@ -149,6 +149,9 @@
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Shader\atmosphere.frag" />
+    <Content Include="Resources\Shader\atmosphere.geom" />
+    <Content Include="Resources\Shader\atmosphere.vert" />
     <Content Include="Resources\Shader\mesh.frag" />
     <Content Include="Resources\Shader\mesh.vert" />
     <Content Include="Resources\Shader\particle2D.frag" />

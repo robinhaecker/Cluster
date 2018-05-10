@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Cluster.Rendering.Appearance
 {
-    class Shader
+    public class Shader
     {
         int program;
         int vert, frag, geom;
@@ -22,9 +23,9 @@ namespace Cluster.Rendering.Appearance
             GL.CompileShader(frag);
 
             string log = GL.GetShaderInfoLog(vert);
-            if (log != "") Console.Write("Compilation Error in vertex shader:\n{0}\n", log);
+            if (log != "") Debug.Write("Compilation Error in vertex shader:\n" + log + "\n");
             log = GL.GetShaderInfoLog(frag);
-            if (log != "") Console.Write("Compilation Error in fragment shader:\n{0}\n", log);
+            if (log != "") Debug.Write("Compilation Error in fragment shader:\n" + log + "\n");
 
             if (geometryShaderSource != "")
             {
@@ -32,7 +33,7 @@ namespace Cluster.Rendering.Appearance
                 GL.ShaderSource(geom, geometryShaderSource);
                 GL.CompileShader(geom);
                 log = GL.GetShaderInfoLog(geom);
-                if (log != "") Console.Write("Compilation Error in geometry shader:\n{0}\n", log);
+                if (log != "") Debug.Write("Compilation Error in geometry shader:\n" + log + "\n");
 
                 GL.AttachShader(program, geom);
             }

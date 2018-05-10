@@ -61,6 +61,33 @@ namespace Cluster.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  ähnelt.
+        /// </summary>
+        public static string atmosphere_frag {
+            get {
+                return ResourceManager.GetString("atmosphere_frag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  ähnelt.
+        /// </summary>
+        public static string atmosphere_geom {
+            get {
+                return ResourceManager.GetString("atmosphere_geom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  ähnelt.
+        /// </summary>
+        public static string atmosphere_vert {
+            get {
+                return ResourceManager.GetString("atmosphere_vert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die #version 420 core
         ///
         ///
@@ -287,12 +314,14 @@ namespace Cluster.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die #version 420 core
         ///
+        ///layout(binding = 0) uniform sampler2D texture;
         ///
         ///uniform float pos_x;
         ///uniform float pos_y;
         ///uniform vec3 rgb;
         ///uniform float size;
         ///
+        ///in vec2 tex_coords;
         ///in vec2 pass_height;
         ///flat in vec3 pass_color;
         ///
@@ -307,9 +336,7 @@ namespace Cluster.Properties {
         ///	if (pass_height.x != pass_height.y) // Ist nur bei Wasser der Fall --&gt; Dunkel-Hell Farbverlauf
         ///	{
         ///		tercol.xy *= 0.0125;
-        ///		tercol += vec3(0.015*(pass_height.y-18.75*size),0.015*(pass_height.y-18.75*size),0.0);
-        ///	}
-        ///	float blend = sqrt(max( 0.0, min(1.0, (pass_height.x - 1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///		tercol += vec3(0.015*(pass_height.y-18.75*size),0.015*(pass_height.y-18.75*size) [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string planet_frag {
             get {
@@ -332,7 +359,7 @@ namespace Cluster.Properties {
         ///uniform vec3 rgb;
         ///uniform float size;
         ///
-        ///
+        ///out vec2 tex_coords;
         ///out vec2 pass_height;
         ///flat out vec3 pass_color;
         ///
@@ -345,7 +372,7 @@ namespace Cluster.Properties {
         ///	//viewport.xy * + vec2(pos_x-scroll.x, pos_y-scroll.y))*scroll.z
         ///	vec2 vertex = in_Position;
         ///	bool isWater = false;
-        ///	float temp_waterdepth [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///	f [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         public static string planet_vert {
             get {

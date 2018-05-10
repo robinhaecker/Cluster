@@ -12,7 +12,7 @@ uniform float pos_y;
 uniform vec3 rgb;
 uniform float size;
 
-
+out vec2 tex_coords;
 out vec2 pass_height;
 flat out vec3 pass_color;
 
@@ -38,6 +38,7 @@ void main(void)
 	
 	gl_Position = vec4( viewport.xy * (vertex + vec2(pos_x-scroll.x, pos_y-scroll.y))*scroll.z , 0.0, 1.0);
 	
+	tex_coords = vertex * 0.001; 
 	pass_height = vec2(length(vertex), length(vertex));//min( 1.0 , max( 0.0, length(in_Position) - 20.0*size) );
 	if ( length(in_Position) < 1.0 ) pass_height = vec2(0.0, 0.0);
 	if (isWater == true) pass_height += vec2(temp_waterdepth * 2.0 + wave, temp_waterdepth * 0.75);

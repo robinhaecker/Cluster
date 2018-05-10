@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using Cluster.GameMechanics.Universe.LivingThings;
 
 namespace Cluster.GameMechanics.Content
 {
-    class Prototype
+    public class Prototype
     {
         public enum ShipAbility
         {
@@ -143,7 +144,7 @@ namespace Cluster.GameMechanics.Content
 
                 weaponRange = hasShortWeaponRange() ? 630.0f : 950.0f;
 
-                Console.WriteLine("Prototype loaded: " + name);
+                Debug.WriteLine("Prototype loaded: " + name);
             }
         }
 

@@ -1,11 +1,13 @@
 #version 420 core
 
+layout(binding = 0) uniform sampler2D texture;
 
 uniform float pos_x;
 uniform float pos_y;
 uniform vec3 rgb;
 uniform float size;
 
+in vec2 tex_coords;
 in vec2 pass_height;
 flat in vec3 pass_color;
 
@@ -45,5 +47,5 @@ void main(void)
 	//if (pass_height.y < 12.5*size) {inside = vec3(0.61, 0.35, 0.02) * (1.0-bright) + rgb*(bright);}
 	//if (pass_height.y < 4.5*size) {inside = vec3(0.81, 0.45, 0.02) * (1.0-bright) + rgb*(bright);}
 	
-	out_Color = vec4(tercol*blend + inside *(1.0-blend) , 0.3+(blend + bright));
+	out_Color = vec4(tercol*blend + inside *(1.0-blend), 0.3+(blend + bright)) * (0.5 + 0.5 * texture2D(texture, tex_coords));
 }

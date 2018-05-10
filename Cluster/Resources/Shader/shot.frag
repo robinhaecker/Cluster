@@ -1,8 +1,5 @@
 #version 420 core
 
-//layout(binding = 0) uniform sampler2D font;
-
-
 in Fragment {
 	vec4 rgba;
 } frag;

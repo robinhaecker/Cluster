@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ using Cluster.Rendering.Draw2D;
 
 namespace Cluster.GameMechanics.Content
 {
-	class Technology
+	public class Technology
 	{
 
 		public const byte BONUS_NONE = 0;
@@ -53,7 +54,7 @@ namespace Cluster.GameMechanics.Content
 			{
 				new Technology(directory, count.ToString().PadLeft(3, '0') + ".tech");
 			}
-			//Console.WriteLine("All Technologies loaded.");
+			//Debug.WriteLine("All Technologies loaded.");
 
 
 		}
@@ -95,7 +96,7 @@ namespace Cluster.GameMechanics.Content
 
 		public Technology(string fileDirectory, string fileName)
 		{
-			//Console.WriteLine("Load Technology: " + file_directory + file_name);
+			//Debug.WriteLine("Load Technology: " + file_directory + file_name);
 
 			using (StreamReader file = new StreamReader(fileDirectory + fileName, System.Text.Encoding.Default))
 			{
@@ -157,7 +158,7 @@ namespace Cluster.GameMechanics.Content
 				while (!exit);
 
 
-				//Console.WriteLine("Technology loaded: " + name);
+				//Debug.WriteLine("Technology loaded: " + name);
 
 			}
 		}
@@ -182,11 +183,11 @@ namespace Cluster.GameMechanics.Content
 		{
 			foreach (Technology t in Technology.data)
 			{
-				//Console.Write("" + t.name + ", ");
+				//Debug.Write("" + t.name + ", ");
 				if (techname.Contains(t.name)) return t;
 			}
 
-			Console.WriteLine("Warning: Technology with name '" + techname + "' has not been found.");
+			Debug.WriteLine("Warning: Technology with name '" + techname + "' has not been found.");
 			return null;
 		}
 

@@ -10,7 +10,7 @@ using Cluster.Rendering.Appearance;
 
 namespace Cluster.Rendering.Draw2D
 {
-    class Mesh
+    public class Mesh
     {
         public static List<MeshDraw> drawCall;
 
@@ -309,7 +309,7 @@ namespace Cluster.Rendering.Draw2D
         }
     }
 
-    class MeshDraw
+    public class MeshDraw
     {
         public Mesh mesh;
         public float x, y, width, height, clamp, r, g, b, a;

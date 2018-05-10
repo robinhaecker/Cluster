@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe.LivingThings;
@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Cluster.GameMechanics.Universe.CelestialBodies
 {
-    class Planet
+    public class Planet
     {
         // constants
         public const int PLANET_DETAIL = 15;
@@ -163,7 +163,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                         Civilisation.data[GameWindow.random.Next(Civilisation.count)], false);
                 }
 
-                //Console.WriteLine(terra[i].ToString());
+                //Debug.WriteLine(terra[i].ToString());
             }
         }
 
@@ -196,16 +196,31 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
         // rendering stuff
         public static void render()
         {
+            Space.planetAtmosphereShader.bind();
+            GL.Uniform3(Space.planetAtmosphereShader.getUniformLocation("scroll"),
+                (float) Space.scrollX,
+                (float) Space.scrollY,
+                (float) Space.zoom);
+            GL.Uniform3(Space.planetAtmosphereShader.getUniformLocation("viewport"), GameWindow.active.multX,
+                GameWindow.active.multY, Space.animation);
+
+            foreach (Planet pl in planets)
+            {
+                if (true) //pl.cansee_temp || pl.seenbefore)
+                {
+                    pl._render_atmosphere();
+                }
+            }
+            
             Space.planetShader.bind();
-            GL.Uniform3(Space.planetShader.getUniformLocation("scroll"), (float) Space.scrollX, (float) Space.scrollY,
+            GL.Uniform3(Space.planetShader.getUniformLocation("scroll"),
+                (float) Space.scrollX,
+                (float) Space.scrollY,
                 (float) Space.zoom);
             GL.Uniform3(Space.planetShader.getUniformLocation("viewport"), GameWindow.active.multX,
                 GameWindow.active.multY, Space.animation);
             Space.animation += 0.001f;
 
-            float maxwidth = GL.GetFloat(GetPName.AliasedLineWidthRange);
-            float linewidth = Math.Min(maxwidth, 3.0f * (float) Math.Max(Space.zoom, 1.0));
-            GL.LineWidth(linewidth);
             foreach (Planet pl in planets)
             {
                 if (true) //pl.cansee_temp || pl.seenbefore)
@@ -214,8 +229,11 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
                 }
             }
 
+
             if (Space.zoom > 0.2)
             {
+                float maxwidth = GL.GetFloat(GetPName.AliasedLineWidthRange);
+                float linewidth = Math.Min(maxwidth, 3.0f * (float) Math.Max(Space.zoom, 1.0));
                 GL.LineWidth(Math.Min(maxwidth, 1.5f));
                 Space.buildingShader.bind();
                 GL.Uniform3(Space.buildingShader.getUniformLocation("scroll"), (float) Space.scrollX,
@@ -541,19 +559,40 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
             glDataUpdate = false;
         }
 
+        private void _render_atmosphere()
+        {
+            if (glDataUpdate) prepare_vba();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, Space.planetTex0.tex);
+
+            GL.Uniform1(Space.planetAtmosphereShader.getUniformLocation("pos_x"), (float) x);
+            GL.Uniform1(Space.planetAtmosphereShader.getUniformLocation("pos_y"), (float) y);
+            GL.Uniform1(Space.planetAtmosphereShader.getUniformLocation("size"), (float) size);
+            GL.Uniform3(Space.planetAtmosphereShader.getUniformLocation("rgb"), red, green, blue);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindVertexArray(glData);
+            GL.DrawArrays(PrimitiveType.Points, 0, 1);
+            GL.BindVertexArray(0);
+            GL.Enable(EnableCap.DepthTest);
+        }
+
         private void _render()
         {
             if (glDataUpdate) prepare_vba();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, Space.planetTex0.tex);
 
-            GL.Uniform1(Space.planetShader.getUniformLocation("pos_x"), (float) x);
-            GL.Uniform1(Space.planetShader.getUniformLocation("pos_y"), (float) y);
+            GL.Uniform1(Space.planetShader.getUniformLocation("pos_x"), x);
+            GL.Uniform1(Space.planetShader.getUniformLocation("pos_y"), y);
             GL.Uniform1(Space.planetShader.getUniformLocation("size"), (float) size);
             GL.Uniform3(Space.planetShader.getUniformLocation("rgb"), red, green, blue);
 
+            GL.Disable(EnableCap.Blend);
             GL.BindVertexArray(glData);
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, size * PLANET_DETAIL + 2);
-            GL.DrawArrays(PrimitiveType.LineLoop, 1, size * PLANET_DETAIL + 1);
             GL.BindVertexArray(0);
+            GL.Enable(EnableCap.Blend);
         }
 
         private void _render_buildings()

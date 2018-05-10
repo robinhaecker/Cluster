@@ -11,7 +11,7 @@ using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Behaviour
 {
-	class Target
+	public class Target
 	{
 		public const byte  TARGET_SPACE  = 0,
 						   TARGET_PLANET = 1,
@@ -21,7 +21,6 @@ namespace Cluster.GameMechanics.Behaviour
 							MISSION_ATTACK   = 1,
 							MISSION_COLONIZE = 2,
 							MISSION_PROTECT  = 3;
-
 
 		byte type;
 		Planet planet;

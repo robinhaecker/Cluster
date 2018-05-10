@@ -19,6 +19,11 @@ namespace Cluster.GameMechanics.Interface
             panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
         }
 
+        public Target pickTarget(float x, float y)
+        {
+            return null;
+        }
+
         public bool selectByPick(float x, float y)
         {
             if (!(GameWindow.keyboard.IsKeyDown(Key.ControlLeft) || GameWindow.keyboard.IsKeyDown(Key.ControlRight)))
@@ -105,6 +110,10 @@ namespace Cluster.GameMechanics.Interface
 
         public void updateGui()
         {
+            if (GuiMouse.mouseHitRight && !CombinedGui.isMouseOver())
+            {
+                
+            }
         }
 
         public void renderGui()

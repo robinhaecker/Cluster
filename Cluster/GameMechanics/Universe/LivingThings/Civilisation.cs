@@ -6,7 +6,7 @@ using Cluster.Mathematics;
 
 namespace Cluster.GameMechanics.Universe.LivingThings
 {
-    class Civilisation
+    public class Civilisation
     {
         public const int TOTAL_MAX_POPULATION = 1000;
 

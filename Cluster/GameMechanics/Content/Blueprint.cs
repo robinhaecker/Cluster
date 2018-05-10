@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ using Cluster.GameMechanics.Universe.LivingThings;
 
 namespace Cluster.GameMechanics.Content
 {
-	class Blueprint
+	public class Blueprint
 	{
 		public enum SpecialAbility
 		{
@@ -101,7 +102,7 @@ namespace Cluster.GameMechanics.Content
 
 		public Blueprint(string fileDirectory, string fileName)
 		{
-			//Console.WriteLine("Load Building: " + file_directory + file_name);
+			//Debug.WriteLine("Load Building: " + file_directory + file_name);
 
 			using (StreamReader file = new StreamReader(fileDirectory + fileName, System.Text.Encoding.Default))
 			{
@@ -139,7 +140,7 @@ namespace Cluster.GameMechanics.Content
 				activation = Technology.findWithName(techname);
 				if (activation == null) activation = Technology.data[0];
 
-				Console.WriteLine("Blueprint loaded: " + name);
+				Debug.WriteLine("Blueprint loaded: " + name);
 
 			}
 		}
@@ -150,14 +151,14 @@ namespace Cluster.GameMechanics.Content
 			{
 				if (bpname.Contains(blueprint.name) && blueprint != this)
 				{
-					//Console.WriteLine("Building '"+b.name+"' can be upgraded into '" + this.name + "'.");
+					//Debug.WriteLine("Building '"+b.name+"' can be upgraded into '" + this.name + "'.");
 					upgradeOnly = true;
 					blueprint.developInto.Add(this);
 					return blueprint;
 				}
 			}
 
-			//Console.WriteLine("Warning: Technology with name '" + techname + "' has not been found.");
+			//Debug.WriteLine("Warning: Technology with name '" + techname + "' has not been found.");
 			return null;
 		}
 		void getBuildingTerrain(string info)

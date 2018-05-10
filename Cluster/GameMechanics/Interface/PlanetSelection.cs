@@ -1,4 +1,5 @@
 ﻿using System;
+using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
@@ -13,14 +14,44 @@ namespace Cluster.GameMechanics.Interface
         private Planet planet;
         private int pickedIndex;
 
+        private Planet pickPlanetTmp;
+        private int pickIndexTmp;
+
         private Panel panel;
+        private string defaultToolTipText;
 
         public PlanetSelection()
         {
             panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
+            defaultToolTipText = "";
+        }
+
+        public Target pickTarget(float x, float y)
+        {
+            var result = pickPlanet(x, y);
+            if (result)
+            {
+                var target = new Target();
+                target.update(pickPlanetTmp, pickIndexTmp);
+                return target;
+            }
+
+            return null;
         }
 
         public bool selectByPick(float x, float y)
+        {
+            var result = pickPlanet(x, y);
+            if (result)
+            {
+                planet = pickPlanetTmp;
+                pickedIndex = pickIndexTmp;
+            }
+
+            return result;
+        }
+
+        private bool pickPlanet(float x, float y)
         {
             foreach (Planet pl in Planet.planets)
             {
@@ -29,13 +60,13 @@ namespace Cluster.GameMechanics.Interface
                 double dist = delx * delx + dely * dely;
                 if (dist < pl.size * pl.size * 625.0)
                 {
-                    planet = pl;
-                    pickedIndex = -1;
+                    pickPlanetTmp = pl;
+                    pickIndexTmp = -1;
 
                     if (Space.zoom > 0.3 && dist > pl.size * pl.size * 225.0)
                     {
                         double alpha = Math.Atan2(dely, delx) / (2.0 * Math.PI);
-                        pickedIndex = (int) Math.Floor(((alpha + 1.0) % 1.0) * pl.size);
+                        pickIndexTmp = (int) Math.Floor(((alpha + 1.0) % 1.0) * pl.size);
                     }
 
                     return true;
@@ -72,7 +103,7 @@ namespace Cluster.GameMechanics.Interface
         public string getToolTipText()
         {
             var elementAtMousePosition = panel.getElementAtMousePosition();
-            return (elementAtMousePosition as IToolTip)?.getInfoText();
+            return (elementAtMousePosition as IToolTip)?.getInfoText() ?? defaultToolTipText;
         }
 
         public Vec2 getCenterOfMass()
@@ -94,6 +125,7 @@ namespace Cluster.GameMechanics.Interface
                         0, 0,
                         Commons.Properties.BUTTON_SIZE_LARGE);
                     mainButton.setInfoText(building.getInfoText());
+                    defaultToolTipText = mainButton.getInfoText();
                     panel.addLargeElement(mainButton);
                     if (building.health > 0 && building.owner == Civilisation.getPlayer())
                     {
@@ -133,6 +165,7 @@ namespace Cluster.GameMechanics.Interface
                         0, 0,
                         Commons.Properties.BUTTON_SIZE_LARGE);
                     mainButton.setInfoText(planet.getTerrainType(pickedIndex));
+                    defaultToolTipText = mainButton.getInfoText();
                     panel.addLargeElement(mainButton);
                     foreach (Blueprint blueprint in Blueprint.getAllBuildableOn(planet, pickedIndex))
                     {

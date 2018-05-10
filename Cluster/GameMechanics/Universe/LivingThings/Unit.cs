@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Cluster.GameMechanics.Universe.LivingThings
 {
-    class Unit
+    public class Unit
     {
         public static readonly List<Unit> units = new List<Unit>();
         public static readonly List<Unit> removed = new List<Unit>();
@@ -42,7 +42,6 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private static int bufSh0;
         private static int bufSh1;
         private static int bufSh2;
-
 
         // Instance-specific variables
         int id;
@@ -126,7 +125,6 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
             GL.LineWidth(1.5f);
             GL.Disable(EnableCap.DepthTest);
-            //Shader shader = Mesh.getShader();
             Space.unitShader.bind();
             foreach (Unit u in Unit.units)
             {
@@ -142,16 +140,19 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                         break;
                 }
 
+                var brightness = u.isSelected ? 0.75f : 0.5f;
+
                 GL.Uniform3(Space.unitShader.getUniformLocation("pos"), (float) (u.x - Space.scrollX),
                     (float) (u.y - Space.scrollY), (float) u.rot);
-                GL.Uniform4(Space.unitShader.getUniformLocation("col"), (float) u.owner.red, (float) u.owner.green,
-                    (float) u.owner.blue, alpha);
+                GL.Uniform4(Space.unitShader.getUniformLocation("col"),
+                    brightness + 0.5f * u.owner.red,
+                    brightness + 0.5f * u.owner.green,
+                    brightness + 0.5f * u.owner.blue, alpha);
                 GL.Uniform3(Space.unitShader.getUniformLocation("scale"), scale,
                     (float) (Space.zoom * GameWindow.active.multX), (float) (Space.zoom * GameWindow.active.multY));
 
                 GL.BindVertexArray(u.prototype.shape.glData);
                 GL.DrawArrays(PrimitiveType.Lines, 0, u.prototype.shape.numLines * 2);
-
 
                 // Daten für Schuztschilddarstellung setzen.
                 if (u.isAlive() && (u.gotHitTimer > 0.0f || u.isSelected))
@@ -669,6 +670,17 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         public float getShieldFraction()
         {
             return shield / prototype.getShields(owner);
+        }
+
+        public static IEnumerable<Unit> filterByOwner(List<Unit> units, Civilisation civ)
+        {
+            foreach (Unit unit in units)
+            {
+                if (unit.getOwner() == civ)
+                {
+                    yield return unit;
+                }
+            }
         }
     }
 }

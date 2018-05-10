@@ -133,7 +133,7 @@ namespace Cluster.GameMechanics.Universe
 			}
 
 
-			GL.PointSize(4.0f);
+			GL.PointSize(8.0f);
 			GL.Enable(EnableCap.PointSmooth);
 			//GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
 			GL.Disable(EnableCap.DepthTest);

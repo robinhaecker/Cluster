@@ -154,6 +154,21 @@
             PublicKeyToken=b77a5c561934e089
         </value>
     </data>
+    <data name="atmosphere_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>../Resources/Shader/atmosphere.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </data>
+    <data name="atmosphere_geom" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>../Resources/Shader/atmosphere.geom;System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </data>
+    <data name="atmosphere_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>../Resources/Shader/atmosphere.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </data>
     <data name="mesh_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>../Resources/Shader/mesh.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b77a5c561934e089
