@@ -91,6 +91,7 @@
     <Compile Include="GameMechanics\Universe\LivingThings\Unit.cs" />
     <Compile Include="GameMechanics\Universe\Particle.cs" />
     <Compile Include="GameMechanics\Universe\Space.cs" />
+    <Compile Include="Mathematics\Counter.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="Rendering\Appearance\FrameBuffer.cs" />
     <Compile Include="Rendering\Appearance\Shader.cs" />

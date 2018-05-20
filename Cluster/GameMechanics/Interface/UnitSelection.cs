@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cluster.GameMechanics.Behaviour;
+using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Mathematics;
 using OpenTK.Input;
+using static Cluster.GameMechanics.Interface.Commons.Properties;
 
 namespace Cluster.GameMechanics.Interface
 {
@@ -16,7 +18,7 @@ namespace Cluster.GameMechanics.Interface
 
         public UnitSelection()
         {
-            panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
+            panel = new Panel(10, GameWindow.active.height - BUTTON_SIZE_DEFAULT, 10, 1);
         }
 
         public Target pickTarget(float x, float y)
@@ -30,6 +32,7 @@ namespace Cluster.GameMechanics.Interface
             {
                 deselectAll();
             }
+
             var unit = pick(x, y);
             if (unit != null)
             {
@@ -84,7 +87,7 @@ namespace Cluster.GameMechanics.Interface
         {
             return panel.isMouseOver();
         }
-        
+
         public string getToolTipText()
         {
             var elementAtMousePosition = panel.getElementAtMousePosition();
@@ -110,14 +113,104 @@ namespace Cluster.GameMechanics.Interface
 
         public void updateGui()
         {
+            commandUnits();
+            panel.enable();
+            panel.clear();
+
+            Counter<Prototype> counter = new Counter<Prototype>(getPrototypes());
+            foreach (Prototype prototype in counter.getKeys())
+            {
+                var button = new ProgressBar(prototype.shape);
+                panel.addElement(button);
+                button.setAnzahlFolgende(counter.getCount(prototype));
+                button.setProgress(0);
+                button.onLeftClick(() =>
+                {
+                    unselectAllUnitsExcept(prototype);
+                    return true;
+                });
+                button.onRightClick(() =>
+                {
+                    unselectAllUnitsWith(prototype);
+                    return true;
+                });
+            }
+
+            panel.updateState();
+        }
+
+        public void unselectAllUnitsExcept(Prototype prototype)
+        {
+            var toRemove = chooseUnitsExceptPrototype(prototype);
+            removeTheseUnitsFromSelection(toRemove);
+        }
+
+        public void unselectAllUnitsWith(Prototype prototype)
+        {
+            var toRemove = chooseUnitsOfPrototype(prototype);
+            removeTheseUnitsFromSelection(toRemove);
+        }
+
+        private IEnumerable<Unit> chooseUnitsOfPrototype(Prototype prototype)
+        {
+            List<Unit> list = new List<Unit>();
+            foreach (Unit unit in units)
+            {
+                if (unit.getPrototype() == prototype)
+                {
+                    list.Add(unit);
+                }
+            }
+
+            return list;
+        }
+
+        private IEnumerable<Unit> chooseUnitsExceptPrototype(Prototype prototype)
+        {
+            List<Unit> list = new List<Unit>();
+            foreach (Unit unit in units)
+            {
+                if (unit.getPrototype() != prototype)
+                {
+                    list.Add(unit);
+                }
+            }
+
+            return list;
+        }
+
+        private void removeTheseUnitsFromSelection(IEnumerable<Unit> toRemove)
+        {
+            foreach (Unit unit in toRemove)
+            {
+                unit.isSelected = false;
+                units.Remove(unit);
+            }
+        }
+
+        private IEnumerable<Prototype> getPrototypes()
+        {
+            foreach (var unit in units)
+            {
+                yield return unit.getPrototype();
+            }
+        }
+
+        private void commandUnits()
+        {
             if (GuiMouse.mouseHitRight && !CombinedGui.isMouseOver())
             {
-                
+                Target target = MoveAndSelect.pickTargetAtMousePosition();
+                foreach (Unit unit in Unit.filterByOwner(units, Civilisation.getPlayer()))
+                {
+                    unit.updateTarget(target);
+                }
             }
         }
 
         public void renderGui()
         {
+            panel?.render();
         }
 
         private void deselectAll()

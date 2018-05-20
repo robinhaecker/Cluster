@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Content;
@@ -123,7 +124,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         {
             displayShieldCount = 0;
 
-            GL.LineWidth(1.5f);
+            GL.LineWidth(2.5f);
             GL.Disable(EnableCap.DepthTest);
             Space.unitShader.bind();
             foreach (Unit u in Unit.units)
@@ -245,7 +246,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private static void updateAllUnitsAndAddPopulationCounter(float t)
         {
-            foreach (Unit u in Unit.units)
+            foreach (Unit u in units)
             {
                 u.owner.population += u.prototype.getPopulation();
                 u.simulate(t);
@@ -332,7 +333,13 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
             simMoveAndShoot(t, delta, deltaMission);
 
-            if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.D)) damage(t * 0.1f); // Nur zu Testzwecken
+            harmAllShipsForTesting(t);
+        }
+        
+        [Conditional("DEBUG")]
+        private void harmAllShipsForTesting(float t)
+        {
+            if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.D)) damage(t * 0.1f); // TODO: Nur zu Testzwecken
         }
 
         private Vec2 getDirectionToNextWaypoint()
@@ -427,13 +434,15 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         void simDeath(float t)
         {
             /*
-            if (current_effect_timer > 0.97f)
+            if (currentEffectTimer > 0.97f)
             {
                 for (int i = 0; i < 3; i++)
                 {
                     float speed = (float)GameWindow.random.NextDouble();
                     float angle = (float)GameWindow.random.NextDouble() * 2.0f * (float)Math.PI;
-                    Particle p = new Particle(x, y, v * (float)Math.Cos(rot) + 100.0f * speed * (float)Math.Cos(angle), v * (float)Math.Sin(rot) + 100.0f * speed * (float)Math.Sin(angle));
+                    Particle p = new Particle(x, y, 
+                        v * (float)Math.Cos(rot) + 100.0f * speed * (float)Math.Cos(angle),
+                        v * (float)Math.Sin(rot) + 100.0f * speed * (float)Math.Sin(angle));
                     p.setColor(1.0f, (float)GameWindow.random.NextDouble() * 0.7f + speed * 0.3f, speed * 0.25f, 0.1f);
                 }
             }*/
@@ -670,6 +679,11 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         public float getShieldFraction()
         {
             return shield / prototype.getShields(owner);
+        }
+
+        public void updateTarget(Target newTarget)
+        {
+           target.update(newTarget);
         }
 
         public static IEnumerable<Unit> filterByOwner(List<Unit> units, Civilisation civ)

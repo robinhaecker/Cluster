@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Interface.Commons;
 using Cluster.GameMechanics.Universe;
@@ -45,6 +46,27 @@ namespace Cluster.GameMechanics.Interface
             changeView();
             selectStuff();
             selection?.updateGui();
+        }
+
+        public static Target pickTargetAtMousePosition()
+        {
+            return pickTarget(GuiMouse.mouseX, GuiMouse.mouseY);
+        }
+
+        public static Target pickTarget(float mouseX, float mouseY)
+        {
+            var x = Space.screenToSpaceX(mouseX);
+            var y = Space.screenToSpaceY(mouseY);
+            foreach (var sel in selections)
+            {
+                Target target = sel.pickTarget(x, y);
+                if (target != null)
+                {
+                    return target;
+                }
+            }
+
+            return new Target(x, y);
         }
 
         public static bool isMouseOver()
@@ -131,9 +153,20 @@ namespace Cluster.GameMechanics.Interface
 
         private static void changeView()
         {
+            switchPlayerForTestingPurposes();
             scrollView();
             updateFocus();
             moveViewToFocus();
+        }
+
+
+        [Conditional("DEBUG")]
+        private static void switchPlayerForTestingPurposes()
+        {
+            if (GameWindow.keyboard.IsKeyDown(OpenTK.Input.Key.Tab))
+            {
+                Civilisation.player = (Civilisation.player + 1) % Civilisation.data.Count;
+            }
         }
 
         private static void scrollView()

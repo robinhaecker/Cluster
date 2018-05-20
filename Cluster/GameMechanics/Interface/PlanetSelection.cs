@@ -6,6 +6,7 @@ using Cluster.GameMechanics.Universe;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 using Cluster.GameMechanics.Universe.LivingThings;
 using Cluster.Mathematics;
+using static Cluster.GameMechanics.Interface.Commons.Properties;
 
 namespace Cluster.GameMechanics.Interface
 {
@@ -22,7 +23,7 @@ namespace Cluster.GameMechanics.Interface
 
         public PlanetSelection()
         {
-            panel = new Panel(10, GameWindow.active.height - 110, 10, 2);
+            panel = new Panel(10, GameWindow.active.height - BUTTON_SIZE_LARGE, 10, 2);
             defaultToolTipText = "";
         }
 
@@ -123,7 +124,7 @@ namespace Cluster.GameMechanics.Interface
                     var mainButton = new MeshButton(building.blueprint.shape,
                         Planet.terraImage[(int) planet.terra[pickedIndex]],
                         0, 0,
-                        Commons.Properties.BUTTON_SIZE_LARGE);
+                        BUTTON_SIZE_LARGE);
                     mainButton.setInfoText(building.getInfoText());
                     defaultToolTipText = mainButton.getInfoText();
                     panel.addLargeElement(mainButton);
@@ -163,7 +164,7 @@ namespace Cluster.GameMechanics.Interface
                     var mainButton = new MeshButton(Planet.terraImage[(int) planet.terra[pickedIndex]],
                         null,
                         0, 0,
-                        Commons.Properties.BUTTON_SIZE_LARGE);
+                        BUTTON_SIZE_LARGE);
                     mainButton.setInfoText(planet.getTerrainType(pickedIndex));
                     defaultToolTipText = mainButton.getInfoText();
                     panel.addLargeElement(mainButton);
