@@ -597,7 +597,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
         private void _render_buildings()
         {
-            GL.LineWidth(2.0f);
+            GL.LineWidth(2.5f);
             GL.Enable(EnableCap.LineSmooth);
             GL.Disable(EnableCap.DepthTest);
 

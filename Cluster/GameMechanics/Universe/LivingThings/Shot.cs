@@ -53,7 +53,22 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         private readonly float alpha;
         private readonly float length;
 
-
+        public Shot(Building from)
+        {
+            red = from.owner.red;
+            green = from.owner.green;
+            blue = from.owner.blue;
+            length = 108.0f;
+            against = FiredAgainst.UNITS;
+            weaponType = Prototype.WeaponType.FIND_AIM;
+            this.@from = null;
+            owner = from.owner;
+            v = 100.0f;
+            rot = @from.getSpotRotation();
+            x = from.getPlanet().x + (float)Math.Cos(rot) * from.getPlanet().size * 20.0f;
+            y = from.getPlanet().y + (float)Math.Sin(rot) * from.getPlanet().size * 20.0f;
+        }
+        
         public Shot(Unit from, Unit aim = null, byte inrange = 1)
         {
             red = green = blue = alpha = 1.0f;

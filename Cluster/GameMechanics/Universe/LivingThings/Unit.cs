@@ -124,7 +124,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         {
             displayShieldCount = 0;
 
-            GL.LineWidth(2.5f);
+            GL.LineWidth(2.0f);
             GL.Disable(EnableCap.DepthTest);
             Space.unitShader.bind();
             foreach (Unit u in Unit.units)

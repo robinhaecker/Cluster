@@ -58,7 +58,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public float getSpotRotation()
         {
-            return ( location + 0.5f) / planet.size * 2.0f * (float) Math.PI;
+            return (location + 0.5f) / planet.size * 2.0f * (float) Math.PI;
         }
 
         public float getHealthFraction()
@@ -196,7 +196,27 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     }
 
                     break;
+
+                case Blueprint.SpecialAbility.DEFEND:
+                    useAbilityForDefense(dt);
+                    break;
             }
+        }
+
+        private void useAbilityForDefense(float dt)
+        {
+            float constructionSpeed = dt * 0.2f * owner.getMultiplicator(Civilisation.BONUS_CONSTRUCTION_SPEED);
+            productionTimer += constructionSpeed;
+            if (productionTimer >= 1.0f)
+            {
+                productionTimer = 0.0f;
+                createShot();
+            }
+        }
+
+        private void createShot()
+        {
+            var shot = new Shot(this);
         }
 
         private void useAbilityForSettling()
@@ -251,9 +271,9 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public string getInfoText()
         {
-            return blueprint.getName()+" ("+(int)health+"/"+(int)+healthMax+")\n"+
-                   "Besitzer: "+(owner?.name ?? "Niemand")+"\n"+
-                string.Join("\n", blueprint.description);
+            return blueprint.getName() + " (" + (int) health + "/" + (int) +healthMax + ")\n" +
+                   "Besitzer: " + (owner?.name ?? "Niemand") + "\n" +
+                   string.Join("\n", blueprint.description);
         }
     }
 }
