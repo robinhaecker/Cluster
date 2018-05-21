@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe.CelestialBodies;
+using Cluster.Mathematics;
+using static Cluster.GameMechanics.Universe.LivingThings.Civilisation.TechBonus;
 
 namespace Cluster.GameMechanics.Universe.LivingThings
 {
@@ -14,7 +16,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             UNDER_CONSTRUCTION,
             DESTROYED,
             DESTROYED_DURING_CONSTRUCTION
-        };
+        }
 
         readonly Planet planet;
         readonly int location;
@@ -54,6 +56,14 @@ namespace Cluster.GameMechanics.Universe.LivingThings
         public int getSpotId()
         {
             return location;
+        }
+
+        public Vec2 getPosition()
+        {
+            float phi = getSpotRotation();
+            float planetRadius = planet.size * 20.0f;
+            return new Vec2(planet.x + (float)Math.Cos(phi) * planetRadius,
+                planet.y + (float)Math.Sin(phi) * planetRadius);
         }
 
         public float getSpotRotation()
@@ -205,9 +215,9 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         private void useAbilityForDefense(float dt)
         {
-            float constructionSpeed = dt * 0.2f * owner.getMultiplicator(Civilisation.BONUS_CONSTRUCTION_SPEED);
+            float constructionSpeed = dt * 0.003f * owner.getMultiplicator(CONSTRUCTION_SPEED);
             productionTimer += constructionSpeed;
-            if (productionTimer >= 1.0f)
+            if (productionTimer >= 1.0f && Sector.areUnitsInRange(getPosition(), owner, 1000.0f))
             {
                 productionTimer = 0.0f;
                 createShot();
@@ -231,19 +241,19 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             else if (planet.terra[location] == Planet.Terrain.RESSOURCES) factor = 0.02f;
 
             owner.ressources += dt * factor * blueprint.specialStrength *
-                                owner.getMultiplicator(Civilisation.BONUS_RESSOURCES);
+                                owner.getMultiplicator(RESSOURCES);
         }
 
         private void useAbilityForResearch(float dt)
         {
             owner.science += dt * 0.0025f * blueprint.specialStrength *
-                             owner.getMultiplicator(Civilisation.BONUS_RESEARCH);
+                             owner.getMultiplicator(RESEARCH);
         }
 
         private void useAbilityForShipbuilding(float dt)
         {
-            float constructionSpeed = dt * 0.02f / (float) production[0].cost *
-                                      owner.getMultiplicator(Civilisation.BONUS_CONSTRUCTION_SPEED);
+            float constructionSpeed = dt * 0.02f / production[0].cost *
+                                      owner.getMultiplicator(CONSTRUCTION_SPEED);
             productionTimer += constructionSpeed;
             if (productionTimer >= 1.0f)
             {

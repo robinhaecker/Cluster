@@ -4,6 +4,7 @@ using Cluster.GameMechanics.Behaviour;
 using Cluster.GameMechanics.Content;
 using Cluster.GameMechanics.Universe.CelestialBodies;
 using OpenTK.Graphics.OpenGL;
+using static Cluster.GameMechanics.Universe.LivingThings.Civilisation.TechBonus;
 
 namespace Cluster.GameMechanics.Universe.LivingThings
 {
@@ -55,18 +56,25 @@ namespace Cluster.GameMechanics.Universe.LivingThings
 
         public Shot(Building from)
         {
-            red = from.owner.red;
-            green = from.owner.green;
-            blue = from.owner.blue;
-            length = 108.0f;
+            damage = from.blueprint.specialStrength *
+                     from.owner.getMultiplicator(WEAPONS_TORPEDO);
+            red = from.owner.red * 0.5f + 0.5f;
+            green = from.owner.green * 0.5f + 0.5f;
+            blue = from.owner.blue * 0.5f + 0.5f;
+            alpha = 1.05f;
+            length = 25.0f;
+            lifespan = 100.0f;
             against = FiredAgainst.UNITS;
             weaponType = Prototype.WeaponType.FIND_AIM;
-            this.@from = null;
+            this.from = null;
             owner = from.owner;
-            v = 100.0f;
+            v = 120.0f;
+            var position = @from.getPosition();
+            x = position.x;
+            y = position.y;
             rot = @from.getSpotRotation();
-            x = from.getPlanet().x + (float)Math.Cos(rot) * from.getPlanet().size * 20.0f;
-            y = from.getPlanet().y + (float)Math.Sin(rot) * from.getPlanet().size * 20.0f;
+            
+            list[(int) against].Add(this);
         }
         
         public Shot(Unit from, Unit aim = null, byte inrange = 1)
@@ -153,9 +161,9 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             y = (float) from.y;
             v = 75.0f;
             rot = (float) Math.Atan2(
-                pl.y + (double) pl.size * 20.0 * Math.Sin(((double) index + 0.5) / (double) pl.size * 2.0 * Math.PI) -
+                pl.y + pl.size * 20.0 * Math.Sin((index + 0.5) / pl.size * 2.0 * Math.PI) -
                 y,
-                pl.x + (double) pl.size * 20.0 * Math.Cos(((double) index + 0.5) / (double) pl.size * 2.0 * Math.PI) -
+                pl.x + pl.size * 20.0 * Math.Cos((index + 0.5) / pl.size * 2.0 * Math.PI) -
                 x);
 
             list[(int) against].Add(this);
@@ -210,10 +218,9 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             {
                 float neardist = 1000.0f;
                 Sector s = Sector.get(x, y);
-                for (int i = 0; i < Civilisation.count + 1; i++)
+                foreach (List<Unit> units in s.getUnitsInExtendedSector(owner))
                 {
-                    if (i == owner.getId()) continue;
-                    foreach (Unit u in s.ships[i])
+                    foreach (Unit u in units)
                     {
                         float dst = (float) Math.Sqrt((u.x - x) * (u.x - x) + (u.y - y) * (u.y - y));
                         if (dst < 5.0f * u.getPrototype().shapeScaling * u.getPrototype().shape.radius)
@@ -222,7 +229,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                             removed.Add(this);
                             return;
                         }
-                        else if (weaponType == Prototype.WeaponType.FIND_AIM && dst < neardist)
+                        if (weaponType == Prototype.WeaponType.FIND_AIM && dst < neardist)
                         {
                             neardist = dst;
                             aimUnit = u;
@@ -230,7 +237,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                         else if (weaponType == Prototype.WeaponType.EXPLOSIVE && dst <
                                  30.0f * u.getPrototype().shapeScaling * u.getPrototype().shape.radius + 150.0f)
                         {
-                            for (int j = 0; j < 15 + owner.getMultiplicator(Civilisation.BONUS_WEAPONS_EXPLOSIVE); j++)
+                            for (int j = 0; j < 15 + owner.getMultiplicator(WEAPONS_EXPLOSIVE); j++)
                             {
                                 // ReSharper disable once ObjectCreationAsStatement -> Wird direkt in Liste gespeichert (Konstruktor)
                                 new Shot(this);
@@ -242,7 +249,8 @@ namespace Cluster.GameMechanics.Universe.LivingThings
                     }
                 }
 
-                if (weaponType == Prototype.WeaponType.FIND_AIM || weaponType == Prototype.WeaponType.PERSECUTE)
+                
+                if (aimUnit != null && (weaponType == Prototype.WeaponType.FIND_AIM || weaponType == Prototype.WeaponType.PERSECUTE))
                 {
                     turnTowards(aimUnit.x - x, aimUnit.y - y, t * 0.002);
                 }

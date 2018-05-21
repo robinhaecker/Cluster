@@ -96,13 +96,25 @@ namespace Cluster.GameMechanics.Behaviour
 			//asteroids = new List<Asteroid>();
 		}
 
-
 		public static Sector get(float x, float y)
 		{
 			return data[Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((x - ORIGIN) / SECTOR_SIZE))),
 						Math.Min(SECTOR_COUNT - 1, Math.Max(1, (int)Math.Floor((y - ORIGIN) / SECTOR_SIZE)))];
 		}
 
+		public IEnumerable<List<Unit>> getUnitsInExtendedSector(Civilisation excludeCivilisation = null)
+		{
+			foreach (Sector sector in extendedSector)
+			{
+				
+				for (int i = 0; i < Civilisation.count + 1; i++)
+				{
+					if (excludeCivilisation != null && i == excludeCivilisation.getId()) continue;
+					yield return sector.ships[i];
+				}
+			}
+		}
+		
 		public bool containsPoint(float x, float y)
 		{
 			return p0.x >= x && p0.y >= y && p1.x <= x && p1.y <= y;
@@ -111,7 +123,6 @@ namespace Cluster.GameMechanics.Behaviour
 		{
 			return p0.x >= x && p0.y >= y && p1.x <= x && p1.y <= y;
 		}
-
 
 		public void removeUnit(Unit u)
 		{
@@ -161,6 +172,29 @@ namespace Cluster.GameMechanics.Behaviour
 				u.enemyDistance = 1500;
 				u.inrange = 0;
 			}
+		}
+
+		public static bool areUnitsInRange(Vec2 position, Civilisation excludeCivilisation = null, float range = 500.0f)
+		{
+			foreach (Sector sector in get(position.x, position.y).extendedSector)
+			{
+				foreach (List<Unit> units in sector.ships)
+				{
+					foreach (Unit unit in units)
+					{
+						if (unit.getOwner().Equals(excludeCivilisation))
+						{
+							continue;
+						}
+
+						if ((new Vec2(unit.x, unit.y)-position).length() < range)
+						{
+							return true;
+						}
+					}
+				}
+			}
+			return false;
 		}
 
 		private static void checkNearestEnemyFor(Unit unit1, Unit unit0)

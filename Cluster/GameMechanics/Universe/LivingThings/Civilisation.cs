@@ -10,18 +10,21 @@ namespace Cluster.GameMechanics.Universe.LivingThings
     {
         public const int TOTAL_MAX_POPULATION = 1000;
 
-        public const byte BONUS_RESSOURCES = 0,
-            BONUS_RESEARCH = 1,
-            BONUS_SPEED = 2,
-            BONUS_SHIELDING = 3,
-            BONUS_HULL = 4,
-            BONUS_WEAPONS_TORPEDO = 5,
-            BONUS_WEAPONS_LASER = 6,
-            BONUS_WEAPONS_EXPLOSIVE = 7,
-            BONUS_REPAIR = 8,
-            BONUS_BUILDING_STABILITY = 9,
-            BONUS_ENERGY = 10,
-            BONUS_CONSTRUCTION_SPEED = 11;
+        public enum TechBonus
+        {
+            RESSOURCES,
+            RESEARCH,
+            SPEED,
+            SHIELDING,
+            HULL,
+            WEAPONS_TORPEDO,
+            WEAPONS_LASER,
+            WEAPONS_EXPLOSIVE,
+            REPAIR,
+            BUILDING_STABILITY,
+            ENERGY,
+            CONSTRUCTION_SPEED 
+        }
 
         public const int NUMBER_OF_BONI = 12;
 
@@ -168,7 +171,7 @@ namespace Cluster.GameMechanics.Universe.LivingThings
             return id;
         }
 
-        public float getMultiplicator(byte id)
+        public float getMultiplicator(TechBonus techBonus)
         {
             return (1.0f + boni[id]);
         }

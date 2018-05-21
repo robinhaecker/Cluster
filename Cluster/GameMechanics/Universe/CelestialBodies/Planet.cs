@@ -792,7 +792,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
         public bool canBuild(Civilisation civ)
         {
-            return true;
+            return true; //TODO: wieder normal verwenden
             for (int i = 0; i < size; i++)
             {
                 if (infra[i] != null && infra[i].owner == civ &&
@@ -802,7 +802,7 @@ namespace Cluster.GameMechanics.Universe.CelestialBodies
 
             return false;
         }
-
+        
         public Civilisation getDominantCivilisation()
         {
             //TODO: Hat aus irgendeinem Grund nicht funktioniert, daher vorerst auskommentiert
